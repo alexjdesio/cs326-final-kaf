@@ -14,3 +14,4 @@ There is a similar web app called Petfinder. While the website has a vast user b
 An important feature is the built in messaging system in our app. By providing a seamless interaction between adopters and animal shelters, it can relieve some of the hassles of Emails and calls. Behind this messaging system will have to be user profiles, which will need to be divided into two types. One will be the more common way to use the website, as an adopter. The other will be the profiles of animal shelters. Both will have different needs and will therefore have different user interfaces.
 
 Another one, the virtual meetings, asynchronous or synchronous, will allow adopters to meet the pets without leaving their homes. Synchronous will utilize Zoom (subject to change), and asynchronous will utilize Youtube (subject to change).
+
