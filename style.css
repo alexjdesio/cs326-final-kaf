@@ -6,3 +6,27 @@
 #page {
     background-color: white;
 }
+
+#featured-pet{
+    width: 800px;
+    margin:auto;
+    border: 3px solid #212529;
+    border-radius: 6px;
+}
+
+#footer{
+    height:300px;
+    background-color: #343a40;
+}
+
+.carousel-control-prev, .carousel-control-next {
+    /**filter: invert(100%);**/
+}
+
+#navbarSupportedContent{
+    list-style:none;
+}
+
+#login a:hover{
+    color:white;
+}
