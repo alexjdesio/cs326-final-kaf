@@ -46,6 +46,7 @@
             </div>
         </nav>
         <!--This is the end of the navbar-->
+        <!--Below is the main text section that the shelter would enter when creating the page for Sparky-->
         <div class="container border-left border-right" id="page">
             <div class="row mt-5">
                 <div class="col">
@@ -77,17 +78,18 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-5">
+                <!--Image of Sparky-->
+                <div class="col-5 mt-5">
                     <!--This would be a slideshow of images...-->
-                    <img src="https://thedogdigest.com/wp-content/uploads/2018/12/Boxer-Boston-Terrier-Mix-1024x1024.jpg" class="img-fluid mt-5 rounded float-right">
-                    <div class="float-right">
-                        <p>Vaccinated <img src="images/check.png" class="check"> 
-                            Spayed <img src="images/check.png" class="check">
-                            Housetrained <img src="images/check.png" class="check">
-                        </p>
-                    </div>
+                    <div class="card" class="mt-5 float-right">
+                        <img class="card-img-top" src="https://thedogdigest.com/wp-content/uploads/2018/12/Boxer-Boston-Terrier-Mix-1024x1024.jpg" alt="Card image cap">
+                        <div class="card-body bg-light">
+                          <p class="card-text bg-light">This would be a slideshow of images, each having a description (if one was entered)</p>
+                        </div>
+                      </div>
                 </div>
             </div>
+            <!--Comments section-->
             <div class="row mt-5 ml-0">
                 <div class="card" style="width: 68rem;">
                     <div class="card-body">
@@ -97,6 +99,7 @@
                                     <label for="userComment"></label>
                                     <textarea class="form-control" rows="2" placeholder="Make a comment"></textarea>
                                     <div class="row">
+                                        <!--This is a little hacky, but it gets the job done.-->
                                         <div class="col">
                                             <small id="commentHelp" class="form-text text-muted">Login to comment</small>
                                         </div>
