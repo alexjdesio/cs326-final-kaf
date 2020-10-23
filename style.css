@@ -10,16 +10,16 @@
     background-color: #343a40;
 }
 
-.carousel-control-prev, .carousel-control-next {
-    /**filter: invert(100%);**/
-}
-
 #navbarSupportedContent{
     list-style:none;
 }
 
 #login a:hover{
     color:white;
+}
+
+#login{
+    line-height:0.4;
 }
 
 #add_heart{
@@ -36,4 +36,22 @@
 #add_heart:hover{
     background-image: url("images/heart-filled.png");
     z-index: 99;
+}
+
+.featured-img-label{
+    height: 140px;
+}
+
+#pet-ownership-articles .card, #recent-pets .card{
+    width: 18rem;
+}
+
+.blank-div-h100{
+    height: 100px;
+}
+
+.login-signup-form{
+    margin-top: 100px; 
+    border: 1px solid #343a40; 
+    padding: 20px;
 }
