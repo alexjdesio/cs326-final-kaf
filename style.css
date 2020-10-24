@@ -38,3 +38,11 @@
 .morebtn {
     margin: auto;
 }
+
+#comments {
+    width: 68rem;
+}
+
+#dogpic {
+    width: 100%;
+}
