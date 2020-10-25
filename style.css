@@ -1,3 +1,19 @@
+<<<<<<< HEAD
+=======
+.link:hover {
+    color: lightblue;
+    text-decoration: underline;
+}
+
+#page {
+    background-color: white;
+}
+
+.slideimage {
+    background-color: black;
+}
+
+>>>>>>> a3676e95e1bfacb8219a885bcba79c8766fbc8cf
 #featured-pet{
     width: 800px;
     margin:auto;
@@ -18,6 +34,25 @@
     color:white;
 }
 
+<<<<<<< HEAD
+=======
+.centertitle {
+    text-align: center;
+}
+
+.morebtn {
+    margin: auto;
+}
+
+#comments {
+    width: 68rem;
+}
+
+#dogpic {
+    width: 100%;
+} 
+
+>>>>>>> a3676e95e1bfacb8219a885bcba79c8766fbc8cf
 #login{
     line-height:0.4;
 }
@@ -54,6 +89,7 @@
     margin-top: 100px; 
     border: 1px solid #343a40; 
     padding: 20px;
+<<<<<<< HEAD
 }
 
 <!--Joe Styles--> 
@@ -89,3 +125,6 @@
     top: 530px;
 }
 <!--End--> 
+=======
+}
+>>>>>>> a3676e95e1bfacb8219a885bcba79c8766fbc8cf
