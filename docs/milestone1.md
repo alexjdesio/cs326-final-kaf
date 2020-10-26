@@ -46,9 +46,8 @@ Zizheng Huang - joehuang1234
 ### Create Pet Page
 ![CreatePet](https://raw.githubusercontent.com/alexjdesio/cs326-final-kaf/images/HTML%20Page%20Screenshots/createpethtml.png)
 ### Chat
-![Chat](https://raw.githubusercontent.com/alexjdesio/cs326-final-kaf/images/HTML%20Page%20Screenshots/chathtml.png)
-
+![Chat](https://raw.githubusercontent.com/alexjdesio/cs326-final-kaf/images/HTML%20Page%20Screenshots/chathtml.png)]
 # Division of Labor
-Alex: Homepage, Sign Up, Sign In, Wireframes for 3 Pages, Navigation Bar
-Sam: Pet Page, Pet Form, User Page, Wireframes for 3 Pages, Comment Section
-Joe: Shelter Page, Shelter Form, Chat, Wireframe for 3 Pages, Creating milestone1
+- Alex: Homepage, Sign Up, Sign In, Wireframe for 3 Pages, Navigation Bar
+- Sam: Pet Page, Pet Form, User Page, Wireframe for 3 Pages, Comment Section
+- Joe: Shelter Page, Shelter Form, Chat, Wireframe for 3 Pages, Creating milestone1
