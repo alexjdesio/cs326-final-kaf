@@ -51,4 +51,4 @@ Zizheng Huang - joehuang1234
 # Division of Labor
 Alex: Homepage, Sign Up, Sign In, Wireframes for 3 Pages, Navigation Bar
 Sam: Pet Page, Pet Form, User Page, Wireframes for 3 Pages, Comment Section
-Joe: Shelter Page, Shelter Form, Chat, Wireframe for 3 Pages, Creating milestone1.md
+Joe: Shelter Page, Shelter Form, Chat, Wireframe for 3 Pages, Creating milestone1
