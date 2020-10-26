@@ -14,7 +14,7 @@ Zizheng Huang - joehuang1234
 
 # Part 1: Wireframes
 ### Homepage Wireframe
-![Homepage Wireframe](images/wireframes/homepage.PNG)
+![Homepage Wireframe](./images/wireframes/homepage.PNG)
 ### Sign Up Wireframe
 ![Sign Up Wireframe](images/wireframes/signup.PNG)
 ### Sign In Wireframe
