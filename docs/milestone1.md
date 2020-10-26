@@ -14,36 +14,36 @@ Zizheng Huang - joehuang1234
 
 # Part 1: Wireframes
 ### Homepage Wireframe
-![Homepage Wireframe](https://raw.githubusercontent.com/alexjdesio/cs326-final-kaf/joe-dev/images/HTML%20Page%20Screenshots/chathtml.png)
+![Homepage Wireframe](https://raw.githubusercontent.com/alexjdesio/cs326-final-kaf/images/wireframes/homepage.png)
 ### Sign Up Wireframe
-![Sign Up Wireframe](images/wireframes/signup.PNG)
+![Sign Up Wireframe](https://raw.githubusercontent.com/alexjdesio/cs326-final-kaf/images/wireframes/signup.png)
 ### Sign In Wireframe
-![Sign In Wireframe](images/wireframes/signin.PNG)
+![Sign In Wireframe](https://raw.githubusercontent.com/alexjdesio/cs326-final-kaf/images/wireframes/signin.png)
 ### Pet Page Wireframe
-![Pet Page Wireframe](images/wireframes/petpage.PNG)
+![Pet Page Wireframe](https://raw.githubusercontent.com/alexjdesio/cs326-final-kaf/images/wireframes/petpage.png)
 ### Shelter Page Wireframe
-![Shelter Page Wireframe](images/wireframes/shelterpage.PNG)
+![Shelter Page Wireframe](https://raw.githubusercontent.com/alexjdesio/cs326-final-kaf/images/wireframes/shelterpage.png)
 ### User Page Wireframe
-![User Page Wireframe](images/wireframes/userpage.PNG)
+![User Page Wireframe](https://raw.githubusercontent.com/alexjdesio/cs326-final-kaf/images/wireframes/userpage.png)
 ### Create Pet Page Wireframe
-![CreatePet Wireframe](images/wireframes/createpet.PNG)
+![CreatePet Wireframe](https://raw.githubusercontent.com/alexjdesio/cs326-final-kaf/images/wireframes/createpet.png)
 ### Chat Wireframe
-![Chat Wireframe](images/wireframes/chat.PNG)
+![Chat Wireframe](https://raw.githubusercontent.com/alexjdesio/cs326-final-kaf/images/wireframes/chat.png)
 
 # Part 2: HTML and CSS
 ### Homepage
-![Homepage](images/wireframes/homepagehtml.PNG)
+![Homepage](https://raw.githubusercontent.com/alexjdesio/cs326-final-kaf/images/HTML%20Page%20Screenshots/homepagehtml.png)
 ### Sign Up
-![Sign Up](images/wireframes/signuphtml.PNG)
+![Sign Up](https://raw.githubusercontent.com/alexjdesio/cs326-final-kaf/images/HTML%20Page%20Screenshots/signuphtml.png)
 ### Sign In
-![Sign In](images/wireframes/signinhtml.PNG)
+![Sign In](https://raw.githubusercontent.com/alexjdesio/cs326-final-kaf/images/HTML%20Page%20Screenshots/signinhtml.png)
 ### Pet Page
-![Pet Page](images/wireframes/petpagehtml.PNG)
+![Pet Page](https://raw.githubusercontent.com/alexjdesio/cs326-final-kaf/images/HTML%20Page%20Screenshots/petpagehtml.png)
 ### Shelter Page
-![Shelter Page](images/wireframes/shelterpagehtml.PNG)
+![Shelter Page](https://raw.githubusercontent.com/alexjdesio/cs326-final-kaf/images/HTML%20Page%20Screenshots/shelterpagehtml.png)
 ### User Page
-![User Page](images/wireframes/userpagehtml.PNG)
+![User Page](https://raw.githubusercontent.com/alexjdesio/cs326-final-kaf/images/HTML%20Page%20Screenshots/userpagehtml.png)
 ### Create Pet Page
-![CreatePet](images/wireframes/createpethtml.PNG)
+![CreatePet](https://raw.githubusercontent.com/alexjdesio/cs326-final-kaf/images/HTML%20Page%20Screenshots/createpethtml.png)
 ### Chat
-![Chat](images/wireframes/chathtml.PNG)
+![Chat](https://raw.githubusercontent.com/alexjdesio/cs326-final-kaf/images/HTML%20Page%20Screenshots/chathtml.png)
