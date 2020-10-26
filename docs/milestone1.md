@@ -14,21 +14,21 @@ Zizheng Huang - joehuang1234
 
 # Part 1: Wireframes
 ### Homepage Wireframe
-![Homepage Wireframe](https://raw.githubusercontent.com/alexjdesio/cs326-final-kaf/master/images/wireframes/homepage.png)
+![Homepage Wireframe](https://raw.githubusercontent.com/alexjdesio/cs326-final-kaf/master/images/wireframes/homepage.PNG)
 ### Sign Up Wireframe
-![Sign Up Wireframe](https://raw.githubusercontent.com/alexjdesio/cs326-final-kaf/master/images/wireframes/signup.png)
+![Sign Up Wireframe](https://raw.githubusercontent.com/alexjdesio/cs326-final-kaf/master/images/wireframes/signup.PNG)
 ### Sign In Wireframe
-![Sign In Wireframe](https://raw.githubusercontent.com/alexjdesio/cs326-final-kaf/master/images/wireframes/signin.png)
+![Sign In Wireframe](https://raw.githubusercontent.com/alexjdesio/cs326-final-kaf/master/images/wireframes/signin.PNG)
 ### Pet Page Wireframe
-![Pet Page Wireframe](https://raw.githubusercontent.com/alexjdesio/cs326-final-kaf/master/images/wireframes/petpage.png)
+![Pet Page Wireframe](https://raw.githubusercontent.com/alexjdesio/cs326-final-kaf/master/images/wireframes/petpage.PNG)
 ### Shelter Page Wireframe
-![Shelter Page Wireframe](https://raw.githubusercontent.com/alexjdesio/cs326-final-kaf/master/images/wireframes/shelterpage.png)
+![Shelter Page Wireframe](https://raw.githubusercontent.com/alexjdesio/cs326-final-kaf/master/images/wireframes/shelterpage.PNG)
 ### User Page Wireframe
-![User Page Wireframe](https://raw.githubusercontent.com/alexjdesio/cs326-final-kaf/master/images/wireframes/userpage.png)
+![User Page Wireframe](https://raw.githubusercontent.com/alexjdesio/cs326-final-kaf/master/images/wireframes/userpage.PNG)
 ### Create Pet Page Wireframe
-![CreatePet Wireframe](https://raw.githubusercontent.com/alexjdesio/cs326-final-kaf/master/images/wireframes/createpet.png)
+![CreatePet Wireframe](https://raw.githubusercontent.com/alexjdesio/cs326-final-kaf/master/images/wireframes/createpet.PNG)
 ### Chat Wireframe
-![Chat Wireframe](https://raw.githubusercontent.com/alexjdesio/cs326-final-kaf/master/images/wireframes/chat.png)
+![Chat Wireframe](https://raw.githubusercontent.com/alexjdesio/cs326-final-kaf/master/images/wireframes/chat.PNG)
 
 # Part 2: HTML and CSS
 ### Homepage
