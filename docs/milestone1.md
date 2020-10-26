@@ -4,7 +4,7 @@ Apllication Name: "Pet-It"
 # Team Overview
 Alexander Desio - alexjdesio
 Sam Cox - shcox
-Zizheng Huang - joehuang1234
+Zizheng(Joe) Huang - joehuang1234
 
 # Part 0: Data Interactions
  - There will be 2 types of users: Adopters and Shelters
@@ -47,3 +47,8 @@ Zizheng Huang - joehuang1234
 ![CreatePet](https://raw.githubusercontent.com/alexjdesio/cs326-final-kaf/master/images/HTML%20Page%20Screenshots/createpethtml.png)
 ### Chat
 ![Chat](https://raw.githubusercontent.com/alexjdesio/cs326-final-kaf/master/images/HTML%20Page%20Screenshots/chathtml.png)
+
+# Division of Labor
+Alex: Homepage, Sign Up, Sign In, Wireframes for 3 Pages, Navigation Bar
+Sam: Pet Page, Pet Form, User Page, Wireframes for 3 Pages, Comment Section
+Joe: Shelter Page, Shelter Form, Chat, Wireframe for 3 Pages, Creating milestone1.md
