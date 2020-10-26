@@ -14,7 +14,7 @@ Zizheng Huang - joehuang1234
 
 # Part 1: Wireframes
 ### Homepage Wireframe
-![Homepage Wireframe](./images/wireframes/homepage.PNG)
+![Homepage Wireframe](https://raw.githubusercontent.com/alexjdesio/cs326-final-kaf/joe-dev/images/HTML%20Page%20Screenshots/chathtml.png)
 ### Sign Up Wireframe
 ![Sign Up Wireframe](images/wireframes/signup.PNG)
 ### Sign In Wireframe
