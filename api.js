@@ -1,4 +1,4 @@
-import pkg from "faker";
+import pkg from 'faker';
 import {createServer} from 'http';
 import {parse} from 'url';
 import {join} from 'path';
@@ -10,8 +10,8 @@ const {name,internet,company,address,lorem,commerce} = pkg;
 function createFakePet() {
     //Pet Objects: Pet Name, Breed, About, Health, Location, Comments, Num Likes
     let i;
-    let commarr = [];
-    const num_com = Math.random() * 10
+    const commarr = [];
+    const num_com = Math.random() * 10;
     for (i = 0; i < num_com; i++) {
         commarr.push({comment: lorem.sentence(), user: internet.userName()});
     }
@@ -23,8 +23,10 @@ function createFakePet() {
         health: lorem.paragraph(),
         location: address.city(),
         comments: commarr,
-        num_likes: Math.random() * 100
+        num_likes: Math.floor(Math.random() * 100)
     };
     return pet;
 }
+
+console.log(createFakePet());
 
