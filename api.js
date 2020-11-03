@@ -5,13 +5,15 @@ import {join} from 'path';
 import {writeFile, readFileSync, existsSync} from 'fs';
 const {name,internet,company,address,lorem,commerce} = pkg;
 
-function createFakeUser(){
+'use strict';
+
+function createFakeUser(username){
     let interestIndex = Math.floor((Math.random()*3))
     let interestArray = ["dog","cats","exotics"];
     let userType = (Math.random() > 0.5) ? "adopter" : "shelter";
     
     let user = {
-        username: internet.userName(),
+        username: username,
         email: internet.email(), 
         password: internet.password(),
         type: userType,
@@ -29,7 +31,7 @@ function createFakeLogin(){
     let login = {
         username: internet.userName(),
         password: internet.password(), 
-    }
+    };
     return login;
 }
 
@@ -40,12 +42,12 @@ function createFakeLoginToken(){
 function createFakePetResult(type,query){
     let pet = {
         pet_name: name.firstName(),
+        pet_location: company.companyName(),
         pet_breed: commerce.color(),
         pet_about: lorem.sentence(5,10),
         pet_health: lorem.sentence(5,10),
-        pet_location: company.companyName(),
         pet_comments: []
-    }
+    };
     let fields = Object.keys(pet);
     if(fields.includes(type)){ //guarantees that the fake data satisfies the search constraints
         pet[type] = query;
@@ -60,7 +62,7 @@ function createFakeShelterResult(type,query){
         shelter_about: lorem.sentence(5,10),
         shelter_pets: null,
         shelter_comments: []
-    }
+    };
     let petArr = [];
     for(let i = 0; i < 10;i++){
         petArr.push(createFakePetResult("location",shelter.shelter_name))
@@ -79,12 +81,12 @@ function createFakeSearchResult(type,query,quantity){
     let returnArr = [];
 
     if(pet_fields.includes(type)){
-        for(let i = 0;i<quantity;i++){
+        for(let i = 0;i<parseInt(quantity);i++){
             returnArr.push(createFakePetResult(type,query));
         }
     }
     else if(shelter_fields.includes(type)){
-        for(let i = 0;i<quantity;i++){
+        for(let i = 0;i<parseInt(quantity);i++){
             returnArr.push(createFakeShelterResult(type,query));
         }
     }
@@ -92,45 +94,6 @@ function createFakeSearchResult(type,query,quantity){
         console.log("Invalid query type");
     }
     return returnArr;
-}
-
-async function registerFakeUser(){
-    const response = await fetch("http://127.0.0.1:8080/register", {
-        method: 'POST',
-        headers: {
-        'Content-Type': 'application/json;charset=utf-8'
-        },
-        body: JSON.stringify(createFakeUser())
-    });   
-    if(response.ok){
-        console.log("Fake User successfully sent to server.");
-    }
-}
-
-async function editFakeUser(){
-    const response = await fetch("http://127.0.0.1:8080/login", {
-        method: 'POST',
-        headers: {
-        'Content-Type': 'application/json;charset=utf-8'
-        },
-        body: JSON.stringify(createFakeLogin())
-    });   
-    if(response.ok){
-        console.log("User Edit submitted.");
-    }
-}
-
-async function loginFakeUser(){
-    const response = await fetch("http://127.0.0.1:8080/login", {
-        method: 'POST',
-        headers: {
-        'Content-Type': 'application/json;charset=utf-8'
-        },
-        body: JSON.stringify(createFakeLogin())
-    });   
-    if(response.ok){
-        console.log("Fake Login submitted.");
-    }
 }
 
 //API
@@ -179,8 +142,9 @@ function process(request,res,options){
         if((options.username === null) || (options.password === null)){
             //validates that sufficient information was passed in for the login attempt to occur
             res.end("Login attempt failed- Invalid request.")
+            return;
         }
-        if(Math.random() > 0.5){ //50% Chance of success on login to simulate successful or unsuccessful login attempts
+        else if(Math.random() > 0.5){ //50% Chance of success on login to simulate successful or unsuccessful login attempts
             //if login succeeds
             let newToken = createFakeLoginToken();
             database.tokens.push(newToken);
@@ -195,7 +159,7 @@ function process(request,res,options){
         res.end(JSON.stringify(createFakeSearchResult(options.type,options.query,options.quantity)));
     }
     else if (parsed.pathname === '/user/id/view') {
-        res.end(JSON.stringify(createFakeUser(options.type,options.query))); //this works!
+        res.end(JSON.stringify(createFakeUser(options.username))); //this works!
     }
     else if(parsed.pathname === '/user/id/edit') {
         let users = database.users;
@@ -212,6 +176,32 @@ function process(request,res,options){
             }
         }
         res.end("No user found.");
+    }
+    else {
+        // If the client did not request an API endpoint, we assume we need to fetch and serve a file.
+        // This is terrible security-wise, since we don't check the file requested is in the same directory.
+        // This will do for our purposes.
+        const filename = parsed.pathname === '/' ? "index.html" : parsed.pathname.replace('/', '');
+        //const path = join("client/", filename);
+        const path = filename;
+        console.log("trying to serve " + path + "...");
+        if (existsSync(path)) {
+            if (filename.endsWith("html")) {
+                res.writeHead(200, {"Content-Type" : "text/html"});
+            }
+            else if (filename.endsWith("css")) {
+                res.writeHead(200, {"Content-Type" : "text/css"});
+            }
+            else if (filename.endsWith("js")) {
+                res.writeHead(200, {"Content-Type" : "text/javascript"});
+            }
+
+            res.write(readFileSync(path));
+            res.end();
+        } else {
+            res.writeHead(404);
+            res.end();
+        }
     }
 }
 

@@ -116,3 +116,36 @@
     position: relative;
     top: 530px;
 }
+
+#search-results{
+    width: 50%;
+    margin: 0 auto;
+}
+
+.pet_name, .pet_breed{
+    display: inline;
+}
+
+.pet_name:after{
+    content: ": ";
+}
+
+.pet_name{
+    font-size: 1.75rem;
+}
+
+.dropdown-menu{
+    display: none;
+    right: 1px;
+    left: -100px;
+    top: 90%;
+}
+
+.dropdown-login{
+    position: relative;
+}
+
+.dropdown-login:hover .dropdown-menu{
+    display:block;
+    position: absolute; 
+}
