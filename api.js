@@ -7,7 +7,7 @@ const {name,internet,company,address,lorem,commerce} = pkg;
 
 'use strict';
 
-function createFakePet() {
+function createFakePet(pet_name) {
     //Pet Objects: Pet Name, Breed, About, Health, Location, Comments, Num Likes
     let i;
     const commarr = [];
@@ -17,16 +17,70 @@ function createFakePet() {
     }
     
     const pet = {
-        name:  name.firstName(),
+        name:  pet_name,
         breed: 'terrier',
         about: lorem.paragraph(),
         health: lorem.paragraph(),
-        location: address.city(),
+        location: company.companyName(),
         comments: commarr,
         num_likes: Math.floor(Math.random() * 100)
     };
     return pet;
 }
 
-console.log(createFakePet());
+function recentlyViewedPets() {
+    const pets = [];
+    let i;
+    for (i = 0; i < 5; i++) {
+        pets.push(createFakePet(name.firstName()));
+    }
+    return pets;
+}
+
+function favoritePets(range) {
+    const pets = [];
+    let i;
+    for (i = 0; i < range; i++) {
+        pets.push(createFakePet(name.firstName()));
+    }
+    return pets;
+}
+
+function process(request,res,options) {
+    const headerText = {"Content-Type" : "text/json"};
+    res.writeHead(200, headerText);
+    const parsed = parse(request.url, true);
+    if (parsed.pathname === '/pet/view') {
+        //
+    } else if (parsed.pathname === '/pet/create') {
+        //
+    } else if (parsed.pathname === '/user/favoritepets/view') {
+        //
+    } else if (parsed.pathname === '/user/favoritepets/delete') {
+        //this needs to modify both the pet and the user!
+    } else if (parsed.pathname === '/user/favoritepets/add') {
+        //this needs to modify both the pet and the user!
+    } else if (parsed.pathname === '/user/recentlyviewedpets') {
+        //
+    }
+}
+
+const server = createServer((request, response) => {	
+	if (request.method === 'GET') {
+		const options = parse(request.url, true).query;
+		process(request, response, options);
+	} else {
+		let requestBody = "";
+		request.on('data', function (data) {
+			requestBody += data;
+		});
+		request.on('end', function () {
+		const options = JSON.parse(requestBody);
+		process(request, response, options);
+		});
+	}
+});
+server.listen(8080);
+
+
 
