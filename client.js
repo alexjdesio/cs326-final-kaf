@@ -1,5 +1,7 @@
 'use strict';
 
+const { fake } = require("faker");
+
 const site_url = "http://localhost:8080";
 
 async function getPet(name) {
@@ -8,6 +10,16 @@ async function getPet(name) {
     if (response.ok) {
         const pet = await response.json();
         return pet;
+    }
+    //need to add else
+}
+
+async function getShelter(name) {
+    const url = site_url + "/shelter/view?name=" + name;
+    const response = await fetch(url);
+    if (response.ok) {
+        const shelter = await response.json();
+        return shelter;
     }
     //need to add else
 }
@@ -56,6 +68,30 @@ async function renderPetPage() {
     const adopt_button = document.getElementById("adopt_button");
     const comments_section = document.getElementById("comments_section");
 
+    const url_string = window.location.href;
+    const url = new URL(url_string);
+    const name = url.searchParams('name');
+    //Pet Objects: Name, Breed, About, Health, Location, Comments, Num Likes
+    const fake_pet = await getPet(name);
+    const fake_shelter = await getShelter(fake_pet.location);
+
+    pet_name.innerText = fake_pet.name;
+    pet_breed.innerText = fake_pet.breed;
+    about_header.innerText = 'About ' + name;
+    about_body.innerText = fake_pet.about;
+    health_header.innerText = name + '\'s Health and Needs';
+    health_body.innerText = fake_pet.health;
+    pet_home_header.innerText = fake_pet.name + '\'s Current Home';
+    shelter_name.innerText = fake_shelter.name;
+    about_shelter.innerText = fake_shelter.about;
+    adopt_button.innerText = 'Adopt ' + fake_pet.name;
+
+    //then deal with the comments section
+
+}
+
+async function renderUserHome() {
+    
 }
 
 

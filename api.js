@@ -8,7 +8,7 @@ const {name,internet,company,address,lorem,commerce} = pkg;
 'use strict';
 
 function createFakePet(pet_name) {
-    //Pet Objects: Pet Name, Breed, About, Health, Location, Comments, Num Likes
+    //Pet Objects: Name, Breed, About, Health, Location, Comments, Num Likes
     let i;
     const commarr = [];
     const num_com = Math.random() * 10;
@@ -89,6 +89,8 @@ function process(request,res,options) {
     if (parsed.pathname === '/pet/view') {
         //
         res.end(JSON.stringify(createFakePet(options.name)));
+    } else if (parsed.pathname === '/shelter/view') {
+        res.end(JSON.stringify(createFakeShelter(options.name)));
     } else if (parsed.pathname === '/pet/create') {
         //we would create this, not necessary for now.
         res.end();
