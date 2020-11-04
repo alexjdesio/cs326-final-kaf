@@ -148,7 +148,6 @@ async function getUserResults(username){
 }
 
 //TESTING:
-getUserResults("Theo Masterson");
 
 //How do we take the form data and create the POST request from it?
 async function editUserSettings(){
@@ -176,10 +175,33 @@ async function editUserSettings(){
         body: JSON.stringify(userData)
     }); 
     if(response.ok){
-        let result = response.json();
-        console.log("Edit to user data successfully submitted.\nResponse:", JSON.stringify(result));
+        //let result = response.json();
+        //console.log("Edit to user data successfully submitted.\nResponse:", JSON.stringify(result));
     }
     return;
 }
 
-//document.getElementById("settings_submit").addEventListener("click",editUserSettings);
+//This is the only function that should be called- it will decide which other functions need to load
+function generateDynamicHTML(){
+    const url_string = window.location.href;
+    const url = new URL(url_string);
+    const name = url.searchParams.get("name");
+    const page = url.pathname;
+    console.log(name,page);
+    if(page === "/settings.html"){
+        const username = url.searchParams.get("username");
+        if(username !== null){
+            getUserResults(username);
+        }
+        //document.getElementById("settings_submit").addEventListener("click",editUserSettings);
+    }
+    else if (page === "/search.html"){
+        let type = url.searchParams.get("type");
+        let query = url.searchParams.get("query");
+        let quantity = 10; //this could be modified to become more dynamic- for example, add event listener to increase num of results on click
+        getSearchResults(type,query,quantity);
+    }
+    
+}
+
+generateDynamicHTML(); //enables dynamically-generated HTML

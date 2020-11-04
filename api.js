@@ -123,7 +123,9 @@ let server = createServer((request, response) => {
 			requestBody += data;
 		});
 		request.on('end', function () {
-		const options = JSON.parse(requestBody);
+        console.log("Before ",requestBody);
+        const options = JSON.parse(requestBody); //getting an error here- JSON.parse is upset
+        console.log("After ", options);
 		process(request, response, options);
 		});
 	}

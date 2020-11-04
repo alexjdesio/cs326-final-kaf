@@ -27,8 +27,12 @@
     list-style:none;
 }
 
-#login a:hover{
+#login a:hover, #search a:hover{
     color:white;
+}
+
+#search a{
+    font-weight: bold;
 }
 
 .centertitle {
@@ -149,3 +153,4 @@
     display:block;
     position: absolute; 
 }
+

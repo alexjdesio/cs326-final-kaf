@@ -8,4 +8,4 @@ function replaceLoginWithUsername(){
     document.getElementById("login").classList.add("dropdown-toggle"); //adds styling to login
 }
 
-replaceLoginWithUsername();
+//replaceLoginWithUsername();
