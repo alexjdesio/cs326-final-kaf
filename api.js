@@ -40,7 +40,7 @@ function createFakeShelter(shelter_name) {
     const petarr = [];
     const num_pets = Math.random() * 10;
     for (i = 0; i < num_pets; i++) {
-        petarr.push(createFakePet(name.firstName));
+        petarr.push(createFakePet(name.firstName()));
     }
 
     const shelter = {
@@ -59,7 +59,7 @@ function favoriteShelters(range) {
     const shelters = [];
     let i;
     for (i = 0; i < range; i++) {
-        shelters.push(createFakeShelter(commerce.companyName()));
+        shelters.push(createFakeShelter(company.companyName()));
     }
     return shelters;
 }

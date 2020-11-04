@@ -42,3 +42,20 @@ async function getFavoriteShelters(range) {
     //need to add else
 }
 
+async function renderPetPage() {
+    //get all the elements we need to fill in first. Because its easier for me to process that way.
+    const pet_name = document.getElementById("pet_name");
+    const pet_breed = document.getElementById("pet_breed");
+    const about_header = document.getElementById("about_header");
+    const about_body = document.getElementById("about_body");
+    const health_header = document.getElementById("health_header");
+    const health_body = document.getElementById("health_body");
+    const pet_home_header = document.getElementById("pet_home_header");
+    const shelter_name = document.getElementById("shelter_name");
+    const about_shelter = document.getElementById("about_shelter");
+    const adopt_button = document.getElementById("adopt_button");
+    const comments_section = document.getElementById("comments_section");
+
+}
+
+
