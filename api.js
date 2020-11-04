@@ -1,8 +1,8 @@
 import pkg from 'faker';
 import {createServer} from 'http';
 import {parse} from 'url';
-import {join} from 'path';
-import {writeFile, readFileSync, existsSync} from 'fs';
+//import {join} from 'path';
+//import {writeFile, readFileSync, existsSync} from 'fs';
 const {name,internet,company,address,lorem,commerce} = pkg;
 
 'use strict';
@@ -52,16 +52,22 @@ function process(request,res,options) {
     const parsed = parse(request.url, true);
     if (parsed.pathname === '/pet/view') {
         //
+        res.end(JSON.stringify(createFakePet(options.name)));
     } else if (parsed.pathname === '/pet/create') {
-        //
+        //we would create this, not necessary for now.
+        res.end();
     } else if (parsed.pathname === '/user/favoritepets/view') {
-        //
+        res.end(JSON.stringify(favoritePets(options.range)));
     } else if (parsed.pathname === '/user/favoritepets/delete') {
-        //this needs to modify both the pet and the user!
+        //this needs to modify both the pet and the user! eventually...
+        res.end();
     } else if (parsed.pathname === '/user/favoritepets/add') {
         //this needs to modify both the pet and the user!
+        res.end();
     } else if (parsed.pathname === '/user/recentlyviewedpets') {
-        //
+        res.end(JSON.stringify(recentlyViewedPets()));
+    } else {
+        res.end();
     }
 }
 
