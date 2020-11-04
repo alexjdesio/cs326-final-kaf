@@ -28,6 +28,42 @@ function createFakePet(pet_name) {
     return pet;
 }
 
+function createFakeShelter(shelter_name) {
+    //Shelter Objects: Shelter Name, About, Pets, Location, Comments, Num Likes
+    let i;
+    const commarr = [];
+    const num_com = Math.random() * 10;
+    for (i = 0; i < num_com; i++) {
+        commarr.push({comment: lorem.sentence(), user: internet.userName()});
+    }
+
+    const petarr = [];
+    const num_pets = Math.random() * 10;
+    for (i = 0; i < num_pets; i++) {
+        petarr.push(createFakePet(name.firstName));
+    }
+
+    const shelter = {
+        name: shelter_name,
+        about: lorem.paragraph(),
+        pets: petarr,
+        location: address.city(),
+        comments: commarr,
+        num_likes: Math.floor(Math.random() * 100)
+    };
+
+    return shelter;
+}
+
+function favoriteShelters(range) {
+    const shelters = [];
+    let i;
+    for (i = 0; i < range; i++) {
+        shelters.push(createFakeShelter(commerce.companyName()));
+    }
+    return shelters;
+}
+
 function recentlyViewedPets() {
     const pets = [];
     let i;
@@ -58,6 +94,8 @@ function process(request,res,options) {
         res.end();
     } else if (parsed.pathname === '/user/favoritepets/view') {
         res.end(JSON.stringify(favoritePets(options.range)));
+    } else if (parsed.pathname === '/user/favoriteshelters/view') {
+        res.end(JSON.stringify(favoriteShelters(options.range)));
     } else if (parsed.pathname === '/user/favoritepets/delete') {
         //this needs to modify both the pet and the user! eventually...
         res.end();

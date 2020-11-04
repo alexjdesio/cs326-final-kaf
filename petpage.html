@@ -59,12 +59,12 @@
             <!--Below is the main text section that the shelter would enter when creating the page for Sparky-->
             <div class="row">
                 <div class="col">
-                    <h1 class="mt-5 font-weight-light">Sparky</h1>
-                    <h6 class="link mb-2 text-muted font-weight-light">Boston Terrier</h6>
+                    <h1 class="mt-5 font-weight-light" id="pet_name">Sparky</h1>
+                    <h6 class="link mb-2 text-muted font-weight-light" id="pet_breed">Boston Terrier</h6>
                     <div class="card mt-3">
                         <div class="card-body">
-                            <h5 class="card-title mt-0 font-weight-light">About Sparky</h5>
-                            <p class="card-text bg-light mb-0">
+                            <h5 class="card-title mt-0 font-weight-light" id="about_header">About Sparky</h5>
+                            <p class="card-text bg-light mb-0" id="health_body">
                                 Sparky is a Boston Terrier mixed with an unknown breed of hound named
                                 for his love of chewing on high voltage wires.
                                 He was abandoned when he was just 6 months old, and was rescued a few weeks later when a friend
@@ -78,8 +78,8 @@
                                 weight, but he requires some extra care from his future owners. 
                             </p>
                             <br>
-                            <h5 class="card-title mt-0 font-weight-light">Sparky's Health and Needs</h5>
-                            <p class="card-text bg-light mb-0">
+                            <h5 class="card-title mt-0 font-weight-light" id="health_header">Sparky's Health and Needs</h5>
+                            <p class="card-text bg-light mb-0" id="health_body">
                                Sparky has been spayed, vaccinated, has no fleas, and is housetrained. He is at a healthy weight and 
                                size for his age. However, Sparky needs a special brand of food and a few different types of medicine 
                                so that he can stay healthy. 
@@ -93,13 +93,13 @@
                     <div class="card" class="mt-5 float-right">
                         <img class="card-img-top" src="https://bloximages.chicago2.vip.townnews.com/thenewsherald.com/content/tncms/assets/v3/editorial/1/35/1354826e-1867-11ea-bb93-d380618ddcb0/5deaba1d4f0de.image.jpg" alt="Shelter">
                         <div class="card-body">
-                            <h5 class="card-title mt-0 font-weight-light">Sparky's Current Home</h5>
-                            <h6 class="link mb-2 text-muted font-weight-light">Westminster Animal Shelter</h6>
-                            <p class="card-text bg-light">Here at Westminster Animal Shelter, we rescue pets in need and give them 
+                            <h5 class="card-title mt-0 font-weight-light" id="pet_home_header">Sparky's Current Home</h5>
+                            <h6 class="link mb-2 text-muted font-weight-light" id="shelter_name">Westminster Animal Shelter</h6>
+                            <p class="card-text bg-light" id="about_shelter">Here at Westminster Animal Shelter, we rescue pets in need and give them 
                                 a loving home. Our pets are priced on a pay what you want scale, plus a small fee for shelter upkeep.
                                 Please contact us to adopt one of our beautiful animals!
                             </p>
-                            <button type="button" class="btn btn-primary">Adopt Sparky</button>
+                            <button type="button" class="btn btn-primary" id="adopt_button">Adopt Sparky</button>
                         </div>
                     </div>
                 </div>
@@ -125,6 +125,9 @@
                         </form>
                         <!--Comments would be added programatically-->
                         <h3 class="card-title mt-0">Comments:</h3>   
+                        <div id="comments_section">
+
+                        </div>
                     </div>
                 </div>
             </div>
