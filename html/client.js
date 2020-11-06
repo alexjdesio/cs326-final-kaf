@@ -2,45 +2,6 @@
 
 'use strict';
 
-async function registerFakeUser(){
-    const response = await fetch("http://127.0.0.1:8080/register", {
-        method: 'POST',
-        headers: {
-        'Content-Type': 'application/json;charset=utf-8'
-        },
-        body: JSON.stringify(createFakeUser())
-    });   
-    if(response.ok){
-        console.log("Fake User successfully sent to server.");
-    }
-}
-
-async function editFakeUser(){
-    const response = await fetch("http://127.0.0.1:8080/login", {
-        method: 'POST',
-        headers: {
-        'Content-Type': 'application/json;charset=utf-8'
-        },
-        body: JSON.stringify(createFakeLogin())
-    });   
-    if(response.ok){
-        console.log("User Edit submitted.");
-    }
-}
-
-async function loginFakeUser(){
-    const response = await fetch("http://127.0.0.1:8080/login", {
-        method: 'POST',
-        headers: {
-        'Content-Type': 'application/json;charset=utf-8'
-        },
-        body: JSON.stringify(createFakeLogin())
-    });   
-    if(response.ok){
-        console.log("Fake Login submitted.");
-    }
-}
-
 /**
  * Example queries:
  * POST(not-browser):
@@ -50,6 +11,8 @@ async function loginFakeUser(){
  * GET:
     * http://127.0.0.1:8080/search?type=pet_location&query=Boston&quantity=2
     * http://127.0.0.1:8080/user/id/view
+    * 
+    * http://127.0.0.1:8080/settings.html?username=Theo
  */
 
 async function getSearchResults(type,query,quantity){
@@ -58,11 +21,19 @@ async function getSearchResults(type,query,quantity){
     let fieldClasses = {
         pet_name: "card-title",
         shelter_name: "card-title",
+        picture: "format-picture"
     };
     let fieldElements = {
         pet_name: "a",
-        pet_breed: "h3",
+        pet_breed: "p",
         shelter_name: "h3",
+        picture: "img"
+    };
+    let labels = {
+        pet_breed: "Breed: ",
+        pet_about: "About: ",
+        pet_comments: "Comments: ",
+        pet_health: "Health: "
     };
     if(response.ok){
         let results = await response.json();
@@ -80,7 +51,19 @@ async function getSearchResults(type,query,quantity){
                     elementType = fieldElements[field];
                 }
                 const newField = document.createElement(elementType);
-                newField.textContent = result[field];
+                if(elementType === "img"){
+                    newField.src = result[field];
+                    newField.width = 268;
+                    newField.height = 200;
+                }
+                else{
+                    if(field in labels){
+                        newField.textContent = labels[field] + result[field];
+                    }
+                    else{
+                        newField.textContent = result[field];
+                    }   
+                }
                 newResultDiv.append(newField);
                 let classIdentifier = "card-text";
         
@@ -106,23 +89,15 @@ async function getSearchResults(type,query,quantity){
     }
  }
 
- //getSearchResults("pet_location","Boston","5");
+//getSearchResults("pet_location","Boston","5");
 
 
 async function getUserResults(username){
-    let responseBody = {
-        username: username
-    };
-    const response = await fetch("http://127.0.0.1:8080/user/id/view", {
-        method: 'POST',
-        headers: {
-        'Content-Type': 'application/json;charset=utf-8'
-        },
-        body: JSON.stringify(responseBody)
-    }); 
+    let viewUserUrl = "http://127.0.0.1:8080/user/id/view?username=" + username;
+    const response = await fetch(viewUserUrl);
     if(response.ok){
         let result = await response.json();
-        //console.log("User view request successful.");
+        console.log("User view request successful.");
         document.getElementById("username").textContent = "Modify Settings for: " + result["username"]; 
         //update value fields
         for(let field of Object.keys(result)){
@@ -149,7 +124,7 @@ async function getUserResults(username){
 
 //TESTING:
 
-//How do we take the form data and create the POST request from it?
+//Experimental function, may be removed
 async function editUserSettings(){
     let userData = {
         username: null,
@@ -193,7 +168,12 @@ function generateDynamicHTML(){
         if(username !== null){
             getUserResults(username);
         }
-        //document.getElementById("settings_submit").addEventListener("click",editUserSettings);
+        let form = document.getElementById("settings-form");
+        let submit = document.getElementById("settings-submit");
+        form.addEventListener("submit",function (event){
+            event.preventDefault(); //this is so important, prevents default form submission behavior
+            sendFormData();
+        });   
     }
     else if (page === "/search.html"){
         let type = url.searchParams.get("type");
@@ -201,7 +181,56 @@ function generateDynamicHTML(){
         let quantity = 10; //this could be modified to become more dynamic- for example, add event listener to increase num of results on click
         getSearchResults(type,query,quantity);
     }
+    else if (page === "/signup.html"){
+        let form = document.getElementById("signup-form");
+        let submit = document.getElementById("signup-submit");
+        form.addEventListener("submit",function (event){
+            event.preventDefault(); //this is so important, prevents default form submission behavior
+            sendFormData();
+        });
+    }
+    else if (page === "/login.html"){
+        let form = document.getElementById("login-form");
+        let submit = document.getElementById("login-submit");
+        form.addEventListener("submit",function (event){
+            event.preventDefault(); //this is so important, prevents default form submission behavior
+            sendFormData();
+        });
+    }
     
 }
+
+async function sendFormData(){
+    let userData = {
+        username: null,
+        email: null, 
+        password: null,
+        type: null,
+        interests: null,
+        shelter: null,
+        liked_pets: null,
+        viewed_pets: null,
+        location: null
+    };
+    let fields = Object.keys(userData);
+    for(let field of fields){
+        if(document.getElementById(field) !== null){
+            userData[field] = document.getElementById(field).value;
+        }
+    }
+    //console.log(JSON.stringify(userData));
+    
+    const response = await fetch("http://127.0.0.1:8080/user/id/edit", {
+        method: 'POST',
+        headers: {
+        'Content-Type': 'application/json;charset=utf-8'
+        },
+        body: JSON.stringify(userData)
+    });
+    if(response.ok){
+        console.log("Edit response successfully sent to server.");
+    } 
+}
+
 
 generateDynamicHTML(); //enables dynamically-generated HTML

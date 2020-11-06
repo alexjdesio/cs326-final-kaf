@@ -154,3 +154,8 @@
     position: absolute; 
 }
 
+.format-picture{
+    right: 50px;
+    position: absolute;
+    top: 10px;
+}
