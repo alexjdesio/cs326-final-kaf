@@ -96,4 +96,6 @@ async function renderUserHome() {
     //ok I will think about this later lol. 
 }
 
+renderPetPage();
+
 
