@@ -1,9 +1,13 @@
 import pkg from 'faker';
 import {createServer} from 'http';
 import {parse} from 'url';
+import * as bodyParser from "body-parser";
+//const bodyParser = require('body-parser');
+import express from "express";
+
 //import {join} from 'path';
 //import {writeFile, readFileSync, existsSync} from 'fs';
-const {name,internet,company,address,lorem,commerce} = pkg;
+const {name,internet,company,address,lorem,commerce,image} = pkg;
 
 'use strict';
 
@@ -23,7 +27,8 @@ function createFakePet(pet_name) {
         health: lorem.paragraph(),
         location: company.companyName(),
         comments: commarr,
-        num_likes: Math.floor(Math.random() * 100)
+        num_likes: Math.floor(Math.random() * 100),
+        picture: image.cats()
     };
     return pet;
 }
@@ -49,7 +54,8 @@ function createFakeShelter(shelter_name) {
         pets: petarr,
         location: address.city(),
         comments: commarr,
-        num_likes: Math.floor(Math.random() * 100)
+        num_likes: Math.floor(Math.random() * 100),
+        picture: image.business()
     };
 
     return shelter;
@@ -82,35 +88,36 @@ function favoritePets(range) {
     return pets;
 }
 
-function process(request,res,options) {
-    const headerText = {"Content-Type" : "text/json"};
-    res.writeHead(200, headerText);
-    const parsed = parse(request.url, true);
-    if (parsed.pathname === '/pet/view') {
+//function process(request,res,options) {
+//    const headerText = {"Content-Type" : "text/json"};
+//    res.writeHead(200, headerText);
+//    const parsed = parse(request.url, true);
+//    if (parsed.pathname === '/pet/view') {
         //
-        res.end(JSON.stringify(createFakePet(options.name)));
-    } else if (parsed.pathname === '/shelter/view') {
-        res.end(JSON.stringify(createFakeShelter(options.name)));
-    } else if (parsed.pathname === '/pet/create') {
+//        res.end(JSON.stringify(createFakePet(options.name)));
+//    } else if (parsed.pathname === '/shelter/view') {
+//        res.end(JSON.stringify(createFakeShelter(options.name)));
+//    } else if (parsed.pathname === '/pet/create') {
         //we would create this, not necessary for now.
-        res.end();
-    } else if (parsed.pathname === '/user/favoritepets/view') {
-        res.end(JSON.stringify(favoritePets(options.range)));
-    } else if (parsed.pathname === '/user/favoriteshelters/view') {
-        res.end(JSON.stringify(favoriteShelters(options.range)));
-    } else if (parsed.pathname === '/user/favoritepets/delete') {
+//        res.end();
+//    } else if (parsed.pathname === '/user/favoritepets/view') {
+//        res.end(JSON.stringify(favoritePets(options.range)));
+//    } else if (parsed.pathname === '/user/favoriteshelters/view') {
+//       res.end(JSON.stringify(favoriteShelters(options.range)));
+//    } else if (parsed.pathname === '/user/favoritepets/delete') {
         //this needs to modify both the pet and the user! eventually...
-        res.end();
-    } else if (parsed.pathname === '/user/favoritepets/add') {
+//        res.end();
+//    } else if (parsed.pathname === '/user/favoritepets/add') {
         //this needs to modify both the pet and the user!
-        res.end();
-    } else if (parsed.pathname === '/user/recentlyviewedpets') {
-        res.end(JSON.stringify(recentlyViewedPets()));
-    } else {
-        res.end();
-    }
-}
+//        res.end();
+//    } else if (parsed.pathname === '/user/recentlyviewedpets') {
+//        res.end(JSON.stringify(recentlyViewedPets()));
+//    } else {
+//        res.end();
+//    }
+//}
 
+/**
 const server = createServer((request, response) => {	
 	if (request.method === 'GET') {
 		const options = parse(request.url, true).query;
@@ -127,6 +134,41 @@ const server = createServer((request, response) => {
 	}
 });
 server.listen(8080);
+**/
+const app = express();
+const port = 8080;
+
+app.listen(port, () => {
+  console.log('App listening at http://localhost:${port}');
+});
+
+app.use('/',express.static('./html')); //Serves static pages(index.html, search.html, etc.)
+
+//app.get('/search',bodyParser.urlencoded(),search);
+
+app.get('/pet/view',express.json(), (req,res) => res.end(JSON.stringify(createFakePet(req.query.name))));
+
+app.get('/shelter/view',express.json(), (req,res) => res.end(JSON.stringify(createFakeShelter(req.query.name))));
+
+app.get('/user/favoritepets/view',express.json(), (req,res) => res.end(JSON.stringify(favoritePets(req.query.range))));
+
+app.get('/user/favoriteshelters/view',express.json(), (req,res) => res.end(JSON.stringify(favoriteShelters(req.query.range))));
+
+app.get('/user/recentlyviewedpets',express.json(), (req,res) => res.end(JSON.stringify(recentlyViewedPets())));
+
+
+
+app.post("/pet/create",express.json(), (req,res) => res.end("Info Recieved."));
+
+//app.post("/pet/create",bodyParser.json(), (req,res) => res.end("Info Recieved."));
+
+
+//app.post("/login",bodyParser.json(),login); //should be POST, works when set to GET
+
+//app.post("/user/id/edit",bodyParser.json(),userEdit);
+
+
+
 
 
 
