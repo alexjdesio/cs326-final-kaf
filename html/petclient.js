@@ -53,6 +53,7 @@ async function getFavoriteShelters(range) {
 }
 
 async function renderPetPage() {
+    console.log("yay");
     //get all the elements we need to fill in first. Because its easier for me to process that way.
     const pet_name = document.getElementById("pet_name");
     const pet_breed = document.getElementById("pet_breed");
@@ -70,7 +71,7 @@ async function renderPetPage() {
 
     const url_string = window.location.href;
     const url = new URL(url_string);
-    const name = url.searchParams('name');
+    const name = url.searchParams.get('name');
     //Pet Objects: Name, Breed, About, Health, Location, Comments, Num Likes
     const fake_pet = await getPet(name);
     const fake_shelter = await getShelter(fake_pet.location);
@@ -96,6 +97,8 @@ async function renderUserHome() {
     //ok I will think about this later lol. 
 }
 
-renderPetPage();
+window.addEventListener("load", async function() {
+    renderPetPage();
+});
 
 
