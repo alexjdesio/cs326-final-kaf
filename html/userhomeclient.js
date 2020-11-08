@@ -86,16 +86,22 @@ function renderPets(element, pets) {
             card_title.classList.add('font-weight-light');
             card_title.innerText = pets[current_pet].name;
 
+            const card_link = document.createElement('a');
+            card_link.classList.add('card-link');
+            card_link.innerText = 'Visit ' + pets[current_pet].name + '\'s Page';
+            card_link.href = site_url + 'petpage.html/name?=' + pets[current_pet].name;
 
             current_pet += 1;
             
             card_body.appendChild(card_title);
+            card_body.appendChild(card_link);
             card.appendChild(card_image);
             card.appendChild(card_body);
             col.appendChild(card);
             row.appendChild(col);
         }
         element.appendChild(row);
+        element.appendChild(document.createElement('br'));
     }
 }
 
@@ -129,16 +135,22 @@ function renderShelters(element, shelters) {
             card_title.classList.add('font-weight-light');
             card_title.innerText = shelters[current_shelter].name;
 
+            const card_link = document.createElement('a');
+            card_link.classList.add('card-link');
+            card_link.innerText = 'Visit ' + shelters[current_shelter].name + '\'s Page';
+            //card_link.href = site_url + 'shelter/view?=' + shelters[current_shelter].name;
 
             current_shelter += 1;
-            
+
             card_body.appendChild(card_title);
+            card_body.appendChild(card_link);
             card.appendChild(card_image);
             card.appendChild(card_body);
             col.appendChild(card);
             row.appendChild(col);
         }
         element.appendChild(row);
+        element.appendChild(document.createElement('br'));
     }
 }
 
@@ -148,7 +160,7 @@ async function renderUserHome() {
     const user = url.searchParams.get('user');
     const favorite_pets = await getFavoritePets(range_pets);
     const favorite_shelters = await getFavoriteShelters(range_shelters);
-    
+
     const pets_elem = document.getElementById('favorite_pets');
     const shelters_elem = document.getElementById('favorite_shelters');
     const user_header = document.getElementById('username_label');
