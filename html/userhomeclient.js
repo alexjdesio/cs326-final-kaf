@@ -89,7 +89,7 @@ function renderPets(element, pets) {
             const card_link = document.createElement('a');
             card_link.classList.add('card-link');
             card_link.innerText = 'Visit ' + pets[current_pet].name + '\'s Page';
-            card_link.href = site_url + 'petpage.html/name?=' + pets[current_pet].name;
+            card_link.href = site_url + '/petpage.html?name=' + pets[current_pet].name;
 
             current_pet += 1;
             
@@ -139,6 +139,8 @@ function renderShelters(element, shelters) {
             card_link.classList.add('card-link');
             card_link.innerText = 'Visit ' + shelters[current_shelter].name + '\'s Page';
             //card_link.href = site_url + 'shelter/view?=' + shelters[current_shelter].name;
+            card_link.href = site_url + '/shelterpage.html?name=' + shelters[current_shelter].name;
+
 
             current_shelter += 1;
 
