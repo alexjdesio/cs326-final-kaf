@@ -32,7 +32,8 @@ function createFakeUser(username){
         shelter: (userType === "shelter") ? company.companyName() : "null",
         liked_pets: [],
         viewed_pets: [],
-        location: address.city()   
+        location: address.city(),
+        num_likes: 0
     };
     //console.log(user);
     return user;
@@ -58,7 +59,8 @@ function createFakePetResult(type,query){
         pet_about: lorem.sentence(5,10),
         pet_health: lorem.sentence(5,10),
         pet_comments: [],
-        picture: image.cats()
+        picture: image.cats(),
+        num_likes: 0
     };
     let fields = Object.keys(pet);
     if(fields.includes(type)){ //guarantees that the fake data satisfies the search constraints

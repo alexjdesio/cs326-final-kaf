@@ -13,11 +13,11 @@
     * http://127.0.0.1:8080/user/id/view
     * 
     * http://127.0.0.1:8080/settings.html?username=Theo
- */
+*/
 
 async function getSearchResults(type,query,quantity){
-    let request_url = "http://127.0.0.1:8080/search?type=" + type + "&query=" + query + "&quantity=" + quantity;
-    let response = await fetch(request_url);
+    let request_url = "/search?type=" + type + "&query=" + query + "&quantity=" + quantity;
+    let response = await fetch(request_url, {method:"GET"});
     let fieldClasses = {
         pet_name: "card-title",
         shelter_name: "card-title",
@@ -75,10 +75,10 @@ async function getSearchResults(type,query,quantity){
 
                 //generates appropriate links for <a> tags, needs to be updated when merging code on Friday
                 if(field === "pet_name"){
-                    newField.href = "/petpage.html?pet=" + result[field];
+                    newField.href = "/petpage.html?name=" + result[field]; //may need to change name of this field
                 }
                 else if(field === "shelter_name"){
-                    newField.href = "/shelterPage.html?pet=" + result[field];
+                    newField.href = "/shelterPage.html?name=" + result[field]; //may need to change name of this field
                 }
             } 
             search_container.append(newCard);
@@ -93,8 +93,8 @@ async function getSearchResults(type,query,quantity){
 
 
 async function getUserResults(username){
-    let viewUserUrl = "http://127.0.0.1:8080/user/id/view?username=" + username;
-    const response = await fetch(viewUserUrl);
+    let viewUserUrl = "/user/id/view?username=" + username;
+    const response = await fetch(viewUserUrl,{method:"GET"});
     if(response.ok){
         let result = await response.json();
         console.log("User view request successful.");
@@ -142,7 +142,7 @@ async function editUserSettings(){
         userData[field] = (currField !== null) ? currField.value : null;
     }
     console.log(userData);
-    const response = await fetch("http://127.0.0.1:8080/user/id/edit", {
+    const response = await fetch("/user/id/edit", {
         method: 'POST',
         headers: {
         'Content-Type': 'application/json;charset=utf-8'
@@ -220,7 +220,7 @@ async function sendFormData(){
     }
     //console.log(JSON.stringify(userData));
     
-    const response = await fetch("http://127.0.0.1:8080/user/id/edit", {
+    const response = await fetch("/user/id/edit", {
         method: 'POST',
         headers: {
         'Content-Type': 'application/json;charset=utf-8'
