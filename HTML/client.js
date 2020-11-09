@@ -60,6 +60,35 @@ async function renderOneChat(id){
         }
 }
 
+//Shelter Client
+async function renderShelter(name){
+    let viewUserUrl = "/shelter/view";
+    const response = await fetch(viewUserUrl, {
+        method: 'GET'});
+    if(response.ok){
+        const results = await response.json();
+        document.getElementById('nameOrg').innerText = results.shelter_name;
+        document.getElementById('nameOrg2').innerText = results.shelter_name;
+        document.getElementById('aboutOrg').innerText = results.shelter_about;
+        document.getElementById('aboutOrg2').innerText = results.shelter_about;
+        
+        const recentList = document.getElementById('recentPet');
+        for (let i = 0; i < 5; ++i){
+            const post = document.createElement('div');
+            post.classList.add('col', 'card');
+            recentList.appendChild(post);
+            const img = document.createElement('img');
+            img.classList.add('img-thumbnail', 'imgCrop');
+            img.src = results.shelter_pets[i].picture;
+            post.appendChild(img);
+            const header = document.createElement('h5');
+            header.innerText = results.shelter_pets[i].pet_name;
+            post.appendChild(header);
+        }
+    }
+}
+
+
 //This is the only function that should be called- it will decide which other functions need to load
 function generateDynamicHTML(){
     const url_string = window.location.href;
@@ -112,9 +141,9 @@ function generateDynamicHTML(){
             renderOneChat(0);
         });
     }
-    else if (page ==='/shelter.html'){
+    else if (page ==='/shelterPage.html'){
         let name = url.searchParams.get('name');
-        
+        renderShelter(name); 
     }
 }
 

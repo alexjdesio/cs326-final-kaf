@@ -19,15 +19,16 @@ app.use('/',express.static('./html')); //Serves static pages(index.html, search.
 
 //Chat
 app.get('/chat/view', (req, res) => res.end(JSON.stringify(createFakeChat()))); 
-app.post('/chat/msg', bodyParser.json(), (req, res) => {
+app.post('/chat/msg', (req, res) => {
     console.log(req.body.id);
     console.log(req.body.value);
-    res.send('Success')});
+    res.send('Success');});
 
 //Shelter Page
-app.get('/shelter/view', bodyParser.json(), (req, res) => res.end(JSON.stringify(createShelterResults(type, query))));
-app.post('/shelter/create', bodyParser.json(), (req, res) => res.end('Success')); 
-app.post('/shelter/edit', bodyParser.json(), userEdit); 
+app.get('/shelter/view', bodyParser.json(), (req, res) => res.end(JSON.stringify(createFakeShelterResult(null, null))));
+app.post('/shelter/edit', (req, res) => {
+    console.log(req.body);
+    res.send('Success');}); 
 
 //Chat Functions
 let chat = [];
@@ -85,3 +86,19 @@ function userEdit(req,res){
     res.send("Request received successfully.");  
 }
 
+function createFakePetResult(type,query){
+    let pet = {
+        pet_name: name.firstName(),
+        pet_location: company.companyName(),
+        pet_breed: commerce.color(),
+        pet_about: lorem.sentence(5,10),
+        pet_health: lorem.sentence(5,10),
+        pet_comments: [],
+        picture: image.cats()
+    };
+    let fields = Object.keys(pet);
+    if(fields.includes(type)){ //guarantees that the fake data satisfies the search constraints
+        pet[type] = query;
+    }
+    return pet;
+}
