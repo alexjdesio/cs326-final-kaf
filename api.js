@@ -9,6 +9,7 @@ const {name,internet,company,address,lorem,commerce,image} = pkg;
 //EXPERIMENTING WITH EXPRESS.JS
 const app = express(); // this is the "app"
 const port = process.env.PORT || 8080;
+app.use(express.json({type: ['application/json', 'text/plain']})); 
 
 app.listen(port, () => {
       console.log('App listening at http://localhost:${port}');
@@ -17,8 +18,11 @@ app.listen(port, () => {
 app.use('/',express.static('./html')); //Serves static pages(index.html, search.html, etc.)
 
 //Chat
-app.get('/chat/view', bodyParser.json(), (req, res) => res.end(JSON.stringify(createFakeChat()))); 
-app.post('/chat/create', bodyParser.json(), msgChat);
+app.get('/chat/view', (req, res) => res.end(JSON.stringify(createFakeChat()))); 
+app.post('/chat/msg', bodyParser.json(), (req, res) => {
+    console.log(req.body.id);
+    console.log(req.body.value);
+    res.send('Success')});
 
 //Shelter Page
 app.get('/shelter/view', bodyParser.json(), (req, res) => res.end(JSON.stringify(createShelterResults(type, query))));
@@ -48,12 +52,9 @@ function createFakeChat(){
 }
 
 function msgChat(req, res){
-    for (let x of chat){
-        if (chat[x].id === id){
-            chat[x].messages.push({'key': 0, 'value': message});
-        }
-    }
-    res.send(chat);
+    console.log(req.body.id);
+    console.log(req.body.value);
+    res.send();
 }
 
 //Shelter Functions

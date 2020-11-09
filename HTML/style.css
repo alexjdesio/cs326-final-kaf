@@ -112,7 +112,18 @@
     width: 105%;
 }
 
-.positionNearBottom{
-    position: relative;
-    top: 530px;
+#chatForm{
+    position: relative; 
+    right: -1100px;
+    width: 500px;
+}
+
+p{
+    width: fit-content;
+    font-size: large;
+}
+
+.alignToRight{
+    position: relative; 
+    right: -1100px;
 }
