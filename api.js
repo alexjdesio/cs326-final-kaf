@@ -8,7 +8,7 @@ const {name,internet,company,address,lorem,commerce,image} = pkg;
 
 //EXPERIMENTING WITH EXPRESS.JS
 const app = express(); // this is the "app"
-const port = 8080;     // we will listen on this port
+const port = process.env.PORT || 8080;
 
 app.listen(port, () => {
       console.log('App listening at http://localhost:${port}');
