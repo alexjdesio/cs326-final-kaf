@@ -18,12 +18,12 @@ app.use('/',express.static('./html')); //Serves static pages(index.html, search.
 
 //Chat
 app.get('/chat/view', bodyParser.json(), (req, res) => res.end(JSON.stringify(createFakeChat()))); 
-app.post('/chat/msg', bodyParser.json(), (req, res) => res.end(JSON.stringify(msgChat(req.body.id, req.body.message))));
+app.post('/chat/create', bodyParser.json(), msgChat);
 
 //Shelter Page
 app.get('/shelter/view', bodyParser.json(), (req, res) => res.end(JSON.stringify(createShelterResults(type, query))));
 app.post('/shelter/create', bodyParser.json(), (req, res) => res.end('Success')); 
-app.post('/shelter/edit', bodyParser.json(), userEdit()); 
+app.post('/shelter/edit', bodyParser.json(), userEdit); 
 
 //Chat Functions
 let chat = [];
@@ -47,12 +47,13 @@ function createFakeChat(){
     return chat; 
 }
 
-function msgChat(id, message){
-    for (let x in chat){
+function msgChat(req, res){
+    for (let x of chat){
         if (chat[x].id === id){
             chat[x].messages.push({'key': 0, 'value': message});
         }
     }
+    res.send(chat);
 }
 
 //Shelter Functions
@@ -78,7 +79,8 @@ function createFakeShelterResult(type,query){
 }
 
 function userEdit(req,res){  
-    let options = req.body; 
-    console.log("Edit request, Body:",JSON.stringify(options));  
-    res.end("Request received successfully.");  
+    //let options = req.body; 
+    //console.log("Edit request, Body:",JSON.stringify(options));  
+    res.send("Request received successfully.");  
 }
+
