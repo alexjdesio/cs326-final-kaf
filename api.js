@@ -150,13 +150,17 @@ app.get('/pet/view',express.json(), (req,res) => res.end(JSON.stringify(createFa
 
 app.get('/shelter/view',express.json(), (req,res) => res.end(JSON.stringify(createFakeShelter(req.query.name))));
 
-app.get('/user/favoritepets/view',express.json(), (req,res) => res.end(JSON.stringify(favoritePets(req.query.range))));
+app.get('/user/id/favoritepets/view',express.json(), (req,res) => res.end(JSON.stringify(favoritePets(req.query.range))));
 
-app.get('/user/favoriteshelters/view',express.json(), (req,res) => res.end(JSON.stringify(favoriteShelters(req.query.range))));
+app.get('/user/id/favoriteshelters/view',express.json(), (req,res) => res.end(JSON.stringify(favoriteShelters(req.query.range))));
 
-app.get('/user/recentlyviewedpets',express.json(), (req,res) => res.end(JSON.stringify(recentlyViewedPets())));
+app.get('/user/id/recentlyviewedpets',express.json(), (req,res) => res.end(JSON.stringify(recentlyViewedPets())));
 
+app.post("/pet/comments/create",express.json(), (req,res) => res.end("Comment Recieved"));
 
+app.post("/user/id/favoritepets/add",express.json(), (req,res) => res.end("Added Pet to Favorites"));
+
+app.post("/user/id/favoritepets/delete",express.json(), (req,res) => res.end("Removed Pet from Favorites"));
 
 app.post("/pet/create",express.json(), (req,res) => res.end("Info Recieved."));
 

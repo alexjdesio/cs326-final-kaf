@@ -67,6 +67,22 @@
     z-index: 99;
 }
 
+.add_heart{
+    position: absolute; 
+    right:0; 
+    bottom: 130px; 
+    height: 100px; 
+    width: 100px;
+    background-image: url("images/heart-empty.png");
+    background-size: cover;
+    z-index: 99;
+}
+
+.add_heart:hover{
+    background-image: url("images/heart-filled.png");
+    z-index: 99;
+}
+
 .featured-img-label{
     height: 140px;
 }

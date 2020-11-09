@@ -26,7 +26,7 @@ async function getShelter(name) {
 }
 
 async function getRecentPets() {
-    const url = site_url + "/user/recentlyviewedpets/";
+    const url = site_url + "/user/id/recentlyviewedpets/";
     const response = await fetch(url);
     if (response.ok) {
         const pets = await response.json();
@@ -36,7 +36,7 @@ async function getRecentPets() {
 }
 
 async function getFavoritePets(range) {
-    const url = site_url + "/user/favoritepets/view?range=" + range;
+    const url = site_url + "/user/id/favoritepets/view?range=" + range;
     const response = await fetch(url);
     if (response.ok) {
         const pets = await response.json();
@@ -47,7 +47,7 @@ async function getFavoritePets(range) {
 }
 
 async function getFavoriteShelters(range) {
-    const url = site_url + "/user/favoriteshelters/view?range=" + range;
+    const url = site_url + "/user/id/favoriteshelters/view?range=" + range;
     const response = await fetch(url);
     if (response.ok) {
         const shelters = await response.json();
