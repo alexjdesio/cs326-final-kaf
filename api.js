@@ -18,10 +18,16 @@ app.listen(port, () => {
 app.use('/',express.static('./html')); //Serves static pages(index.html, search.html, etc.)
 
 //Chat
-app.get('/chat/view', (req, res) => res.end(JSON.stringify(createFakeChat()))); 
+app.get('/chat/view', (req, res) => {
+    if (chat.length === 0){
+        createFakeChat();
+    }
+    res.end(JSON.stringify(chat));}
+);
 app.post('/chat/msg', (req, res) => {
-    console.log(req.body.id);
-    console.log(req.body.value);
+    chat[req.body.id].messages.push({
+        key: 0,
+        value: req.body.value});
     res.send('Success');});
 
 //Shelter Page
@@ -44,9 +50,9 @@ function createFakeChat(){
             messages.push({'key': 1, 'value': sentence2});
         }
         chat.push({
-            'id': i,
-            'name': fakeName,
-            'messages': messages
+            id: i,
+            name: fakeName,
+            messages: messages
         });
     }
     return chat; 

@@ -37,27 +37,27 @@ async function renderChat(){
 }
 
 async function renderOneChat(id){
-        let viewUserUrl = "/chat/view";
-        const response = await fetch(viewUserUrl, {
-            method: 'GET'});
-        if(response.ok){
-            let result = await response.json();
-            const chatUsers = document.getElementById('chatUsers');
-            let results = result[id]; 
-            const messages = results.messages;
-            while (chatMessages.firstChild){
-                chatMessages.removeChild(chatMessages.lastChild);
-            }
-            for (let y of messages){
-                const message = document.createElement('p');
-                message.innerText = y.value;
-                message.classList.add('border', 'rounded', 'bg-white');
-                if (y.key === 1){
-                    message.classList.add('alignToRight');
-                }
-            chatMessages.appendChild(message);
-            }         
+    let viewUserUrl = "/chat/view";
+    const response = await fetch(viewUserUrl, {
+        method: 'GET'});
+    if(response.ok){
+        let result = await response.json();
+        const chatUsers = document.getElementById('chatUsers');
+        let results = result[id]; 
+        const messages = results.messages;
+        while (chatMessages.firstChild){
+            chatMessages.removeChild(chatMessages.lastChild);
         }
+        for (let y of messages){
+            const message = document.createElement('p');
+            message.innerText = y.value;
+            message.classList.add('border', 'rounded', 'bg-white');
+            if (y.key === 1){
+                message.classList.add('alignToRight');
+            }
+        chatMessages.appendChild(message);
+        }         
+    }
 }
 
 //Shelter Client
@@ -155,8 +155,8 @@ async function sendChatData(){
         'Content-Type': 'application/json;charset=utf-8'
         },
         body: JSON.stringify({
-            id: 2, 
-            value: 'works'
+            id: 0, 
+            value: document.getElementById('chatField').value
         })
     });
 
