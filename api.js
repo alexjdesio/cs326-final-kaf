@@ -64,27 +64,6 @@ function createFakePetResult(type,query){
     return pet;
 }
 
-function createFakeShelterResult(type,query){
-    let shelter = {
-        shelter_name: company.companyName(),
-        shelter_location: company.companyName(),
-        shelter_about: lorem.sentence(5,10),
-        shelter_pets: null,
-        shelter_comments: [],
-        picture: image.cats()
-    };
-    let petArr = [];
-    for(let i = 0; i < 10;i++){
-        petArr.push(createFakePetResult("location",shelter.shelter_name))
-    }
-    shelter.shelter_pets = petArr;
-    let fields = Object.keys(shelter);
-    if(fields.includes(type)){ //guarantees that the fake data satisfies the search constraints
-        shelter[type] = query;
-    }
-    return shelter;
-}
-
 function createFakeSearchResult(type,query,quantity){
     let shelter_fields = Object.keys(createFakeShelterResult("null",""));
     let pet_fields = Object.keys(createFakePetResult("null",""));
