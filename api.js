@@ -172,6 +172,7 @@ function favoritePets(range) {
 //EXPERIMENTING WITH EXPRESS.JS
 const app = express(); // this is the "app"
 const port = process.env.PORT || 8080;     // we will listen on this port
+app.use(express.json({type: ['application/json', 'text/plain']})); 
 
 app.listen(port, () => {
   console.log('App listening at http://localhost:${port}');
