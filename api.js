@@ -2,7 +2,6 @@
 import pkg from 'faker';
 import {createServer} from 'http';
 import {parse} from 'url';
-import * as bodyParser from "body-parser";
 //const bodyParser = require('body-parser');
 import express from "express";
 
@@ -206,7 +205,7 @@ app.post('/chat/msg', (req, res) => {
     res.send('Success');});
 
 //Shelter Page
-app.get('/shelter/view', bodyParser.json(), (req, res) => res.end(JSON.stringify(createFakeShelterResult(null, null))));
+app.get('/shelter/view', (req, res) => res.end(JSON.stringify(createFakeShelterResult(null, null))));
 app.post('/shelter/edit', (req, res) => {
     console.log(req.body);
     res.send('Success');}); 
