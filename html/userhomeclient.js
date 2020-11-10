@@ -1,12 +1,10 @@
 'use strict';
 
-const site_url = "http://localhost:8080";
-
 let range_pets = 4;
 let range_shelters = 4;
 
 async function getPet(name) {
-    const url = site_url + "/pet/view?name=" + name;
+    const url = "/pet/view?name=" + name;
     const response = await fetch(url);
     if (response.ok) {
         const pet = await response.json();
@@ -16,7 +14,7 @@ async function getPet(name) {
 }
 
 async function getShelter(name) {
-    const url = site_url + "/shelter/view?name=" + name;
+    const url = "/shelter/view?name=" + name;
     const response = await fetch(url);
     if (response.ok) {
         const shelter = await response.json();
@@ -26,7 +24,7 @@ async function getShelter(name) {
 }
 
 async function getRecentPets() {
-    const url = site_url + "/user/id/recentlyviewedpets/";
+    const url = "/user/id/recentlyviewedpets/";
     const response = await fetch(url);
     if (response.ok) {
         const pets = await response.json();
@@ -36,7 +34,7 @@ async function getRecentPets() {
 }
 
 async function getFavoritePets(range) {
-    const url = site_url + "/user/id/favoritepets/view?range=" + range;
+    const url = "/user/id/favoritepets/view?range=" + range;
     const response = await fetch(url);
     if (response.ok) {
         const pets = await response.json();
@@ -47,7 +45,7 @@ async function getFavoritePets(range) {
 }
 
 async function getFavoriteShelters(range) {
-    const url = site_url + "/user/id/favoriteshelters/view?range=" + range;
+    const url = "/user/id/favoriteshelters/view?range=" + range;
     const response = await fetch(url);
     if (response.ok) {
         const shelters = await response.json();
@@ -89,7 +87,7 @@ function renderPets(element, pets) {
             const card_link = document.createElement('a');
             card_link.classList.add('card-link');
             card_link.innerText = 'Visit ' + pets[current_pet].name + '\'s Page';
-            card_link.href = site_url + '/petpage.html?name=' + pets[current_pet].name;
+            card_link.href = '/petpage.html?name=' + pets[current_pet].name;
 
             current_pet += 1;
             
@@ -139,7 +137,7 @@ function renderShelters(element, shelters) {
             card_link.classList.add('card-link');
             card_link.innerText = 'Visit ' + shelters[current_shelter].name + '\'s Page';
             //card_link.href = site_url + 'shelter/view?=' + shelters[current_shelter].name;
-            card_link.href = site_url + '/shelterpage.html?name=' + shelters[current_shelter].name;
+            card_link.href = '/shelterpage.html?name=' + shelters[current_shelter].name;
 
 
             current_shelter += 1;
