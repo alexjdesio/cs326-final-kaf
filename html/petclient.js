@@ -3,7 +3,7 @@
 const site_url = "http://localhost:8080";
 
 async function getPet(name) {
-    const url = site_url + "/pet/view?name=" + name;
+    const url = "/pet/view?name=" + name;
     const response = await fetch(url);
     if (response.ok) {
         const pet = await response.json();
@@ -13,7 +13,7 @@ async function getPet(name) {
 }
 
 async function getShelter(name) {
-    const url = site_url + "/shelter/view?name=" + name;
+    const url = "/shelter/view?name=" + name;
     const response = await fetch(url);
     if (response.ok) {
         const shelter = await response.json();
