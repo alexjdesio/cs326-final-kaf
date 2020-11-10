@@ -1,19 +1,14 @@
-/** 
-const express = require('express');
-const bodyParser = require('body-parser');
-const faker = require('faker');
-const http = require('http');
-const url = require('url');
-const path = require('path');
-const fs = require('fs');
-**/
-import pkg from "faker";
-import express from "express";
-import * as bodyParser from "body-parser";
+
+import pkg from 'faker';
 import {createServer} from 'http';
 import {parse} from 'url';
-import {join} from 'path';
-import {writeFile, readFileSync, existsSync} from 'fs';
+import * as bodyParser from "body-parser";
+//const bodyParser = require('body-parser');
+import express from "express";
+
+//import {join} from 'path';
+//import {writeFile, readFileSync, existsSync} from 'fs';
+
 const {name,internet,company,address,lorem,commerce,image} = pkg;
 
 'use strict';
@@ -118,39 +113,83 @@ let database = {
 };
 
 database.users.push(createFakeUser("Eric")); //used for testing user/id/edit
+	
+function createFakePet(pet_name) {
+    //Pet Objects: Name, Breed, About, Health, Location, Comments, Num Likes
+    let i;
+    const commarr = [];
+    const num_com = Math.random() * 10;
+    for (i = 0; i < num_com; i++) {
+        commarr.push({comment: lorem.sentence(), user: internet.userName()});
+    }
+    
+    const pet = {
+        name:  pet_name,
+        breed: 'terrier',
+        about: lorem.paragraph(),
+        health: lorem.paragraph(),
+        location: company.companyName(),
+        comments: commarr,
+        num_likes: Math.floor(Math.random() * 100),
+        picture: image.cats()
+    };
+    return pet;
+}
 
-/**
- * Example queries:
- * POST(not-browser):
-    * http://127.0.0.1:8080/login
-    * http://127.0.0.1:8080/register
-    * http://127.0.0.1:8080/user/id/edit
- * GET:
-    * http://127.0.0.1:8080/search?type=pet_location&query=Boston&quantity=2
-    * http://127.0.0.1:8080/user/id/view
- */
+function createFakeShelter(shelter_name) {
+    //Shelter Objects: Shelter Name, About, Pets, Location, Comments, Num Likes
+    let i;
+    const commarr = [];
+    const num_com = Math.random() * 10;
+    for (i = 0; i < num_com; i++) {
+        commarr.push({comment: lorem.sentence(), user: internet.userName()});
+    }
 
-/** 
-let server = createServer((request, response) => {	
-	if (request.method === 'GET') {
-		const options = parse(request.url, true).query;
-		process(request, response, options);
-	} else {
-        
-		let requestBody = "";
-		request.on('data', function (data) {
-			requestBody += data;
-		});
-		request.on('end', function () {
-        console.log("Before ",requestBody);
-        const options = JSON.parse(requestBody); //getting an error here- JSON.parse is upset
-        console.log("After ", options);
-		process(request, response, options);
-		});
-	}
-});
-server.listen(8080);
-**/
+    const petarr = [];
+    const num_pets = Math.random() * 10;
+    for (i = 0; i < num_pets; i++) {
+        petarr.push(createFakePet(name.firstName()));
+    }
+
+    const shelter = {
+        name: shelter_name,
+        about: lorem.paragraph(),
+        pets: petarr,
+        location: address.city(),
+        comments: commarr,
+        num_likes: Math.floor(Math.random() * 100),
+        picture: image.business()
+    };
+
+    return shelter;
+}
+
+function favoriteShelters(range) {
+    const shelters = [];
+    let i;
+    for (i = 0; i < range; i++) {
+        shelters.push(createFakeShelter(company.companyName()));
+    }
+    return shelters;
+}
+
+function recentlyViewedPets() {
+    const pets = [];
+    let i;
+    for (i = 0; i < 5; i++) {
+        pets.push(createFakePet(name.firstName()));
+    }
+    return pets;
+}
+
+function favoritePets(range) {
+    const pets = [];
+    let i;
+    for (i = 0; i < range; i++) {
+        pets.push(createFakePet(name.firstName()));
+    }
+    return pets;
+}
 
 //EXPERIMENTING WITH EXPRESS.JS
 const app = express(); // this is the "app"
@@ -207,80 +246,20 @@ function userEdit(req,res){
     res.end("Request received successfully.");   
 }
 
+app.get('/pet/view',express.json(), (req,res) => res.end(JSON.stringify(createFakePet(req.query.name))));
 
-//Old process function(for reference):
-/** 
-function process(request,res,options){
-    const headerText = {"Content-Type" : "text/json"};
-    res.writeHead(200, headerText);
-    const parsed = parse(request.url, true);
-    if (parsed.pathname === '/register') {
-        //database.users.push(options); //Causes issues, 'Cannot read property 'push' of undefined'
-        res.end();
-    }
-    else if (parsed.pathname === '/login') {
-        if((options.username === null) || (options.password === null)){
-            //validates that sufficient information was passed in for the login attempt to occur
-            res.end("Login attempt failed- Invalid request.")
-            return;
-        }
-        else if(Math.random() > 0.5){ //50% Chance of success on login to simulate successful or unsuccessful login attempts
-            //if login succeeds
-            let newToken = createFakeLoginToken();
-            database.tokens.push(newToken);
-            res.end(JSON.stringify(newToken));
-        }
-        else{
-            //if login failed
-            res.end("Login attempt failed- Username and/or Password incorrect.");
-        }
-    }
-    else if (parsed.pathname === '/search') { 
-        res.end(JSON.stringify(createFakeSearchResult(options.type,options.query,options.quantity)));
-    }
-    else if (parsed.pathname === '/user/id/view') {
-        res.end(JSON.stringify(createFakeUser(options.username))); //this works!
-    }
-    else if(parsed.pathname === '/user/id/edit') {
-        let users = database.users;
-        let updatedUser = {};
-        for(let user of users){
-            if(user.username === options.username){
-                let fields = Object.keys(user);
-                for (let field of fields){ //update all fields that have changed
-                    user[field] = (options[field] !== null) ? options[field] : user[field];
-                }
-                updatedUser = user;
-                res.end(JSON.stringify(updatedUser));
-                return;  
-            }
-        }
-        res.end("No user found.");
-    }
-    else {
-        // If the client did not request an API endpoint, we assume we need to fetch and serve a file.
-        // This is terrible security-wise, since we don't check the file requested is in the same directory.
-        // This will do for our purposes.
-        const filename = parsed.pathname === '/' ? "index.html" : parsed.pathname.replace('/', '');
-        //const path = join("client/", filename);
-        const path = filename;
-        console.log("trying to serve " + path + "...");
-        if (existsSync(path)) {
-            if (filename.endsWith("html")) {
-                res.writeHead(200, {"Content-Type" : "text/html"});
-            }
-            else if (filename.endsWith("css")) {
-                res.writeHead(200, {"Content-Type" : "text/css"});
-            }
-            else if (filename.endsWith("js")) {
-                res.writeHead(200, {"Content-Type" : "text/javascript"});
-            }
-            res.write(readFileSync(path));
-            res.end();
-        } else {
-            res.writeHead(404);
-            res.end();
-        }
-    }
-}
-**/
+app.get('/shelter/view',express.json(), (req,res) => res.end(JSON.stringify(createFakeShelter(req.query.name))));
+
+app.get('/user/id/favoritepets/view',express.json(), (req,res) => res.end(JSON.stringify(favoritePets(req.query.range))));
+
+app.get('/user/id/favoriteshelters/view',express.json(), (req,res) => res.end(JSON.stringify(favoriteShelters(req.query.range))));
+
+app.get('/user/id/recentlyviewedpets',express.json(), (req,res) => res.end(JSON.stringify(recentlyViewedPets())));
+
+app.post("/pet/comments/create",express.json(), (req,res) => res.end("Comment Recieved"));
+
+app.post("/user/id/favoritepets/add",express.json(), (req,res) => res.end("Added Pet to Favorites"));
+
+app.post("/user/id/favoritepets/delete",express.json(), (req,res) => res.end("Removed Pet from Favorites"));
+
+app.post("/pet/create",express.json(), (req,res) => res.end("Info Recieved."));
