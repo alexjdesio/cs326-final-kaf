@@ -201,15 +201,15 @@ app.listen(port, () => {
 
 app.use('/',express.static('./html')); //Serves static pages(index.html, search.html, etc.)
 
-app.get('/search',bodyParser.urlencoded(),search);
+app.get('/search',express.urlencoded(),search);
 
-app.get('/user/id/view',bodyParser.json(), (req,res) => res.end(JSON.stringify(createFakeUser(req.query.username))));
+app.get('/user/id/view',express.json(), (req,res) => res.end(JSON.stringify(createFakeUser(req.query.username))));
 
-app.post("/register",bodyParser.json(), (req,res) => res.end("Registration Successful."));
+app.post("/register",express.json(), (req,res) => res.end("Registration Successful."));
 
-app.post("/login",bodyParser.json(),login); //should be POST, works when set to GET
+app.post("/login",express.json(),login); //should be POST, works when set to GET
 
-app.post("/user/id/edit",bodyParser.json(),userEdit);
+app.post("/user/id/edit",express.json(),userEdit);
 
 //Handles search requests and returns search results (with fake data)
 function search(req,res){
