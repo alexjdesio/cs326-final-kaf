@@ -3,53 +3,17 @@
     <head>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
         <link rel="stylesheet" type="text/css" href="style.css">
+        <script type="module" src="./userhomeclient.js" defer></script>
         <title>Example User Page</title>
     </head>
     <body class="bg-light">
-        <!-- This is the start of the navbar-->
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
-            <a class="navbar-brand" href="index.html">
-                <img src="./images/dog_icon.png " width="30" height="30" alt="" loading="lazy">
-            </a>
-            <a class="navbar-brand" href="index.html">Pet-It</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-            </button>
         
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item active">
-                <a class="nav-link" href="index.html">Home <span class="sr-only">(current)</span></a>
-                </li>
-                <li class="nav-item">
-                <a class="nav-link" href="#">Pets</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Shelters</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Chat</a>
-                </li>
-            </ul>
-            <form class="form-inline my-2 my-lg-0">
-                <input class="form-control mr-sm-2" type="search" placeholder="Enter Location" aria-label="Search">
-                <button type="submit" class="btn btn-primary btn-sm">Search</button>
-            </form>
-                <li class="nav-item">
-                    <a class="nav-link text-white" href="signup.html">Sign Up</a>
-                </li>
-                <li class="nav-item">
-                    <button id="login" type="button" class="btn btn-outline-primary btn-sm">
-                        <a class="nav-link font-weight-bolder" href="login.html">Login</a>
-                    </button>
-                </li>
-            </div>
-        </nav>
-        <!-- This is the end of the navbar-->
+        <iframe id="inlineFrameExample" width="100%" height="60px" title="Navbar" src="./navbar-template.html"></iframe>
+
         <div class="container border-left border-right" id="page">
-            <div class="row mt-5">
+            <div class="row">
                 <div class="col">
-                    <h1 class="mt-5 font-weight-light">Username</h1>
+                    <h1 class="mt-5 font-weight-light" id="username_label">Username</h1>
                 </div>
             </div>
             <div class="row mt-4">
@@ -65,51 +29,12 @@
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col">
-                    <div class="card text-center">
-                        <img class="card-img-top" src="https://i.guim.co.uk/img/media/fe1e34da640c5c56ed16f76ce6f994fa9343d09d/0_174_3408_2046/master/3408.jpg?width=1200&height=900&quality=85&auto=format&fit=crop&s=0d3f33fb6aa6e0154b7713a00454c83d" alt="Pug">
-                        <div class="card-body bg-light">
-                            <h5 class="card-title mt-0 font-weight-light">Boink the Pug</h5>
-                            <!--button type="button" class="btn btn-primary">View Boink</button-->
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col">
-                    <div class="card text-center">
-                        <img class="card-img-top" src="https://i.guim.co.uk/img/media/fe1e34da640c5c56ed16f76ce6f994fa9343d09d/0_174_3408_2046/master/3408.jpg?width=1200&height=900&quality=85&auto=format&fit=crop&s=0d3f33fb6aa6e0154b7713a00454c83d" alt="Pug">
-                        <div class="card-body bg-light">
-                            <h5 class="card-title mt-0 font-weight-light">Boink the Pug</h5>
-                            <!--button type="button" class="btn btn-primary">View Boink</button-->
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col">
-                    <div class="card text-center">
-                        <img class="card-img-top" src="https://i.guim.co.uk/img/media/fe1e34da640c5c56ed16f76ce6f994fa9343d09d/0_174_3408_2046/master/3408.jpg?width=1200&height=900&quality=85&auto=format&fit=crop&s=0d3f33fb6aa6e0154b7713a00454c83d" alt="Pug">
-                        <div class="card-body bg-light">
-                            <h5 class="card-title mt-0 font-weight-light">Boink the Pug</h5>
-                            <!--button type="button" class="btn btn-primary">View Boink</button-->
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col">
-                    <div class="card text-center">
-                        <img class="card-img-top" src="https://i.guim.co.uk/img/media/fe1e34da640c5c56ed16f76ce6f994fa9343d09d/0_174_3408_2046/master/3408.jpg?width=1200&height=900&quality=85&auto=format&fit=crop&s=0d3f33fb6aa6e0154b7713a00454c83d" alt="Pug">
-                        <div class="card-body bg-light">
-                            <h5 class="card-title mt-0 font-weight-light">Boink the Pug</h5>
-                            <!--button type="button" class="btn btn-primary">View Boink</button-->
-                        </div>
-                    </div>
-                </div>
+            <div id="favorite_pets">
             </div>
             
             <div class="row mt-3">
                 <div class="morebtn">
-                    <button type="button" class="btn btn-outline-primary">View More</button>
+                    <button id="more_pets" type="button" class="btn btn-outline-primary">View More</button>
                 </div>
             </div>
 
@@ -126,51 +51,12 @@
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col">
-                    <div class="card text-center">
-                        <img class="card-img-top" src="https://www.scenicridge.com/wp-content/uploads/2019/04/VIEW-8-768x432-600x450.jpg" alt="Shelter">
-                        <div class="card-body bg-light">
-                            <h5 class="card-title mt-0 font-weight-light">Columbia Animal Shelter</h5>
-                            <!--button type="button" class="btn btn-primary">View Shelter Page</button-->
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col">
-                    <div class="card text-center">
-                        <img class="card-img-top" src="https://www.scenicridge.com/wp-content/uploads/2019/04/VIEW-8-768x432-600x450.jpg" alt="Shelter">
-                        <div class="card-body bg-light">
-                            <h5 class="card-title mt-0 font-weight-light">Columbia Animal Shelter</h5>
-                            <!--button type="button" class="btn btn-primary">View Shelter Page</button-->
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col">
-                    <div class="card text-center">
-                        <img class="card-img-top" src="https://www.scenicridge.com/wp-content/uploads/2019/04/VIEW-8-768x432-600x450.jpg" alt="Shelter">
-                        <div class="card-body bg-light">
-                            <h5 class="card-title mt-0 font-weight-light">Columbia Animal Shelter</h5>
-                            <!--button type="button" class="btn btn-primary">View Shelter Page</button-->
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col">
-                    <div class="card text-center">
-                        <img class="card-img-top" src="https://www.scenicridge.com/wp-content/uploads/2019/04/VIEW-8-768x432-600x450.jpg" alt="Shelter">
-                        <div class="card-body bg-light">
-                            <h5 class="card-title mt-0 font-weight-light">Columbia Animal Shelter</h5>
-                            <!--button type="button" class="btn btn-primary">View Shelter Page</button-->
-                        </div>
-                    </div>
-                </div>
+            <div id="favorite_shelters">
             </div>
 
             <div class="row mt-3">
                 <div class="morebtn">
-                    <button type="button" class="btn btn-outline-primary">View More</button>
+                    <button type="button" id="more_shelters" class="btn btn-outline-primary">View More</button>
                 </div>
             </div>
             
