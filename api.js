@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 'use strict';
 const pkg = require('faker');
 const {name,internet,company,address,lorem,commerce,image} = pkg;
@@ -28,6 +29,27 @@ function createFakeUser(username){
     let interestIndex = Math.floor((Math.random()*3));
     let interestArray = ["dog","cats","exotics"];
     let userType = (Math.random() > 0.5) ? "adopter" : "shelter";
+=======
+
+import pkg from 'faker';
+import {createServer} from 'http';
+import {parse} from 'url';
+//const bodyParser = require('body-parser');
+import express from "express";
+
+//import {join} from 'path';
+//import {writeFile, readFileSync, existsSync} from 'fs';
+
+const {name,internet,company,address,lorem,commerce,image} = pkg;
+
+'use strict';
+
+function createFakeUser(username){
+    let interestIndex = Math.floor((Math.random()*3))
+    let interestArray = ["dog","cats","exotics"];
+    let userType = (Math.random() > 0.5) ? "adopter" : "shelter";
+    
+>>>>>>> master
     let user = {
         username: username,
         email: internet.email(), 
@@ -181,7 +203,13 @@ function favoritePets(range) {
 }
 
 //EXPERIMENTING WITH EXPRESS.JS
+<<<<<<< HEAD
 
+=======
+const app = express(); // this is the "app"
+const port = process.env.PORT || 8080;     // we will listen on this port
+app.use(express.json({type: ['application/json', 'text/plain']})); 
+>>>>>>> master
 
 app.listen(port, () => {
   console.log('App listening at http://localhost:${port}');
@@ -199,6 +227,10 @@ app.post("/login",express.json(),login); //should be POST, works when set to GET
 
 app.post("/user/id/edit",express.json(),userEdit);
 
+<<<<<<< HEAD
+=======
+app.use('/',express.static('./html')); //Serves static pages(index.html, search.html, etc.)
+>>>>>>> master
 
 //Chat
 app.get('/chat/view', (req, res) => {
