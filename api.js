@@ -302,11 +302,24 @@ function userEdit(req,res){
     res.end("Request received successfully.");   
 }
 
-app.get('/pet/view',express.json(), (req,res) => res.end(JSON.stringify(createFakePet(req.query.name))));
+app.get('/pet/view',express.json(), async (req,res) => {
+    let database = client.db('petIt');
+    let query = {"pet_id": req.body.id};
+    let result = await database.collection("pets").findOne(query);
+    res.end(JSON.stringify(result));
+});
 
-app.get('/shelter/view',express.json(), (req,res) => res.end(JSON.stringify(createFakeShelter(req.query.name))));
+app.get('/shelter/view',express.json(), async (req,res) => {
+    let database = client.db('petIt');
+    let query = {"name": req.body.name};
+    let result = await database.collection("shelters").findOne(query);
+    res.end(JSON.stringify(result));
+});
 
-app.get('/user/id/favoritepets/view',express.json(), (req,res) => res.end(JSON.stringify(favoritePets(req.query.range))));
+app.get('/user/id/favoritepets/view',express.json(), async (req,res) => {
+    let database = client.db('petIt');
+    //gonna have to wait on the user ones. 
+});
 
 app.get('/user/id/favoriteshelters/view',express.json(), (req,res) => res.end(JSON.stringify(favoriteShelters(req.query.range))));
 
