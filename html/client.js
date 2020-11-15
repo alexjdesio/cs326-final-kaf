@@ -14,7 +14,7 @@
     * 
     * http://127.0.0.1:8080/settings.html?username=Theo
 */
-
+    
 async function getSearchResults(type,query,quantity){
     let request_url = "/search?type=" + type + "&query=" + query + "&quantity=" + quantity;
     let response = await fetch(request_url, {method:"GET"});
@@ -260,7 +260,7 @@ function generateDynamicHTML(){
         let submit = document.getElementById("settings-submit");
         form.addEventListener("submit",function (event){
             event.preventDefault(); //this is so important, prevents default form submission behavior
-            sendFormData();
+            sendFormData("edit");
         });   
     }
     else if (page === "/search.html"){
@@ -274,7 +274,7 @@ function generateDynamicHTML(){
         let submit = document.getElementById("signup-submit");
         form.addEventListener("submit",function (event){
             event.preventDefault(); //this is so important, prevents default form submission behavior
-            sendFormData();
+            sendFormData("register");
         });
     }
     else if (page === "/login.html"){
@@ -320,7 +320,8 @@ async function sendChatData(){
     }
 }
 
-async function sendFormData(){
+//arg1 determines if this is an edit or register or login
+async function sendFormData(arg1){
     let userData = {
         username: null,
         email: null, 
@@ -339,17 +340,42 @@ async function sendFormData(){
         }
     }
     //console.log(JSON.stringify(userData));
-    
-    const response = await fetch("/user/id/edit", {
-        method: 'POST',
-        headers: {
-        'Content-Type': 'application/json;charset=utf-8'
-        },
-        body: JSON.stringify(userData)
-    });
-    if(response.ok){
-        console.log("Edit response successfully sent to server.");
-    } 
+    if(arg1 === "edit"){
+        const response = await fetch("/user/id/edit", {
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json;charset=utf-8'
+            },
+            body: JSON.stringify(userData)
+        });
+        if(response.ok){
+            console.log("Edit response successfully sent to server.");
+        } 
+    }
+    else if (arg1 === "register"){
+        const response = await fetch("/register", {
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json;charset=utf-8'
+            },
+            body: JSON.stringify(userData)
+        });
+        if(response.ok){
+            console.log("Edit response successfully sent to server.");
+        } 
+    }
+    else{
+        const response = await fetch("/login", {
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json;charset=utf-8'
+            },
+            body: JSON.stringify(userData)
+        });
+        if(response.ok){
+            console.log("Edit response successfully sent to server.");
+        } 
+    }
 }
 
 

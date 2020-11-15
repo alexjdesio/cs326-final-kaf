@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 'use strict';
 const pkg = require('faker');
 const {name,internet,company,address,lorem,commerce,image} = pkg;
@@ -25,31 +24,230 @@ const port = process.env.PORT || 8080;     // we will listen on this port
 app.use(express.json({type: ['application/json', 'text/plain']})); 
 app.use(express.static('client'));
 
+//EXPERIMENTING WITH EXPRESS.JS
+
+app.listen(port, () => {
+    console.log('App listening at http://localhost:${port}');
+  });
+  
+app.use('/',express.static('./html')); //Serves static pages(index.html, search.html, etc.)
+
+//Alex's MongoDB endpoints:
+
+/**
+ * TODO:
+    * Frontend for search.html
+        * Add form on search.html
+        * Modify navbar, either:
+            * make search button in navbar a link to search.html OR
+            * make navbar contain a valid search form      
+    * make sure that express post requests are all using body, get requests using query
+    * test search endpoint
+    * test edit user endpoint
+    * write login endpoint
+ * After tuesday
+    * setup frontend for login/user authentication
+*/
+
+app.get('/search',express.urlencoded(), async (req,res) => {
+    let database = client.db('petIt');
+    //Make sure this is a valid search request
+    let requiredFields = {
+        type: null,
+        query: null, 
+        quantity: null,
+    };
+    for(let field of Object.keys(requiredFields)){
+        if(req.query[field] === null){ 
+            res.end("Invalid request- missing type, query, or quantity field."); 
+            return;
+        }
+    }
+    let petFields = {
+        pet_name: null,
+        pet_location: null,
+        pet_type: null,
+        pet_breed: null,
+        pet_about: null,
+        pet_health: null,
+        pet_comments: null,
+        picture: null,
+        num_likes: null
+    };
+    let shelterFields = {
+        shelter_name: null,        
+        shelter_location: null,        
+        shelter_about: null,        
+        shelter_pets: null,        
+        shelter_comments: null,        
+        picture: null
+    };
+    //Figure out if this search will be in the pet or shelter collection
+    if(req.query.type === null){
+       res.end("Invalid query- missing type field.");
+    }
+    let collection_type;
+    if(req.query.type in petFields){
+        collection_type = "pets";
+    }
+    else if(req.query.type in shelterFields){
+        collection_type = "shelters"; 
+    }
+    else{
+        res.end("Invalid query- invalid type value.");
+    }
+    let query = {};
+    query[req.query.type] = req.query.query;
+    let result = await database.collection(collection_type).find(query,{limit: req.query.quantity});
+    console.log("Search request returned: ", result);
+    res.end(JSON.stringify(result));
+});
+
+app.get('/user/id/view',express.json(), async (req,res) => {
+    let database = client.db('petIt');
+    let query = {"username": req.body.username};
+    let result = await database.collection("users").findOne(query); // do I need to await these calls?
+    res.end(JSON.stringify(result));
+});
+
+app.post("/register",express.json(), async (req,res) => {
+    let database = client.db('petIt');
+    //check if the username is in the database
+    let check_query = {"username": req.body.username};
+    let result = await database.collection("users").findOne(check_query); // do I need to await these calls?
+    if(result !== null){
+        console.log("User already exists.");
+        res.end("User already exists.");
+        return;
+    }
+    //check if any of the body fields are blank/malformed
+    let requiredFields = {
+        username: null,
+        email: null, 
+        password: null,
+        type: null,
+    };
+    for(let field of Object.keys(requiredFields)){
+        if(req.body[field] === null || req.body[field] === ""){
+            console.log("Malformed Input.");
+            res.end("Malformed Input.");
+            return;
+        }
+    }
+
+    //Add the user to the database
+    let add_query = req.body;
+    await database.collection("users").insertOne(add_query); // do I need to await these calls?
+    console.log(req.body);
+    res.end("Registration Successful.");
+});
+
+//TODO: Finish this function
+app.post("/login",express.json(),async (req,res) => {
+    let database = client.db('petIt');
+    //Make sure this is a valid search request
+    let requiredFields = {
+        username: null,
+        password: null
+    };
+    for(let field of Object.keys(requiredFields)){
+        if(req.body[field] === null){ 
+            res.end("Invalid request- missing username or password."); 
+            return;
+        }
+    }
+    //Get the user associated with the username
+    let check_query = {"username": req.body.username};
+    let result = await database.collection("users").findOne(check_query); // do I need to await these calls?
+    if(result === null){
+        console.log("User does not exist.");
+        res.end("User does not exist.");
+        return;
+    }
+    //Check if the password matches what is stored in the database
+    if(req.body.password === result.password){
+        //give the user an authentication token
+        res.end("Successfully logged in");
+    }
+    else{
+        res.end("Login failed.");
+    }
+});
+
+//Needs testing
+app.post("/user/id/edit",express.json(), async (req,res) =>{
+    let database = client.db("petIt");
+    //check if the username is in the database
+    let check_query = {"username": req.body.username};
+    let result = await database.collection("users").findOne(check_query); // do I need to await these calls?
+    if(result === null){
+        console.log("User does not exist.");
+        res.end("User does not exist.");
+        return;
+    }
+    //check if any of the body fields are blank/malformed
+    let requiredFields = {
+        username: null,
+        email: null, 
+        password: null,
+        type: null,
+    };
+    for(let field of Object.keys(requiredFields)){
+        if(req.body[field] === null || req.body[field] === ""){
+            console.log("Malformed Input.");
+            res.end("Malformed Input.");
+            return;
+        }
+    }
+    //Edit the existing user data
+    let edit_query = req.body;
+    await database.collection("users").updateOne(check_query,edit_query); 
+    userEdit();
+});
+
+//Sam
+
+app.get('/pet/view',express.json(), (req,res) => res.end(JSON.stringify(createFakePet(req.query.name))));
+
+app.get('/shelter/view',express.json(), (req,res) => res.end(JSON.stringify(createFakeShelter(req.query.name))));
+
+app.get('/user/id/favoritepets/view',express.json(), (req,res) => res.end(JSON.stringify(favoritePets(req.query.range))));
+
+app.get('/user/id/favoriteshelters/view',express.json(), (req,res) => res.end(JSON.stringify(favoriteShelters(req.query.range))));
+
+app.get('/user/id/recentlyviewedpets',express.json(), (req,res) => res.end(JSON.stringify(recentlyViewedPets())));
+
+app.post("/pet/comments/create",express.json(), (req,res) => res.end("Comment Recieved"));
+
+app.post("/user/id/favoritepets/add",express.json(), (req,res) => res.end("Added Pet to Favorites"));
+
+app.post("/user/id/favoritepets/delete",express.json(), (req,res) => res.end("Removed Pet from Favorites"));
+
+app.post("/pet/create",express.json(), (req,res) => res.end("Info Recieved."));
+
+//Chat
+app.get('/chat/view', (req, res) => {
+    if (chat.length === 0){
+        createFakeChat();
+    }
+    res.end(JSON.stringify(chat));}
+);
+app.post('/chat/msg', (req, res) => {
+    chat[req.body.id].messages.push({
+        key: 0,
+        value: req.body.value});
+    res.send('Success');});
+
+//Shelter Page
+app.get('/shelter/view', (req, res) => res.end(JSON.stringify(createFakeShelterResult(null, null))));
+app.post('/shelter/edit', (req, res) => {
+    console.log(req.body);
+    res.send('Success');}); 
+
 function createFakeUser(username){
     let interestIndex = Math.floor((Math.random()*3));
     let interestArray = ["dog","cats","exotics"];
     let userType = (Math.random() > 0.5) ? "adopter" : "shelter";
-=======
-
-import pkg from 'faker';
-import {createServer} from 'http';
-import {parse} from 'url';
-//const bodyParser = require('body-parser');
-import express from "express";
-
-//import {join} from 'path';
-//import {writeFile, readFileSync, existsSync} from 'fs';
-
-const {name,internet,company,address,lorem,commerce,image} = pkg;
-
-'use strict';
-
-function createFakeUser(username){
-    let interestIndex = Math.floor((Math.random()*3))
-    let interestArray = ["dog","cats","exotics"];
-    let userType = (Math.random() > 0.5) ? "adopter" : "shelter";
-    
->>>>>>> master
     let user = {
         username: username,
         email: internet.email(), 
@@ -202,55 +400,6 @@ function favoritePets(range) {
     return pets;
 }
 
-//EXPERIMENTING WITH EXPRESS.JS
-<<<<<<< HEAD
-
-=======
-const app = express(); // this is the "app"
-const port = process.env.PORT || 8080;     // we will listen on this port
-app.use(express.json({type: ['application/json', 'text/plain']})); 
->>>>>>> master
-
-app.listen(port, () => {
-  console.log('App listening at http://localhost:${port}');
-});
-
-app.use('/',express.static('./html')); //Serves static pages(index.html, search.html, etc.)
-
-app.get('/search',express.urlencoded(),search);
-
-app.get('/user/id/view',express.json(), (req,res) => res.end(JSON.stringify(createFakeUser(req.query.username))));
-
-app.post("/register",express.json(), (req,res) => res.end("Registration Successful."));
-
-app.post("/login",express.json(),login); //should be POST, works when set to GET
-
-app.post("/user/id/edit",express.json(),userEdit);
-
-<<<<<<< HEAD
-=======
-app.use('/',express.static('./html')); //Serves static pages(index.html, search.html, etc.)
->>>>>>> master
-
-//Chat
-app.get('/chat/view', (req, res) => {
-    if (chat.length === 0){
-        createFakeChat();
-    }
-    res.end(JSON.stringify(chat));}
-);
-app.post('/chat/msg', (req, res) => {
-    chat[req.body.id].messages.push({
-        key: 0,
-        value: req.body.value});
-    res.send('Success');});
-
-//Shelter Page
-app.get('/shelter/view', (req, res) => res.end(JSON.stringify(createFakeShelterResult(null, null))));
-app.post('/shelter/edit', (req, res) => {
-    console.log(req.body);
-    res.send('Success');}); 
-
 //Chat Functions
 let chat = [];
 function createFakeChat(){
@@ -336,20 +485,4 @@ function userEdit(req,res){
     res.end("Request received successfully.");   
 }
 
-app.get('/pet/view',express.json(), (req,res) => res.end(JSON.stringify(createFakePet(req.query.name))));
 
-app.get('/shelter/view',express.json(), (req,res) => res.end(JSON.stringify(createFakeShelter(req.query.name))));
-
-app.get('/user/id/favoritepets/view',express.json(), (req,res) => res.end(JSON.stringify(favoritePets(req.query.range))));
-
-app.get('/user/id/favoriteshelters/view',express.json(), (req,res) => res.end(JSON.stringify(favoriteShelters(req.query.range))));
-
-app.get('/user/id/recentlyviewedpets',express.json(), (req,res) => res.end(JSON.stringify(recentlyViewedPets())));
-
-app.post("/pet/comments/create",express.json(), (req,res) => res.end("Comment Recieved"));
-
-app.post("/user/id/favoritepets/add",express.json(), (req,res) => res.end("Added Pet to Favorites"));
-
-app.post("/user/id/favoritepets/delete",express.json(), (req,res) => res.end("Removed Pet from Favorites"));
-
-app.post("/pet/create",express.json(), (req,res) => res.end("Info Recieved."));
