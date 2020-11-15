@@ -302,16 +302,18 @@ function userEdit(req,res){
     res.end("Request received successfully.");   
 }
 
+//POSTs should use body, GET should use query
+
 app.get('/pet/view',express.json(), async (req,res) => {
     let database = client.db('petIt');
-    let query = {"pet_id": req.body.id};
+    let query = {"pet_id": req.query.id};
     let result = await database.collection("pets").findOne(query);
     res.end(JSON.stringify(result));
 });
 
 app.get('/shelter/view',express.json(), async (req,res) => {
     let database = client.db('petIt');
-    let query = {"name": req.body.name};
+    let query = {"name": req.query.name};
     let result = await database.collection("shelters").findOne(query);
     res.end(JSON.stringify(result));
 });
