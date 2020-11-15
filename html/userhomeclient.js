@@ -82,12 +82,12 @@ function renderPets(element, pets) {
             card_title.classList.add('card-title');
             card_title.classList.add('mt-0');
             card_title.classList.add('font-weight-light');
-            card_title.innerText = pets[current_pet].name;
+            card_title.innerText = pets[current_pet].pet_name;
 
             const card_link = document.createElement('a');
             card_link.classList.add('card-link');
-            card_link.innerText = 'Visit ' + pets[current_pet].name + '\'s Page';
-            card_link.href = '/petpage.html?name=' + pets[current_pet].name;
+            card_link.innerText = 'Visit ' + pets[current_pet].pet_name + '\'s Page';
+            card_link.href = '/petpage.html?name=' + pets[current_pet].pet_name;
 
             current_pet += 1;
             

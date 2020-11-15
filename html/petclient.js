@@ -23,7 +23,7 @@ async function getShelter(name) {
 }
 
 
-async function renderPetPage(fake_pet) {
+async function renderPetPage(pet) {
     console.log("yay");
     //get all the elements we need to fill in first. Because its easier for me to process that way.
     const pet_name = document.getElementById("pet_name");
@@ -45,26 +45,26 @@ async function renderPetPage(fake_pet) {
     const url = new URL(url_string);
     const name = url.searchParams.get('name');
     //Pet Objects: Name, Breed, About, Health, Location, Comments, Num Likes
-    const fake_shelter = await getShelter(fake_pet.location);
+    const shelter = await getShelter(pet.pet_location);
 
-    pet_name.innerText = fake_pet.name;
-    pet_breed.innerText = fake_pet.breed;
-    pet_picture.src = fake_pet.picture;
-    about_header.innerText = 'About ' + name;
-    about_body.innerText = fake_pet.about;
+    pet_name.innerText = pet.pet_name;
+    pet_breed.innerText = pet.pet_breed;
+    pet_picture.src = pet.pet_picture;
+    about_header.innerText = 'About ' + pet.pet_name;
+    about_body.innerText = pet.pet_about;
     health_header.innerText = name + '\'s Health and Needs';
-    health_body.innerText = fake_pet.health;
-    pet_home_header.innerText = fake_pet.name + '\'s Current Home';
-    shelter_name.innerText = fake_shelter.name;
-    shelter_picture.src = fake_shelter.picture;
-    about_shelter.innerText = fake_shelter.about;
-    adopt_button.innerText = 'Adopt ' + fake_pet.name;
-    favorite_button.innerText = `Add ${fake_pet.name} to Favorites`;
+    health_body.innerText = pet.pet_health;
+    pet_home_header.innerText = pet.pet_name + '\'s Current Home';
+    shelter_name.innerText = shelter.shelter_name;
+    shelter_picture.src = shelter.picture;
+    about_shelter.innerText = shelter.shelter_about;
+    adopt_button.innerText = 'Adopt ' + pet.pet_name;
+    favorite_button.innerText = `Add ${pet.pet_name} to Favorites`;
 
     //then deal with the comments section
 
-    const comments = fake_pet.comments;
-    //console.log(fake_pet.comments);
+    const comments = pet.pet_comments;
+    
     if (comments.length > 0) {
         let i;
         for (i = 0; i < comments.length; i++) {
@@ -78,7 +78,7 @@ async function renderPetPage(fake_pet) {
             comment_user.classList.add('card-title');
             comment_user.classList.add('mt-2');
             comment_user.classList.add('ml-2');
-            comment_user.innerText = `${comments[i].user}:`;
+            comment_user.innerText = `${comments[i].username}:`;
 
             const comment_body_container = document.createElement('div');
             comment_body_container.classList.add('card-body');
@@ -112,19 +112,19 @@ window.addEventListener("load", async function() {
     const url = new URL(url_string);
     const name = url.searchParams.get('name');
     const favorite_button = document.getElementById('favorite_button');
-    const fake_pet = await getPet(name);
-    renderPetPage(fake_pet);
+    const pet = await getPet(name);
+    renderPetPage(pet);
 
     favorite_button.addEventListener('click', () => {
         if (favorite_button.innerText === `Add ${name} to Favorites`) {
             //do a POST request
             //        fetch('http://localhost:8080/gameScore', { method: 'POST', body: JSON.stringify(p0JSON) } ); 
             const post_url = `${site_url}/user/id/favoritepets/add`;
-            fetch(post_url, { method: 'POST', body: JSON.stringify(fake_pet) });
+            fetch(post_url, { method: 'POST', body: JSON.stringify(pet) });
             favorite_button.innerText = `Remove ${name} from Favorites`; 
         } else {
             const post_url = `${site_url}/user/id/favoritepets/delete`;
-            fetch(post_url, { method: 'POST', body: JSON.stringify(fake_pet) });
+            fetch(post_url, { method: 'POST', body: JSON.stringify(pet) });
             favorite_button.innerText = `Add ${name} to Favorites`;
         }
     });
