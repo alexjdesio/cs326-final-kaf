@@ -306,24 +306,44 @@ function userEdit(req,res){
 
 app.get('/pet/view',express.json(), async (req,res) => {
     let database = client.db('petIt');
-    let query = {"pet_id": req.query.id};
+    let query = {"id": req.query.id};
     let result = await database.collection("pets").findOne(query);
     res.end(JSON.stringify(result));
 });
 
 app.get('/shelter/view',express.json(), async (req,res) => {
     let database = client.db('petIt');
-    let query = {"name": req.query.name};
+    let query = {"id": req.query.id};
     let result = await database.collection("shelters").findOne(query);
     res.end(JSON.stringify(result));
 });
 
 app.get('/user/id/favoritepets/view',express.json(), async (req,res) => {
     let database = client.db('petIt');
-    //gonna have to wait on the user ones. 
+    let query = {"id": req.query.id};
+    let result = await database.collection("users").findOne(query);
+    let i;
+    const pet_selection = [];
+    const range = (result.liked_pets.length > req.query.range) ? req.query.range : result.liked_pets.length;
+    for (i = 0; i < range; i++) {
+        pet_selection.push(result.liked_pets[i]);
+    }
+    //check if this is null
+    res.end(JSON.stringify(pet_selection));
 });
 
-app.get('/user/id/favoriteshelters/view',express.json(), (req,res) => res.end(JSON.stringify(favoriteShelters(req.query.range))));
+app.get('/user/id/favoriteshelters/view',express.json(), (req,res) => {
+    let database = client.db('petIt');
+    let query = {"id": req.query.id};
+    let result = await database.collection("users").findOne(query);
+    let i;
+    const shelter_selection = [];    
+    const range = (result.liked_shelters.length > req.query.range) ? req.query.range : result.liked_shelters.length;
+    for (i = 0; i < range; i++) {
+        shelter_selection.push(result.liked_shelters[i]);
+    }
+    res.end(JSON.stringify(shelter_selection));
+});
 
 app.get('/user/id/recentlyviewedpets',express.json(), (req,res) => res.end(JSON.stringify(recentlyViewedPets())));
 
@@ -333,4 +353,21 @@ app.post("/user/id/favoritepets/add",express.json(), (req,res) => res.end("Added
 
 app.post("/user/id/favoritepets/delete",express.json(), (req,res) => res.end("Removed Pet from Favorites"));
 
-app.post("/pet/create",express.json(), (req,res) => res.end("Info Recieved."));
+app.post("/pet/create",express.json(), async (req,res) => {
+    let database = client.db("petIt");
+    let add_query = req.body;
+    let requiredFields = {
+        pet_name: null,
+        pet_location: null,
+        id: null,
+        pet_type: null,
+        pet_breed: null,
+        pet_about: null,
+        pet_health: null,
+        pet_comments: null,
+        picture: null,
+        num_likes: null
+    }
+    await database.collection("pets").insertOne(add_query);
+    console.log(req.body);
+});
