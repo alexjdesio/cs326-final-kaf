@@ -353,16 +353,21 @@ app.get('/user/id/recentlyviewedpets/view',express.json(), async (req,res) => {
     //we should check if this is null before sending it, I'll do it later though.
     res.end(JSON.stringify(result.viewed_pets));
 });
-//WE NEED SOMETHING TO ADD A RECENTLY VIEWED PET!
-app.post("/pet/comments/create",express.json(), (req,res) => res.end("Comment Recieved"));
 
-app.post("/user/id/favoritepets/add",express.json(), (req,res) => res.end("Added Pet to Favorites"));
+//app.post("/pet/comments/create",express.json(), async (req,res) => {
 
-app.post("/user/id/favoritepets/delete",express.json(), (req,res) => res.end("Removed Pet from Favorites"));
+//res.end("Comment Created") });
+
+app.post("/user/id/favoritepets/add",express.json(), async (req,res) => {
+
+    res.end("Added Pet to Favorites") });
+
+app.post("/user/id/favoritepets/delete",express.json(), async (req,res) => {
+
+    res.end("Removed Pet from Favorites") });
 
 app.post("/pet/create",express.json(), async (req,res) => {
     let database = client.db("petIt");
-    let add_query = req.body;
     let requiredFields = {
         pet_name: null,
         pet_location: null,

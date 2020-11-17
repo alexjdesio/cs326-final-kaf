@@ -13,7 +13,7 @@ window.addEventListener('load', async function() {
         const breed = document.getElementById('breed').value;
         const location = document.getElementById('location').value;
 
-        const pet = {name: name, about: about, health: health, breed: breed, location: location, comments: [], picture: ''};
+        const pet = {pet_name: name, pet_about: about, pet_health: health, pet_breed: breed, pet_location: location, comments: [], picture: '', num_likes: 0};
         const post_url = `${site_url}/pet/create`;
         fetch(post_url, { method: 'POST', body: JSON.stringify(pet) });
     });
