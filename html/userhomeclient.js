@@ -3,8 +3,8 @@
 let range_pets = 4;
 let range_shelters = 4;
 
-async function getPet(name) {
-    const url = "/pet/view?name=" + name;
+async function getPet(id) {
+    const url = `/pet/view?id=${id}`;
     const response = await fetch(url);
     if (response.ok) {
         const pet = await response.json();
@@ -13,8 +13,8 @@ async function getPet(name) {
     //need to add else
 }
 
-async function getShelter(name) {
-    const url = "/shelter/view?name=" + name;
+async function getShelter(id) {
+    const url = `/shelter/view?id=${id}`;
     const response = await fetch(url);
     if (response.ok) {
         const shelter = await response.json();
@@ -23,8 +23,8 @@ async function getShelter(name) {
     //need to add else
 }
 
-async function getRecentPets() {
-    const url = "/user/id/recentlyviewedpets/";
+async function getRecentPets(id) {
+    const url = `/user/id/recentlyviewedpets/view?id=${id}`;
     const response = await fetch(url);
     if (response.ok) {
         const pets = await response.json();
@@ -33,8 +33,8 @@ async function getRecentPets() {
     //need to add else
 }
 
-async function getFavoritePets(range) {
-    const url = "/user/id/favoritepets/view?range=" + range;
+async function getFavoritePets(range, id) {
+    const url = `/user/id/favoritepets/view?range=${range}&id=${id}`;
     const response = await fetch(url);
     if (response.ok) {
         const pets = await response.json();
@@ -44,8 +44,8 @@ async function getFavoritePets(range) {
     //need to add else
 }
 
-async function getFavoriteShelters(range) {
-    const url = "/user/id/favoriteshelters/view?range=" + range;
+async function getFavoriteShelters(range, id) {
+    const url = `/user/id/favoriteshelters/view?range=${range}&id=${id}`;
     const response = await fetch(url);
     if (response.ok) {
         const shelters = await response.json();

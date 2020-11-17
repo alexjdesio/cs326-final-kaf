@@ -317,7 +317,7 @@ app.get('/shelter/view',express.json(), async (req,res) => {
     let result = await database.collection("shelters").findOne(query);
     res.end(JSON.stringify(result));
 });
-
+//needs both the user id and the range
 app.get('/user/id/favoritepets/view',express.json(), async (req,res) => {
     let database = client.db('petIt');
     let query = {"id": req.query.id};
@@ -331,8 +331,8 @@ app.get('/user/id/favoritepets/view',express.json(), async (req,res) => {
     //check if this is null
     res.end(JSON.stringify(pet_selection));
 });
-
-app.get('/user/id/favoriteshelters/view',express.json(), (req,res) => {
+//needs both the user id and the range
+app.get('/user/id/favoriteshelters/view',express.json(), async (req,res) => {
     let database = client.db('petIt');
     let query = {"id": req.query.id};
     let result = await database.collection("users").findOne(query);
@@ -342,11 +342,18 @@ app.get('/user/id/favoriteshelters/view',express.json(), (req,res) => {
     for (i = 0; i < range; i++) {
         shelter_selection.push(result.liked_shelters[i]);
     }
+    //check if the array is null
     res.end(JSON.stringify(shelter_selection));
 });
-
-app.get('/user/id/recentlyviewedpets',express.json(), (req,res) => res.end(JSON.stringify(recentlyViewedPets())));
-
+//needs only an id to be send along
+app.get('/user/id/recentlyviewedpets/view',express.json(), async (req,res) => {
+    let database = client.db('petIt');
+    let query = {"id": req.query.id};
+    let result = await database.collection("users").findOne(query);
+    //we should check if this is null before sending it, I'll do it later though.
+    res.end(JSON.stringify(result.viewed_pets));
+});
+//WE NEED SOMETHING TO ADD A RECENTLY VIEWED PET!
 app.post("/pet/comments/create",express.json(), (req,res) => res.end("Comment Recieved"));
 
 app.post("/user/id/favoritepets/add",express.json(), (req,res) => res.end("Added Pet to Favorites"));
@@ -368,6 +375,8 @@ app.post("/pet/create",express.json(), async (req,res) => {
         picture: null,
         num_likes: null
     }
+    //check if all required fields are actually included...
     await database.collection("pets").insertOne(add_query);
     console.log(req.body);
+    res.end("Pet created");
 });
