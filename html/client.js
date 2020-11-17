@@ -328,9 +328,9 @@ async function sendFormData(arg1){
         password: null,
         type: null,
         interests: null,
-        shelter: null,
-        liked_pets: null,
-        viewed_pets: null,
+        shelter: '',
+        liked_pets: '',
+        viewed_pets: '',
         location: null
     };
     let fields = Object.keys(userData);
@@ -373,7 +373,7 @@ async function sendFormData(arg1){
             body: JSON.stringify(userData)
         });
         if(response.ok){
-            console.log("Edit response successfully sent to server.");
+            console.log("Login response successfully sent to server.");
         } 
     }
 }
