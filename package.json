@@ -1,10 +1,5 @@
 {
-<<<<<<< HEAD
     "name": "petit", 
-=======
-    "name": "petit",
-    "type": "module",
->>>>>>> master
     "scripts": {
         "start": "node server/index.js",
         "lint": "eslint client/ server/"

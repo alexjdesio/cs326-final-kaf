@@ -304,23 +304,23 @@ function userEdit(req,res){
 
 //POSTs should use body, GET should use query
 
-app.get('/pet/view',express.json(), async (req,res) => {
+app.get('/pet/view', async (req,res) => {
     let database = client.db('petIt');
-    let query = {"id": req.query.id};
+    let query = {"pet_id": req.query.pet_id};
     let result = await database.collection("pets").findOne(query);
     res.end(JSON.stringify(result));
 });
 
-app.get('/shelter/view',express.json(), async (req,res) => {
+app.get('/shelter/view', async (req,res) => {
     let database = client.db('petIt');
-    let query = {"id": req.query.id};
+    let query = {"shelter_id": req.query.shelter_id};
     let result = await database.collection("shelters").findOne(query);
     res.end(JSON.stringify(result));
 });
 //needs both the user id and the range
-app.get('/user/id/favoritepets/view',express.json(), async (req,res) => {
+app.get('/user/id/favoritepets/view', checkLoggedIn(), async (req,res) => {
     let database = client.db('petIt');
-    let query = {"id": req.query.id};
+    let query = {"user_id": req.query.user_id};
     let result = await database.collection("users").findOne(query);
     let i;
     const pet_selection = [];
@@ -332,9 +332,9 @@ app.get('/user/id/favoritepets/view',express.json(), async (req,res) => {
     res.end(JSON.stringify(pet_selection));
 });
 //needs both the user id and the range
-app.get('/user/id/favoriteshelters/view',express.json(), async (req,res) => {
+app.get('/user/id/favoriteshelters/view', checkLoggedIn(), async (req,res) => {
     let database = client.db('petIt');
-    let query = {"id": req.query.id};
+    let query = {"user_id": req.query.user_id};
     let result = await database.collection("users").findOne(query);
     let i;
     const shelter_selection = [];    
@@ -346,9 +346,9 @@ app.get('/user/id/favoriteshelters/view',express.json(), async (req,res) => {
     res.end(JSON.stringify(shelter_selection));
 });
 //needs only an id to be send along
-app.get('/user/id/recentlyviewedpets/view',express.json(), async (req,res) => {
+app.get('/user/id/recentlyviewedpets/view', checkLoggedIn(), async (req,res) => {
     let database = client.db('petIt');
-    let query = {"id": req.query.id};
+    let query = {"user_id": req.query.user_id};
     let result = await database.collection("users").findOne(query);
     //we should check if this is null before sending it, I'll do it later though.
     res.end(JSON.stringify(result.viewed_pets));
@@ -356,32 +356,45 @@ app.get('/user/id/recentlyviewedpets/view',express.json(), async (req,res) => {
 
 //app.post("/pet/comments/create",express.json(), async (req,res) => {
 
+
 //res.end("Comment Created") });
 
-app.post("/user/id/favoritepets/add",express.json(), async (req,res) => {
+//favorite pets has ?user_id=0123&pet_id=0124
+app.post("/user/id/favoritepets/add", async (req,res) => {
+    let database = client.db('petIt');
+    db.collection("users").updateOne(
+        { "user_id": req.body.user_id},
+        {$push: {"liked_pets" : req.body.pet_id} }
+    );
+    res.end("Added Pet to Favorites") 
+});
 
-    res.end("Added Pet to Favorites") });
+app.post("/user/id/favoritepets/delete", async (req,res) => {
+    let database = client.db('petIt');
+    db.collection("users").updateOne(
+        { "user_id": req.body.user_id},
+        {$pop: {"liked_pets" : req.body.pet_id} }
+    );
+    res.end("Removed Pet from Favorites") 
+});
 
-app.post("/user/id/favoritepets/delete",express.json(), async (req,res) => {
-
-    res.end("Removed Pet from Favorites") });
-
-app.post("/pet/create",express.json(), async (req,res) => {
+app.post("/pet/create", checkLoggedIn(), async (req,res) => {
+    //check if logged in
     let database = client.db("petIt");
     let requiredFields = {
-        pet_name: null,
-        pet_location: null,
-        id: null,
-        pet_type: null,
-        pet_breed: null,
-        pet_about: null,
-        pet_health: null,
-        pet_comments: null,
-        picture: null,
-        num_likes: null
+        pet_name: req.body.pet_name,
+        pet_location: req.body.pet_location,
+        pet_id: 0,
+        pet_type: req.body.pet_type,
+        pet_breed: req.body.pet_breed,
+        pet_about: req.body.pet_about,
+        pet_health: req.body.pet_health,
+        pet_comments: req.body.pet_comments,
+        picture: req.body.picture,
+        num_likes: req.body.num_likes
     }
     //check if all required fields are actually included...
-    await database.collection("pets").insertOne(add_query);
+    await database.collection("pets").insertOne(requiredFields);
     console.log(req.body);
     res.end("Pet created");
 });
