@@ -320,7 +320,7 @@ app.get('/shelter/view', async (req,res) => {
 //needs both the user id and the range
 app.get('/user/id/favoritepets/view', checkLoggedIn(), async (req,res) => {
     let database = client.db('petIt');
-    let query = {"user_id": req.query.user_id};
+    let query = {"user_id": req.query.username};
     let result = await database.collection("users").findOne(query);
     let i;
     const pet_selection = [];
@@ -334,7 +334,7 @@ app.get('/user/id/favoritepets/view', checkLoggedIn(), async (req,res) => {
 //needs both the user id and the range
 app.get('/user/id/favoriteshelters/view', checkLoggedIn(), async (req,res) => {
     let database = client.db('petIt');
-    let query = {"user_id": req.query.user_id};
+    let query = {"user_id": req.query.username};
     let result = await database.collection("users").findOne(query);
     let i;
     const shelter_selection = [];    
@@ -348,7 +348,7 @@ app.get('/user/id/favoriteshelters/view', checkLoggedIn(), async (req,res) => {
 //needs only an id to be send along
 app.get('/user/id/recentlyviewedpets/view', checkLoggedIn(), async (req,res) => {
     let database = client.db('petIt');
-    let query = {"user_id": req.query.user_id};
+    let query = {"user_id": req.query.username};
     let result = await database.collection("users").findOne(query);
     //we should check if this is null before sending it, I'll do it later though.
     res.end(JSON.stringify(result.viewed_pets));
@@ -360,7 +360,7 @@ app.get('/user/id/recentlyviewedpets/view', checkLoggedIn(), async (req,res) => 
 //res.end("Comment Created") });
 
 //favorite pets has ?user_id=0123&pet_id=0124
-app.post("/user/id/favoritepets/add", async (req,res) => {
+app.post("/user/id/favoritepets/add", checkLoggedIn(), async (req,res) => {
     let database = client.db('petIt');
     db.collection("users").updateOne(
         { "user_id": req.body.user_id},
@@ -369,7 +369,7 @@ app.post("/user/id/favoritepets/add", async (req,res) => {
     res.end("Added Pet to Favorites") 
 });
 
-app.post("/user/id/favoritepets/delete", async (req,res) => {
+app.post("/user/id/favoritepets/delete", checkLoggedIn(), async (req,res) => {
     let database = client.db('petIt');
     db.collection("users").updateOne(
         { "user_id": req.body.user_id},
@@ -397,4 +397,13 @@ app.post("/pet/create", checkLoggedIn(), async (req,res) => {
     await database.collection("pets").insertOne(requiredFields);
     console.log(req.body);
     res.end("Pet created");
+});
+
+app.get('/getSessionUser',(req, res) => { 
+    if(req.session.passport !== undefined){//return the user if it exists
+        res.send(req.session.passport.user);
+    }
+    else{
+        res.send();
+    }
 });

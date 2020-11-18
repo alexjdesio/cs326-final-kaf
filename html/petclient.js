@@ -2,8 +2,8 @@
 
 const site_url = "http://localhost:8080";
 
-async function getPet(id) {
-    const url = "/pet/view?id=" + id;
+async function getPet(pet_id) {
+    const url = "/pet/view?pet_id=" + pet_id;
     const response = await fetch(url);
     if (response.ok) {
         const pet = await response.json();
@@ -12,8 +12,8 @@ async function getPet(id) {
     //need to add else
 }
 
-async function getShelter(id) {
-    const url = "/shelter/view?id=" + id;
+async function getShelter(shelter_id) {
+    const url = "/shelter/view?shelter_id=" + shelter_id;
     const response = await fetch(url);
     if (response.ok) {
         const shelter = await response.json();
@@ -43,7 +43,6 @@ async function renderPetPage(pet) {
 
     const url_string = window.location.href;
     const url = new URL(url_string);
-    const name = url.searchParams.get('name');
     //Pet Objects: Name, Breed, About, Health, Location, Comments, Num Likes
     const shelter = await getShelter(pet.pet_location);
 
@@ -52,7 +51,7 @@ async function renderPetPage(pet) {
     pet_picture.src = pet.pet_picture;
     about_header.innerText = 'About ' + pet.pet_name;
     about_body.innerText = pet.pet_about;
-    health_header.innerText = name + '\'s Health and Needs';
+    health_header.innerText = pet.pet_name + '\'s Health and Needs';
     health_body.innerText = pet.pet_health;
     pet_home_header.innerText = pet.pet_name + '\'s Current Home';
     shelter_name.innerText = shelter.shelter_name;
@@ -110,22 +109,29 @@ async function renderPetPage(pet) {
 window.addEventListener("load", async function() {
     const url_string = window.location.href;
     const url = new URL(url_string);
-    const name = url.searchParams.get('name');
+    const pet_id = url.searchParams.get('pet_id');
     const favorite_button = document.getElementById('favorite_button');
-    const pet = await getPet(name);
+    const pet = await getPet(pet_id);
     renderPetPage(pet);
 
     favorite_button.addEventListener('click', () => {
-        if (favorite_button.innerText === `Add ${name} to Favorites`) {
-            //do a POST request
-            //        fetch('http://localhost:8080/gameScore', { method: 'POST', body: JSON.stringify(p0JSON) } ); 
-            const post_url = `${site_url}/user/id/favoritepets/add`;
-            fetch(post_url, { method: 'POST', body: JSON.stringify(pet) });
-            favorite_button.innerText = `Remove ${name} from Favorites`; 
-        } else {
-            const post_url = `${site_url}/user/id/favoritepets/delete`;
-            fetch(post_url, { method: 'POST', body: JSON.stringify(pet) });
-            favorite_button.innerText = `Add ${name} to Favorites`;
+        const username = await fetch("/getSessionUser", {method: 'GET'});
+        if (username === '') {
+            favorite_button.classList.add('disabled');
+        }
+        else {
+            if (favorite_button.innerText === `Add ${pet.pet_name} to Favorites`) {
+                //do a POST request
+                //        fetch('http://localhost:8080/gameScore', { method: 'POST', body: JSON.stringify(p0JSON) } ); 
+                favorite_button.classList.add('active');
+                const post_url = `${site_url}/user/id/favoritepets/add?username=${username}`;
+                fetch(post_url, { method: 'POST', body: JSON.stringify(pet) });
+                favorite_button.innerText = `Remove ${pet.pet_name} from Favorites`; 
+            } else {
+                const post_url = `${site_url}/user/id/favoritepets/delete?username=${username}`;
+                fetch(post_url, { method: 'POST', body: JSON.stringify(pet) });
+                favorite_button.innerText = `Add ${pet.pet_name} to Favorites`;
+            }
         }
     });
     document.getElementById('post_comment_button').addEventListener('click', () => {

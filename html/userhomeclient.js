@@ -2,39 +2,11 @@
 
 let range_pets = 4;
 let range_shelters = 4;
-
-async function getPet(id) {
-    const url = `/pet/view?id=${id}`;
-    const response = await fetch(url);
-    if (response.ok) {
-        const pet = await response.json();
-        return pet;
-    }
-    //need to add else
-}
-
-async function getShelter(id) {
-    const url = `/shelter/view?id=${id}`;
-    const response = await fetch(url);
-    if (response.ok) {
-        const shelter = await response.json();
-        return shelter;
-    }
-    //need to add else
-}
-
-async function getRecentPets(id) {
-    const url = `/user/id/recentlyviewedpets/view?id=${id}`;
-    const response = await fetch(url);
-    if (response.ok) {
-        const pets = await response.json();
-        return pets;
-    }
-    //need to add else
-}
+let viewed_pets = 0;
+let viewed_shelters = 0;
 
 async function getFavoritePets(range, id) {
-    const url = `/user/id/favoritepets/view?range=${range}&id=${id}`;
+    const url = `/user/id/favoritepets/view?range=${range}&username=${username}`;
     const response = await fetch(url);
     if (response.ok) {
         const pets = await response.json();
@@ -45,7 +17,7 @@ async function getFavoritePets(range, id) {
 }
 
 async function getFavoriteShelters(range, id) {
-    const url = `/user/id/favoriteshelters/view?range=${range}&id=${id}`;
+    const url = `/user/id/favoriteshelters/view?range=${range}&username=${username}`;
     const response = await fetch(url);
     if (response.ok) {
         const shelters = await response.json();
@@ -57,46 +29,49 @@ async function getFavoriteShelters(range, id) {
 function renderPets(element, pets) {
     element.innerHTML = '';
     let i;
-    let j;
-    let current_pet = 0;
-    for (i = 0; i < (range_pets / 4); i++) {
-        const row = document.createElement('div');
-        row.classList.add('row');
-        for (j = 0; j < 4; j++) {
-            const col = document.createElement('div');
-            col.classList.add('col');
+    //for (i = 0; i < (range_pets / 4); i++) {
+    let row;
+    for (i = 0; i < viewed_shelters; i++) {
+        if (i % 4 === 0) {
+            row = document.createElement('div');
+            row.classList.add('row');
+        }
+        //for (j = 0; j < 4; j++) {
+        const col = document.createElement('div');
+        col.classList.add('col');
 
-            const card = document.createElement('div');
-            card.classList.add('card');
-            card.classList.add('text-center');
+        const card = document.createElement('div');
+        card.classList.add('card');
+        card.classList.add('text-center');
 
-            const card_image = document.createElement('img');
-            card_image.classList.add('card-img-top');
-            card_image.src = pets[current_pet].picture;
+        const card_image = document.createElement('img');
+        card_image.classList.add('card-img-top');
+        card_image.src = pets[i].picture;
 
-            const card_body = document.createElement('div');
-            card_body.classList.add('card-body');
-            card_body.classList.add('bg-light');
+        const card_body = document.createElement('div');
+        card_body.classList.add('card-body');
+        card_body.classList.add('bg-light');
 
-            const card_title = document.createElement('h5');
-            card_title.classList.add('card-title');
-            card_title.classList.add('mt-0');
-            card_title.classList.add('font-weight-light');
-            card_title.innerText = pets[current_pet].pet_name;
+        const card_title = document.createElement('h5');
+        card_title.classList.add('card-title');
+        card_title.classList.add('mt-0');
+        card_title.classList.add('font-weight-light');
+        card_title.innerText = pets[i].pet_name;
 
-            const card_link = document.createElement('a');
-            card_link.classList.add('card-link');
-            card_link.innerText = 'Visit ' + pets[current_pet].pet_name + '\'s Page';
-            card_link.href = '/petpage.html?name=' + pets[current_pet].pet_name;
+        const card_link = document.createElement('a');
+        card_link.classList.add('card-link');
+        card_link.innerText = 'Visit ' + pets[i].pet_name + '\'s Page';
+        card_link.href = '/petpage.html?name=' + pets[i].pet_name;
 
-            current_pet += 1;
-            
-            card_body.appendChild(card_title);
-            card_body.appendChild(card_link);
-            card.appendChild(card_image);
-            card.appendChild(card_body);
-            col.appendChild(card);
-            row.appendChild(col);
+        card_body.appendChild(card_title);
+        card_body.appendChild(card_link);
+        card.appendChild(card_image);
+        card.appendChild(card_body);
+        col.appendChild(card);
+        row.appendChild(col);
+        if (i % 4 === 3 || i === viewed_pets - 1) {
+            element.appendChild(row);
+            element.appendChild(document.createElement('br'));
         }
         element.appendChild(row);
         element.appendChild(document.createElement('br'));
@@ -107,50 +82,52 @@ function renderShelters(element, shelters) {
     element.innerHTML = '';
     let i;
     let j;
-    let current_shelter = 0;
-    for (i = 0; i < (range_shelters / 4); i++) {
-        const row = document.createElement('div');
-        row.classList.add('row');
-        for (j = 0; j < 4; j++) {
-            const col = document.createElement('div');
-            col.classList.add('col');
-
-            const card = document.createElement('div');
-            card.classList.add('card');
-            card.classList.add('text-center');
-
-            const card_image = document.createElement('img');
-            card_image.classList.add('card-img-top');
-            card_image.src = shelters[current_shelter].picture;
-
-            const card_body = document.createElement('div');
-            card_body.classList.add('card-body');
-            card_body.classList.add('bg-light');
-
-            const card_title = document.createElement('h5');
-            card_title.classList.add('card-title');
-            card_title.classList.add('mt-0');
-            card_title.classList.add('font-weight-light');
-            card_title.innerText = shelters[current_shelter].name;
-
-            const card_link = document.createElement('a');
-            card_link.classList.add('card-link');
-            card_link.innerText = 'Visit ' + shelters[current_shelter].name + '\'s Page';
-            //card_link.href = site_url + 'shelter/view?=' + shelters[current_shelter].name;
-            card_link.href = '/shelterpage.html?name=' + shelters[current_shelter].name;
-
-
-            current_shelter += 1;
-
-            card_body.appendChild(card_title);
-            card_body.appendChild(card_link);
-            card.appendChild(card_image);
-            card.appendChild(card_body);
-            col.appendChild(card);
-            row.appendChild(col);
+    //for (i = 0; i < (range_shelters / 4); i++) {
+    let row;
+    for (i = 0; i < viewed_shelters; i++) {
+        if (i % 4 === 0) {
+            row = document.createElement('div');
+            row.classList.add('row');
         }
-        element.appendChild(row);
-        element.appendChild(document.createElement('br'));
+        //for (j = 0; j < 4; j++) {
+        const col = document.createElement('div');
+        col.classList.add('col');
+
+        const card = document.createElement('div');
+        card.classList.add('card');
+        card.classList.add('text-center');
+
+        const card_image = document.createElement('img');
+        card_image.classList.add('card-img-top');
+        card_image.src = shelters[i].picture;
+
+        const card_body = document.createElement('div');
+        card_body.classList.add('card-body');
+        card_body.classList.add('bg-light');
+
+        const card_title = document.createElement('h5');
+        card_title.classList.add('card-title');
+        card_title.classList.add('mt-0');
+        card_title.classList.add('font-weight-light');
+        card_title.innerText = shelters[i].shelter_name;
+
+        const card_link = document.createElement('a');
+        card_link.classList.add('card-link');
+        card_link.innerText = 'Visit ' + shelters[i].shelter_name + '\'s Page';
+            //card_link.href = site_url + 'shelter/view?=' + shelters[current_shelter].name;
+        card_link.href = '/shelterpage.html?name=' + shelters[i].name;
+
+        card_body.appendChild(card_title);
+        card_body.appendChild(card_link);
+        card.appendChild(card_image);
+        card.appendChild(card_body);
+        col.appendChild(card);
+        row.appendChild(col);
+        //}
+        if (i % 4 === 3 || i === viewed_shelters - 1) {
+            element.appendChild(row);
+            element.appendChild(document.createElement('br'));
+        }
     }
 }
 
@@ -159,7 +136,9 @@ async function renderUserHome() {
     const url = new URL(url_string);
     const user = url.searchParams.get('user');
     const favorite_pets = await getFavoritePets(range_pets);
+    viewed_pets = favorite_pets.length;
     const favorite_shelters = await getFavoriteShelters(range_shelters);
+    viewed_shelters = favorite_shelters.length;
 
     const pets_elem = document.getElementById('favorite_pets');
     const shelters_elem = document.getElementById('favorite_shelters');
@@ -189,10 +168,18 @@ window.addEventListener("load", async function() {
     renderUserHome();
     document.getElementById('more_shelters').addEventListener('click', () => {
         range_shelters += 4;
+        if (range_shelters > viewed_shelters + 4) {
+            range_shelters = viewed_shelters;
+            document.getElementById('more_shelters').classList.add('disabled');
+        }
         renderUserHome();
     });
     document.getElementById('more_pets').addEventListener('click', () => {
         range_pets += 4;
+        if (range_shelters > viewed_shelters + 4) {
+            range_shelters = viewed_shelters;
+            document.getElementById('more_pets').classList.add('disabled');
+        }
         renderUserHome();
     });
 });
