@@ -1,6 +1,4 @@
 'use strict';
-const pkg = require('faker');
-const {name,internet,company,address,lorem,commerce,image} = pkg;
 const express = require("express");
 
 //Secrets
@@ -14,40 +12,29 @@ if (!process.env.URL) {
 }
 
 //MongoDB Start
-const { MongoClient } = require("mongodb");
+const { MongoClient } = require('mongodb');
 const client = new MongoClient(url);
-async function start(){ await client.connect();}
+let database;
+async function start(){ 
+    await client.connect();
+    database = client.db('petIt');
+}
 start();
 
+//Express.js
 const app = express(); // this is the "app"
 const port = process.env.PORT || 8080;     // we will listen on this port
-app.use(express.json({type: ['application/json', 'text/plain']})); 
+app.use(express.json()); 
 app.use(express.static('client'));
-
-//EXPERIMENTING WITH EXPRESS.JS
-
 app.listen(port, () => {
     console.log('App listening at http://localhost:${port}');
-  });
-  
+});
+ 
+//Start of Endpoints
+
 app.use('/',express.static('./html')); //Serves static pages(index.html, search.html, etc.)
 
 //Alex's MongoDB endpoints:
-
-/**
- * TODO:
-    * Frontend for search.html
-        * Add form on search.html
-        * Modify navbar, either:
-            * make search button in navbar a link to search.html OR
-            * make navbar contain a valid search form      
-    * make sure that express post requests are all using body, get requests using query
-    * test search endpoint
-    * test edit user endpoint
-    * write login endpoint
- * After tuesday
-    * setup frontend for login/user authentication
-*/
 
 app.get('/search',express.urlencoded(), async (req,res) => {
     let database = client.db('petIt');
@@ -206,18 +193,11 @@ app.post("/user/id/edit",express.json(), async (req,res) =>{
 });
 
 //Sam
-
 app.get('/pet/view',express.json(), (req,res) => res.end(JSON.stringify(createFakePet(req.query.name))));
-
-app.get('/shelter/view',express.json(), (req,res) => res.end(JSON.stringify(createFakeShelter(req.query.name))));
 
 app.get('/user/id/favoritepets/view',express.json(), (req,res) => res.end(JSON.stringify(favoritePets(req.query.range))));
 
 app.get('/user/id/favoriteshelters/view',express.json(), (req,res) => res.end(JSON.stringify(favoriteShelters(req.query.range))));
-
-app.get('/user/id/recentlyviewedpets',express.json(), (req,res) => res.end(JSON.stringify(recentlyViewedPets())));
-
-app.post("/pet/comments/create",express.json(), (req,res) => res.end("Comment Recieved"));
 
 app.post("/user/id/favoritepets/add",express.json(), (req,res) => res.end("Added Pet to Favorites"));
 
@@ -225,25 +205,108 @@ app.post("/user/id/favoritepets/delete",express.json(), (req,res) => res.end("Re
 
 app.post("/pet/create",express.json(), (req,res) => res.end("Info Recieved."));
 
-//Chat
-app.get('/chat/view', (req, res) => {
-    if (chat.length === 0){
-        createFakeChat();
+//Joe******************************************************************************************************************
+//Chat Endpoints
+app.get('/chat/view', async (req, res) => {
+    const query = {'user_id': req.query.user_id};
+    const result = await database.collection('users').findOne(query); 
+    res.end(JSON.stringify(result.chat));
+});
+//TODO Incomplete but works
+app.post('/chat/msg', async (req, res) => {
+    const query = {'user_id': req.query.user_id};
+    const result = await database.collection('users').findOne(query); 
+    let chat = result.chat;
+    
+    const query2 = {'user_id': req.query.fromUser_id};
+    const result2 = await database.collection('users').findOne(query); 
+    let chat2 = result2.chat;
+
+    for (let x in chat){
+        if (chat[x].fromUser_id === req.query.fromUser_id){
+            chat[x].messages.push({ key: 0, value: req.query.value});
+            break;
+        }
     }
-    res.end(JSON.stringify(chat));}
-);
-app.post('/chat/msg', (req, res) => {
-    chat[req.body.id].messages.push({
-        key: 0,
-        value: req.body.value});
-    res.send('Success');});
+    for (let x in chat2){
+        if (chat2[x].fromUser_id === req.query.user_id){
+            chat2[x].messages.push({ key: 1, value: req.query.value});
+            break;
+        }
+    }
+    
+    await database.collection('users').updateOne(query, {$set: {'chat': chat}});
+    await database.collection('users').updateOne(query2, {$set: {'chat': chat2}});
+    res.end('Success');
+});
 
-//Shelter Page
-app.get('/shelter/view', (req, res) => res.end(JSON.stringify(createFakeShelterResult(null, null))));
-app.post('/shelter/edit', (req, res) => {
-    console.log(req.body);
-    res.send('Success');}); 
+//Shelter Endpoints
+app.post('/shelter/create', async (req, res) => {
+    const id = await getID('shelter');
+    const shelter = {        
+        shelter_name: req.query.shelter_name,
+        shelter_id: id,        
+        shelter_location: req.query.shelter_location,        
+        shelter_about: req.query.shelter_about,        
+        shelter_pets: [],        
+        shelter_comments: [],        
+        picture: ''    
+    };      
+    const col = database.collection('shelters');
+    await col.insertOne(shelter);
+    res.end('Success');
+});
 
+app.get('/shelter/view', async (req, res) => {
+    const query = {'shelter_id' : req.body.shelter_id};
+    const result = await database.collection('shelters').findOne(query); // do I need to await these calls?
+    res.end(JSON.stringify(result));
+});
+
+app.post('/shelter/edit', async (req, res) => {
+    const shelter = {        
+        shelter_name: req.query.shelter_name,
+        shelter_id: req.query.shelter_id,        
+        shelter_location: req.query.shelter_location,        
+        shelter_about: req.query.shelter_about,        
+        shelter_pets: req.query.shelter_pets,        
+        shelter_comments: req.query.shelter_comments,        
+        picture: req.query.shelter_picture   
+    };      
+    const query = {'shelter_id' : parseInt(req.query.shelter_id)};
+    await database.collection('shelters').replaceOne(query, shelter);
+    res.end('Success');
+}); 
+
+//Comments/recentlyViewed Endpoints
+app.post("/pet/comments/create", async (req,res) => {
+    const query = {'pet_id': req.query.pet_id};
+    const comment = {'user_id': req.query.user_id, 'value': req.query.value};
+    await database.collection('pets').updateOne(query, {$push: {'pet_comments': comment}}); 
+    res.end('Success');
+});
+
+app.post("/create/comments/create", async (req,res) => {
+    const query = {'shelter_id': req.query.shelter_id};
+    const comment = {'user_id': req.query.user_id, 'value': req.query.value};
+    await database.collection('shelters').updateOne(query, {$push: {'shelter_comments': comment}}); 
+    res.end('Success');
+});
+
+//app.get('/user/id/recentlyviewedpets', async (req,res) => res.end(JSON.stringify(recentlyViewedPets())));
+
+//Counter for user, shelter and pets
+async function getID(type){
+    const col = database.collection('idCounter');
+    await col.updateOne(
+        {type: type},
+        {$inc: {idCount: 1} }
+    );
+    const result = await col.findOne({type: type});
+    return result.idCount;
+}
+
+//*********************************************************************************************************************
 function createFakeUser(username){
     let interestIndex = Math.floor((Math.random()*3));
     let interestArray = ["dog","cats","exotics"];
@@ -315,14 +378,8 @@ function createFakeSearchResult(type,query,quantity){
     return returnArr;
 }
 
-//API
-let database = {
-    users: [],
-    tokens: []
-};
-
-database.users.push(createFakeUser("Eric")); //used for testing user/id/edit
-	
+//database.users.push(createFakeUser("Eric")); //used for testing user/id/edit
+    
 function createFakePet(pet_name) {
     //Pet Objects: Name, Breed, About, Health, Location, Comments, Num Likes
     let i;
@@ -484,5 +541,3 @@ function userEdit(req,res){
     console.log("Edit request, Body:",JSON.stringify(options));
     res.end("Request received successfully.");   
 }
-
-
