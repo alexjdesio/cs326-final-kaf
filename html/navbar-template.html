@@ -34,7 +34,6 @@
             </li>
         </ul>
         <form class="form-inline my-2 my-lg-0">
-            <input class="form-control mr-sm-2" type="search" placeholder="Enter Location" aria-label="Search">
             <button id="search" type="submit" class="btn btn-sm btn-outline-primary">
                 <a target="_top" href="search.html">Search</a>
             </button>
@@ -43,14 +42,14 @@
                 <a class="nav-link text-white" target="_top" href="signup.html">Sign Up</a>
             </li>
             <li class="nav-item">
-                <div id="dropdown-login" class="">
-                    <button id="login" type="button" class="btn btn-outline-primary btn-sm">
+                <div id="dropdown-login" class="dropdown-login">
+                    <button id="login" type="button" class="btn btn-outline-primary btn-sm dropdown-toggle">
                         <a id="login-link" class="nav-link font-weight-bolder" target="_top" href="login.html">Login</a>
                     </button>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        <a class="dropdown-item" target="" href="#">View Profile</a>
-                        <a class="dropdown-item" target="_top" href="settings.html">Edit Settings</a>
-                        <a class="dropdown-item" target="" href="#">Sign out</a>
+                        <a id="userhome-link" class="dropdown-item" target="_top" href="/userhome.html">View Profile</a>
+                        <a id="settings-link" target="_top" href="/settings.html">Edit Settings</a>
+                        <a id="logout-link" target="_top" href="/logout">Sign out</a>
                     </div>
                 </div>
             </li>

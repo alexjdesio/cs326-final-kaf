@@ -21,38 +21,27 @@ if (!process.env.URL) {
 
 //MongoDB Start
 const { MongoClient } = require("mongodb");
-const client = new MongoClient(url);
+const client = new MongoClient(url,{ useUnifiedTopology: true });
 async function start(){ await client.connect();}
 start();
 
 const app = express(); // this is the "app"
 const port = process.env.PORT || 8080;     // we will listen on this port
 app.use(express.json({type: ['application/json', 'text/plain']})); 
+app.use(express.urlencoded({'extended' : true})); // allow URLencoded data
 app.use(express.static('client'));
 
 //EXPERIMENTING WITH EXPRESS.JS
 
-app.listen(port, () => {
-    console.log('App listening at http://localhost:${port}');
-  });
-  
-//app.use('/',express.static('./html')); //Serves static pages(index.html, search.html, etc.)
-app.use(express.static('html'));
-
 //Alex's MongoDB endpoints:
 
 /**
- * TODO:
-    * Frontend for search.html
-        * Add form on search.html
-        * Modify navbar, either:
-            * make search button in navbar a link to search.html OR
-            * make navbar contain a valid search form      
-    * test search endpoint
-    * test edit user endpoint
-    * login endpoint
-      * does not redirect on login
-      * implement user validation for edit/settings/userhome 
+ * TODO:   
+    * get Sam to redirect away from userhome if not logged in
+    * add same security to settings.html
+    * navbar
+      * need to fix dropdown links using information from session   
+    * fix navbar links programmatically generated in navbar.js 
 */
 
 const strategy = new LocalStrategy(async (username, password, done) => {
@@ -148,12 +137,13 @@ async function validatePassword(username, password) {
 
 function checkLoggedIn(req, res, next) {
     if (req.isAuthenticated()) {
-	// If we are authenticated, run the next route.
-	next();
+    // If we are authenticated, run the next route.
+    next();
+    console.log(req.session.passport.user); //this is the user!
     } else {
     // Otherwise, redirect to the login page.
     console.log("not authed");
-	res.redirect('/login');
+	//res.redirect('/login');
     }
 }
 
@@ -172,13 +162,15 @@ app.get('/userhome', checkLoggedIn, (req, res) => { //this needs testing
 });
 **/
 // Handle post data from the login.html form.
-app.get('/',checkLoggedIn,(req, res) => { res.send("hello world");}); //this needs to be defined first
+app.get('/userhome',checkLoggedIn,(req, res) => { res.send("hello world");}); //this needs to be defined first
 
-app.post('/login',
-    passport.authenticate('local' , {     // use username/password authentication
+app.get('/getSessionUser',checkLoggedIn,(req, res) => { res.send(req.session.passport.user);}); // returns the session user
+
+app.post('/login', passport.authenticate('local' , {     // use username/password authentication
         'successRedirect' : '/userhome',   // when we login, go to /userhome
         'failureRedirect' : '/login'      // otherwise, back to login
-    }));
+        })
+        );
 
 app.get('/userhome', (req, res) => res.sendFile('html/userhome.html',{ 'root' : __dirname }));
 
@@ -278,6 +270,16 @@ app.post("/user/id/edit",express.json(), async (req,res) =>{
     let database = client.db("petIt");
     //check if the username is in the database
     let check_query = {"username": req.body.username};
+
+    if(req.session.passport === null){
+        res.redirect("/login.html");
+        res.end();
+        return;
+    }
+    if(req.body.username !== req.session.passport.user){
+        console.log("You're not", req.session.passport.user, "!");
+    }
+
     let result = await database.collection("users").findOne(check_query); // do I need to await these calls?
     if(result === null){
         console.log("User does not exist.");
@@ -288,7 +290,6 @@ app.post("/user/id/edit",express.json(), async (req,res) =>{
     let requiredFields = {
         username: null,
         email: null, 
-        password: null,
         type: null,
     };
     for(let field of Object.keys(requiredFields)){
@@ -300,8 +301,15 @@ app.post("/user/id/edit",express.json(), async (req,res) =>{
     }
     //Edit the existing user data
     let edit_query = req.body;
-    await database.collection("users").updateOne(check_query,edit_query); 
-    userEdit();
+    if(edit_query.password === null || edit_query.password === ""){
+        edit_query["password"] = result.password;
+    }
+    if(edit_query.salt === null || edit_query.salt === ""){
+        edit_query["salt"] = result.salt;
+    }
+    await database.collection("users").findOneAndReplace(check_query,edit_query); 
+    res.end();
+    return;
 });
 
 app.get('/search',express.urlencoded(), async (req,res) => {
@@ -341,7 +349,7 @@ app.get('/search',express.urlencoded(), async (req,res) => {
     if(req.query.type === null){
        res.end("Invalid query- missing type field.");
     }
-    let collection_type;
+    let collection_type = "pets";
     if(req.query.type in petFields){
         collection_type = "pets";
     }
@@ -353,7 +361,8 @@ app.get('/search',express.urlencoded(), async (req,res) => {
     }
     let query = {};
     query[req.query.type] = req.query.query;
-    let result = await database.collection(collection_type).find(query,{limit: req.query.quantity});
+    let result = [];
+    await database.collection(collection_type).find(query,{limit: parseInt(req.query.quantity)}).forEach((x)=>result.push(x));
     console.log("Search request returned: ", result);
     res.end(JSON.stringify(result));
 });
@@ -361,10 +370,22 @@ app.get('/search',express.urlencoded(), async (req,res) => {
 //TODO: filter what's returned so that the password + salt are not returned
 app.get('/user/id/view',express.json(), async (req,res) => {
     let database = client.db('petIt');
-    let query = {"username": req.body.username};
+    let query = {"username": req.query.username};
     let result = await database.collection("users").findOne(query); // do I need to await these calls?
+    if(result !== null){ //prevent the password and salt being returned to the user
+        result.salt = "";
+        result.password="";
+    }
+    console.log("View request returned", result);
     res.end(JSON.stringify(result));
 });
+
+app.listen(port, () => {
+    console.log(`App listening at http://localhost:${port}`);
+  });
+  
+//app.use('/',express.static('./html')); //Serves static pages(index.html, search.html, etc.)
+app.use(express.static('html'));
 
 //Sam
 
@@ -638,12 +659,5 @@ function login(req, res){
     }
 }
 
-//Edits user data stored on the server.
-// some fields not successfully received
-function userEdit(req,res){
-    let options = req.body;
-    console.log("Edit request, Body:",JSON.stringify(options));
-    res.end("Request received successfully.");   
-}
 
 

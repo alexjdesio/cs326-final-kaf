@@ -270,6 +270,7 @@ function generateDynamicHTML(){
         getSearchResults(type,query,quantity);
     }
     else if (page === "/signup.html"){
+        console.log("signup request sent");
         let form = document.getElementById("signup-form");
         let submit = document.getElementById("signup-submit");
         form.addEventListener("submit",function (event){
@@ -278,11 +279,12 @@ function generateDynamicHTML(){
         });
     }
     else if (page === "/login.html"){
+        console.log("login request sent");
         let form = document.getElementById("login-form");
         let submit = document.getElementById("login-submit");
         form.addEventListener("submit",function (event){
             event.preventDefault(); //this is so important, prevents default form submission behavior
-            sendFormData();
+            sendFormData("login");
         });
     }
      else if (page === '/chat.html'){
@@ -351,6 +353,7 @@ async function sendFormData(arg1){
         if(response.ok){
             console.log("Edit response successfully sent to server.");
         } 
+        window.location.href="/userhome.html";
     }
     else if (arg1 === "register"){
         const response = await fetch("/register", {
@@ -363,8 +366,10 @@ async function sendFormData(arg1){
         if(response.ok){
             console.log("Edit response successfully sent to server.");
         } 
+        window.location.href="/login.html";
     }
-    else{
+    else if (arg1 === "login"){
+        console.log("sending POST request to /login");
         const response = await fetch("/login", {
             method: 'POST',
             headers: {
@@ -375,6 +380,7 @@ async function sendFormData(arg1){
         if(response.ok){
             console.log("Login response successfully sent to server.");
         } 
+        window.location.href="/userhome.html"; //this is the alternative method
     }
 }
 
