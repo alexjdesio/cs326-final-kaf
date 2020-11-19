@@ -736,7 +736,7 @@ app.post("/pet/create", checkLoggedIn(), async (req,res) => {
         pet_comments: req.body.pet_comments,
         picture: req.body.picture,
         num_likes: req.body.num_likes
-    };
+    }
     //check if all required fields are actually included...
     await database.collection("pets").insertOne(requiredFields);
     console.log(req.body);
