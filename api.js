@@ -21,7 +21,7 @@ if (!process.env.URL) {
 
 //MongoDB Start
 const { MongoClient } = require("mongodb");
-const e = require('express');
+//const e = require('express');
 const client = new MongoClient(url,{ useUnifiedTopology: true });
 async function start(){ await client.connect();}
 start();
@@ -135,24 +135,24 @@ async function validatePassword(username, password) {
 // Routes
 
 function checkLoggedIn(req, res, next) {
-    if (true) {
+    if (req.isAuthenticated()) {
      //If we are authenticated, run the next route.
-        //next();
+        next();
     console.log(req.session.passport.user); //this is the user!
     } else {   
         console.log("not authed");
-        res.redirect('/login');
+    res.redirect('/login');
     }
 }
 
 //does the same functionality as checkLoggedIn but also checks that the user matches
 //TODO: not implemented yet
 function checkMatchedUser(req,res,next){
-    if (true){
+    if (req.isAuthenticated()){
         if(req.query.username !== req.session.passport.user){
             res.redirect('/login');
         }
-        //next();
+        next();
     }
     else{
         res.redirect('/login');
@@ -175,9 +175,7 @@ app.get('/userhome', checkLoggedIn, (req, res) => { //this needs testing
 **/
 // Handle post data from the login.html form.
 
-app.get('/settings.html',checkMatchedUser,(req, res,next) => { 
-    //next();
-}); 
+app.get('/settings.html',checkMatchedUser,(req, res,next) => { next();}); 
 //For a url that you want to block, you need checkLoggedIn or checkMatched user as the first function that handles the endpoint
 //and then after validation, just call next
 app.get('/home',checkLoggedIn,(req, res) => { res.send("hello world");}); //this needs to be defined first
