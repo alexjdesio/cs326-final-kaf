@@ -136,13 +136,12 @@ async function validatePassword(username, password) {
 
 function checkLoggedIn(req, res, next) {
     if (req.isAuthenticated()) {
-    // If we are authenticated, run the next route.
-    next();
+     //If we are authenticated, run the next route.
+        next();
     console.log(req.session.passport.user); //this is the user!
-    } else {
-    // Otherwise, redirect to the login page.
-    console.log("not authed");
-	res.redirect('/login');
+    } else {   
+        console.log("not authed");
+        res.redirect('/login');
     }
 }
 
@@ -439,14 +438,6 @@ function createFakeUser(username){
     return user;
 }
 
-function createFakeLogin(){
-    let login = {
-        username: internet.userName(),
-        password: internet.password(), 
-    };
-    return login;
-}
-
 function createFakeLoginToken(){
     return internet.password(); //using this as a placeholder
 }
@@ -597,12 +588,6 @@ function createFakeChat(){
     return chat; 
 }
 
-function msgChat(req, res){
-    console.log(req.body.id);
-    console.log(req.body.value);
-    res.send();
-}
-
 //Shelter Functions
 function createFakeShelterResult(type,query){    
     let shelter = {        
@@ -615,7 +600,7 @@ function createFakeShelterResult(type,query){
     };    
     let petArr = [];    
     for(let i = 0; i < 10;i++){       
-        petArr.push(createFakePetResult("location",shelter.shelter_name))   
+        petArr.push(createFakePetResult("location",shelter.shelter_name));
     }   
     shelter.shelter_pets = petArr;   
     let fields = Object.keys(shelter); 

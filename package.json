@@ -1,5 +1,5 @@
 {
-    "name": "petit", 
+    "name": "petit",
     "scripts": {
         "start": "node server/index.js",
         "lint": "eslint client/ server/"
