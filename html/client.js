@@ -97,6 +97,9 @@ async function getUserResults(username){
     const response = await fetch(viewUserUrl,{method:"GET"});
     if(response.ok){
         let result = await response.json();
+        if(result === null){
+            return;
+        }
         console.log("User view request successful.");
         document.getElementById("username").textContent = "Modify Settings for: " + result["username"]; 
         //update value fields
@@ -251,9 +254,9 @@ function generateDynamicHTML(){
     const name = url.searchParams.get("name");
     const page = url.pathname;
     console.log(name,page);
-    if(page === "/settings.html"){
+    if(page === "/settings.html" || page === "/settings"){
         const username = url.searchParams.get("username");
-        if(username !== null){
+        if(username !== null && username !== ''){
             getUserResults(username);
         }
         let form = document.getElementById("settings-form");
@@ -278,7 +281,7 @@ function generateDynamicHTML(){
             sendFormData("register");
         });
     }
-    else if (page === "/login.html"){
+    else if (page === "/login.html" || page === "/login"){
         console.log("login request sent");
         let form = document.getElementById("login-form");
         let submit = document.getElementById("login-submit");

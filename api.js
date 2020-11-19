@@ -21,6 +21,7 @@ if (!process.env.URL) {
 
 //MongoDB Start
 const { MongoClient } = require("mongodb");
+const e = require('express');
 const client = new MongoClient(url,{ useUnifiedTopology: true });
 async function start(){ await client.connect();}
 start();
@@ -38,10 +39,8 @@ app.use(express.static('client'));
 /**
  * TODO:   
     * get Sam to redirect away from userhome if not logged in
+    * ^ broken because the code that we write is not the code that is run
     * add same security to settings.html
-    * navbar
-      * need to fix dropdown links using information from session   
-    * fix navbar links programmatically generated in navbar.js 
 */
 
 const strategy = new LocalStrategy(async (username, password, done) => {
@@ -143,7 +142,21 @@ function checkLoggedIn(req, res, next) {
     } else {
     // Otherwise, redirect to the login page.
     console.log("not authed");
-	//res.redirect('/login');
+	res.redirect('/login');
+    }
+}
+
+//does the same functionality as checkLoggedIn but also checks that the user matches
+//TODO: not implemented yet
+function checkMatchedUser(req,res,next){
+    if (req.isAuthenticated()){
+        if(req.query.username !== req.session.passport.user){
+            res.redirect('/login');
+        }
+        next();
+    }
+    else{
+        res.redirect('/login');
     }
 }
 
@@ -153,7 +166,7 @@ app.get('/', checkLoggedIn, (req, res) => { //TODO: change this
     });
 */
 
-// Priate data
+// Private data
 /** 
 app.get('/userhome', checkLoggedIn, (req, res) => { //this needs testing
     let url = '/userhome.html?username=' + req.user;
@@ -162,17 +175,31 @@ app.get('/userhome', checkLoggedIn, (req, res) => { //this needs testing
 });
 **/
 // Handle post data from the login.html form.
-app.get('/userhome',checkLoggedIn,(req, res) => { res.send("hello world");}); //this needs to be defined first
 
-app.get('/getSessionUser',checkLoggedIn,(req, res) => { res.send(req.session.passport.user);}); // returns the session user
+app.get('/settings.html',checkMatchedUser,(req, res,next) => { next();}); 
+//For a url that you want to block, you need checkLoggedIn or checkMatched user as the first function that handles the endpoint
+//and then after validation, just call next
+app.get('/home',checkLoggedIn,(req, res) => { res.send("hello world");}); //this needs to be defined first
+//app.get('/userhome.html',checkMatchedUser,(req, res,next) => { next();}); 
+
+
+
+app.get('/getSessionUser',(req, res) => { 
+    if(req.session.passport !== undefined){//return the user if it exists
+        res.send(req.session.passport.user);
+    }
+    else{
+        res.send();
+    }
+    
+}); // returns the session user
 
 app.post('/login', passport.authenticate('local' , {     // use username/password authentication
-        'successRedirect' : '/userhome',   // when we login, go to /userhome
+        'successRedirect' : '/home',   // when we login, go to /userhome
         'failureRedirect' : '/login'      // otherwise, back to login
         })
         );
 
-app.get('/userhome', (req, res) => res.sendFile('html/userhome.html',{ 'root' : __dirname }));
 
 // Handle the URL /login (just output the login.html file).
 app.get('/login', (req, res) => res.sendFile('html/login.html', { 'root' : __dirname }));
@@ -231,42 +258,8 @@ app.post("/register",express.json(), async (req,res) => {
     res.redirect('/login');
 });
 
-/** 
-//TODO: Finish this function
-app.post("/login",express.json(),async (req,res) => {
-    let database = client.db('petIt');
-    //Make sure this is a valid search request
-    let requiredFields = {
-        username: null,
-        password: null
-    };
-    for(let field of Object.keys(requiredFields)){
-        if(req.body[field] === null){ 
-            res.end("Invalid request- missing username or password."); 
-            return;
-        }
-    }
-    //Get the user associated with the username
-    let check_query = {"username": req.body.username};
-    let result = await database.collection("users").findOne(check_query); // do I need to await these calls?
-    if(result === null){
-        console.log("User does not exist.");
-        res.end("User does not exist.");
-        return;
-    }
-    //Check if the password matches what is stored in the database for the given salt
-    if(mc.check(req.body.password,result.salt,result.password)){
-        //give the user an authentication token
-        res.end("Successfully logged in");
-    }
-    else{
-        res.end("Login failed.");
-    }
-});
-**/
-
 //Needs testing
-app.post("/user/id/edit",express.json(), async (req,res) =>{
+app.post("/user/id/edit",checkLoggedIn, async (req,res) =>{
     let database = client.db("petIt");
     //check if the username is in the database
     let check_query = {"username": req.body.username};
