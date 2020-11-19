@@ -704,26 +704,26 @@ app.get('/user/id/recentlyviewedpets/view', checkLoggedIn(), async (req,res) => 
 
 //favorite pets has ?user_id=0123&pet_id=0124
 app.post("/user/id/favoritepets/add", checkLoggedIn(), async (req,res) => {
-    const database = client.db('petIt');
-    await database.collection("users").updateOne(
+    let database = client.db('petIt');
+    db.collection("users").updateOne(
         { "username": req.body.username},
         {$push: {"liked_pets" : req.body.pet_id} }
     );
-    res.end("Added Pet to Favorites");
+    res.end("Added Pet to Favorites") 
 });
 
 app.post("/user/id/favoritepets/delete", checkLoggedIn(), async (req,res) => {
-    const database = client.db('petIt');
-    await database.collection("users").updateOne(
+    let database = client.db('petIt');
+    db.collection("users").updateOne(
         { "username": req.body.username},
         {$pop: {"liked_pets" : req.body.pet_id} }
     );
-    res.end("Removed Pet from Favorites");
+    res.end("Removed Pet from Favorites") 
 });
 
 app.post("/pet/create", checkLoggedIn(), async (req,res) => {
     //check if logged in
-    const database = client.db("petIt");
+    let database = client.db("petIt");
     const pet_id = await getID('pet');
     let requiredFields = {
         pet_name: req.body.pet_name,

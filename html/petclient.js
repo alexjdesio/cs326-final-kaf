@@ -24,6 +24,7 @@ async function getShelter(shelter_id) {
 
 
 async function renderPetPage(pet) {
+    console.log("yay");
     //get all the elements we need to fill in first. Because its easier for me to process that way.
     const pet_name = document.getElementById("pet_name");
     const pet_breed = document.getElementById("pet_breed");
@@ -39,12 +40,15 @@ async function renderPetPage(pet) {
     const adopt_button = document.getElementById("adopt_button");
     const comments_section = document.getElementById("comments_section");
     const favorite_button = document.getElementById("favorite_button");
+
+    const url_string = window.location.href;
+    const url = new URL(url_string);
     //Pet Objects: Name, Breed, About, Health, Location, Comments, Num Likes
     const shelter = await getShelter(pet.pet_location);
 
     pet_name.innerText = pet.pet_name;
     pet_breed.innerText = pet.pet_breed;
-    pet_picture.src = pet.picture;
+    pet_picture.src = pet.pet_picture;
     about_header.innerText = 'About ' + pet.pet_name;
     about_body.innerText = pet.pet_about;
     health_header.innerText = pet.pet_name + '\'s Health and Needs';
@@ -110,7 +114,7 @@ window.addEventListener("load", async function() {
     const pet = await getPet(pet_id);
     renderPetPage(pet);
 
-    favorite_button.addEventListener('click', async () => {
+    favorite_button.addEventListener('click', () => {
         const username = await fetch("/getSessionUser", {method: 'GET'});
         if (username === '') {
             favorite_button.classList.add('disabled');

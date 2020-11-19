@@ -25,7 +25,7 @@ async function getShelter(shelter_id) {
     //need to add else
 }
 
-async function getFavoritePets(range, username) {
+async function getFavoritePets(range, id) {
     const url = `/user/id/favoritepets/view?range=${range}&username=${username}`;
     const response = await fetch(url);
     if (response.ok) {
@@ -36,7 +36,7 @@ async function getFavoritePets(range, username) {
     //need to add else
 }
 
-async function getFavoriteShelters(range, username) {
+async function getFavoriteShelters(range, id) {
     const url = `/user/id/favoriteshelters/view?range=${range}&username=${username}`;
     const response = await fetch(url);
     if (response.ok) {
@@ -46,13 +46,13 @@ async function getFavoriteShelters(range, username) {
     //need to add else
 }
 
-async function renderPets(element, pets) {
+function renderPets(element, pets) {
     element.innerHTML = '';
     let i;
     //for (i = 0; i < (range_pets / 4); i++) {
     let row;
     for (i = 0; i < viewed_shelters; i++) {
-        const pet = await getPet(pets[i]);
+        let pet = await getPet(pets[i]);
         if (i % 4 === 0) {
             row = document.createElement('div');
             row.classList.add('row');
@@ -99,13 +99,13 @@ async function renderPets(element, pets) {
     }
 }
 
-async function renderShelters(element, shelters) {
+function renderShelters(element, shelters) {
     element.innerHTML = '';
     let i;
     //for (i = 0; i < (range_shelters / 4); i++) {
     let row;
     for (i = 0; i < viewed_shelters; i++) {
-        const shelter = await getShelter(shelters[i]);
+        let shelter = await getShelter(shelters[i]);
         if (i % 4 === 0) {
             row = document.createElement('div');
             row.classList.add('row');
