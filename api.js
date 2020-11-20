@@ -218,6 +218,7 @@ app.post("/register",express.json(), async (req,res) => {
     add_query["salt"] = salt;
     add_query["liked_pets"] = [];
     add_query["liked_shelters"] = [];
+    add_query["viewed_pets"] = [];
 
     //Add the user to the database
     await database.collection("users").insertOne(add_query); // do I need to await these calls?
@@ -266,11 +267,12 @@ app.post("/user/id/edit",checkLoggedIn, async (req,res) =>{
     if(req.body.liked_pets === ''){
         edit_query.liked_pets = [];
     }
+    if(req.body.liked_shelters === ''){
+        edit_query.liked_shelters = [];
+    }
     if(req.body.viewed_pets === '') {
         edit_query.viewed_pets = [];
     }
-    console.log("req body", req.body);
-    console.log("edit query,", edit_query);
 
     await database.collection("users").findOneAndReplace(check_query,edit_query); 
     res.end();
