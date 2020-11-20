@@ -19,36 +19,27 @@ if (!process.env.URL) {
 
 //MongoDB Start
 const { MongoClient } = require('mongodb');
-const client = new MongoClient(url);
+const client = new MongoClient(url,{ useUnifiedTopology: true });
 let database;
 async function start(){ 
     await client.connect();
     database = client.db('petIt');
-}
-start();
+} start();
 
 //Express.js
 const app = express(); // this is the "app"
 const port = process.env.PORT || 8080;     // we will listen on this port
-app.use(express.json()); 
-app.use(express.static('client'));
-app.listen(port, () => {
-    console.log('App listening at http://localhost:${port}');
-});
- 
+
 //Start of Endpoints
-
-app.use('/',express.static('./html')); //Serves static pages(index.html, search.html, etc.)
-
-//Alex's MongoDB endpoints:
-
-app.get('/search',express.urlencoded(), async (req,res) => {
-  });
   
 //app.use('/',express.static('./html')); //Serves static pages(index.html, search.html, etc.)
 app.use(express.static('html'));
 
 //Alex's MongoDB endpoints:
+app.use(express.json({type: ['application/json', 'text/plain']})); 
+app.use(express.urlencoded({'extended' : true})); // allow URLencoded data
+app.use(express.static('client'));
+
 const strategy = new LocalStrategy(async (username, password, done) => {
     //Check if the user exists  
     if (!findUser(username)) {
@@ -78,7 +69,6 @@ const strategy = new LocalStrategy(async (username, password, done) => {
 });
 
 // App configuration
-
 const session = {
     secret : process.env.SECRET || 'SECRET', // set this encryption key in Heroku config (never in GitHub)!
     resave : false,
@@ -94,6 +84,7 @@ app.use(passport.session());
 passport.serializeUser((user, done) => {
     done(null, user);
 });
+
 // Convert a unique identifier to a user object.
 passport.deserializeUser((uid, done) => {
     done(null, uid);
@@ -101,7 +92,6 @@ passport.deserializeUser((uid, done) => {
 
 app.use(express.json()); // allow JSON inputs
 app.use(express.urlencoded({'extended' : true})); // allow URLencoded data
-
 
 // Returns true if the user exists.
 async function findUser(username) {
@@ -116,31 +106,12 @@ async function findUser(username) {
     }
 }
 
-// Returns true if the password matches the one stored in the database.
-async function validatePassword(username, password) {
-    //Make sure this is a valid search request
-    //Get the user associated with the username
-    let check_query = {"username": username};
-    let result = await database.collection("users").findOne(check_query); // do I need to await these calls?
-    if(result === null){
-        console.log("User does not exist.");
-        return false;
-    }
-    //Check if the password matches what is stored in the database for the given salt
-    if(mc.check(password,result.salt,result.password)){
-        return true;
-    }
-    else{
-        return false;
-    }
-}
-
 // Routes
-
 function checkLoggedIn(req, res, next) {
     if (req.isAuthenticated()) {
-	// If we are authenticated, run the next route.
-	next();
+    // If we are authenticated, run the next route.
+    next();
+    console.log(req.session.passport.user); //this is the user!
     } else {
     // Otherwise, redirect to the login page.
     console.log("not authed");
@@ -148,30 +119,47 @@ function checkLoggedIn(req, res, next) {
     }
 }
 
-/** Commented out, we might need /userhome.html restricted
-app.get('/', checkLoggedIn, (req, res) => { //TODO: change this
-    res.send("hello world");
-    });
-*/
+//does the same functionality as checkLoggedIn but also checks that the user matches
+//TODO: not implemented yet
+function checkMatchedUser(req,res,next){
+    if (req.isAuthenticated()){
+        if(req.query.username !== req.session.passport.user){
+            console.log("Invalid user match");
+            res.redirect('/login');
+        }
+        else{
+            next();
+        }  
+    }
+    else{
+        res.redirect('/login');
+    }
+}
 
-// Priate data
-/** 
-app.get('/userhome', checkLoggedIn, (req, res) => { //this needs testing
-    let url = '/userhome.html?username=' + req.user;
-    console.log("Redirecting to:",url);
-    res.redirect(url); //TODO: change to id
-});
-**/
-// Handle post data from the login.html form.
-app.get('/',checkLoggedIn,(req, res) => { res.send("hello world");}); //this needs to be defined first
+app.get('/settings.html',checkMatchedUser,(req, res,next) => { next();}); 
+//For a url that you want to block, you need checkLoggedIn or checkMatched user as the first function that handles the endpoint
+//and then after validation, just call next
+app.get('/userhome.html',checkMatchedUser,(req, res,next) => { next();}); 
 
-app.post('/login',
-    passport.authenticate('local' , {     // use username/password authentication
-        'successRedirect' : '/userhome',   // when we login, go to /userhome
+app.get('/home', checkMatchedUser, (req, res) => res.sendFile('html/userhome.html', { 'root' : __dirname }));
+
+//Endpoint to return the username associated with the current session, or "" if not logged in.
+app.get('/getSessionUser',(req, res) => { 
+    if(req.session.passport !== undefined){//return the user if it exists
+        res.send(req.session.passport.user);
+    }
+    else{
+        res.send();
+    }
+    
+}); // returns the session user
+
+app.post('/login', passport.authenticate('local' , {     // use username/password authentication
+        'successRedirect' : '/home',   // when we login, go to /userhome
         'failureRedirect' : '/login'      // otherwise, back to login
-    }));
+        })
+        );
 
-app.get('/userhome', (req, res) => res.sendFile('html/userhome.html',{ 'root' : __dirname }));
 
 // Handle the URL /login (just output the login.html file).
 app.get('/login', (req, res) => res.sendFile('html/login.html', { 'root' : __dirname }));
@@ -222,6 +210,9 @@ app.post("/register",express.json(), async (req,res) => {
     //update query to include hash + salt
     add_query["password"] = hash;
     add_query["salt"] = salt;
+    add_query["liked_pets"] = [];
+    add_query["liked_shelters"] = [];
+    add_query["viewed_pets"] = [];
 
     //Add the user to the database
     await database.collection("users").insertOne(add_query); // do I need to await these calls?
@@ -230,9 +221,20 @@ app.post("/register",express.json(), async (req,res) => {
 });
 
 //Needs testing
-app.post("/user/id/edit",express.json(), async (req,res) =>{
+app.post("/user/id/edit",checkLoggedIn, async (req,res) =>{
+    let database = client.db("petIt");
     //check if the username is in the database
     let check_query = {"username": req.body.username};
+
+    if(req.session.passport === null){
+        res.redirect("/login.html");
+        res.end();
+        return;
+    }
+    if(req.body.username !== req.session.passport.user){
+        console.log("You're not", req.session.passport.user, "!");
+    }
+
     let result = await database.collection("users").findOne(check_query); // do I need to await these calls?
     if(result === null){
         console.log("User does not exist.");
@@ -243,7 +245,6 @@ app.post("/user/id/edit",express.json(), async (req,res) =>{
     let requiredFields = {
         username: null,
         email: null, 
-        password: null,
         type: null,
     };
     for(let field of Object.keys(requiredFields)){
@@ -255,8 +256,21 @@ app.post("/user/id/edit",express.json(), async (req,res) =>{
     }
     //Edit the existing user data
     let edit_query = req.body;
-    await database.collection("users").updateOne(check_query,edit_query); 
-    userEdit();
+    edit_query["password"] = result.password;
+    edit_query["salt"] = result.salt;
+    if(req.body.liked_pets === ''){
+        edit_query.liked_pets = [];
+    }
+    if(req.body.liked_shelters === ''){
+        edit_query.liked_shelters = [];
+    }
+    if(req.body.viewed_pets === '') {
+        edit_query.viewed_pets = [];
+    }
+
+    await database.collection("users").findOneAndReplace(check_query,edit_query); 
+    res.end();
+    return;
 });
 
 app.get('/search',express.urlencoded(), async (req,res) => {
@@ -295,7 +309,7 @@ app.get('/search',express.urlencoded(), async (req,res) => {
     if(req.query.type === null){
        res.end("Invalid query- missing type field.");
     }
-    let collection_type;
+    let collection_type = "pets";
     if(req.query.type in petFields){
         collection_type = "pets";
     }
@@ -307,17 +321,34 @@ app.get('/search',express.urlencoded(), async (req,res) => {
     }
     let query = {};
     query[req.query.type] = req.query.query;
-    let result = await database.collection(collection_type).find(query,{limit: req.query.quantity});
+    let result = [];
+    await database.collection(collection_type).find(query,{limit: parseInt(req.query.quantity)}).forEach((x)=>result.push(x));
     console.log("Search request returned: ", result);
     res.end(JSON.stringify(result));
 });
 
 //TODO: filter what's returned so that the password + salt are not returned
-app.get('/user/id/view',express.json(), async (req,res) => {
-    let query = {"username": req.body.username};
+
+app.get('/user/id/view',checkMatchedUser, async (req,res) => {
+    let database = client.db('petIt');
+    let query = {"username": req.query.username};
     let result = await database.collection("users").findOne(query); // do I need to await these calls?
+    /** 
+    if(result !== null){ //prevent the password and salt being returned to the user
+        result.salt = "";
+        result.password="";
+    }
+    **/
+    console.log("View request returned", result);
     res.end(JSON.stringify(result));
 });
+
+app.listen(port, () => {
+    console.log(`App listening at http://localhost:${port}`);
+  });
+  
+//app.use('/',express.static('./html')); //Serves static pages(index.html, search.html, etc.)
+app.use(express.static('html'));
 
 //Sam
 app.get('/pet/view',express.json(), (req,res) => res.end(JSON.stringify(createFakePet(req.query.name))));
@@ -434,11 +465,3 @@ async function getID(type){
 }
 
 //*********************************************************************************************************************
-
-//Edits user data stored on the server.
-// some fields not successfully received
-function userEdit(req,res){
-    let options = req.body;
-    console.log("Edit request, Body:",JSON.stringify(options));
-    res.end("Request received successfully.");   
-}
