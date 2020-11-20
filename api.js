@@ -2,6 +2,12 @@
 const pkg = require('faker');
 const {name,internet,company,address,lorem,commerce,image} = pkg;
 const express = require("express");
+const minicrypt = require('./miniCrypt');
+const expressSession = require('express-session');  // for managing session state
+const passport = require('passport');               // handles authentication
+const LocalStrategy = require('passport-local').Strategy; // username/password strategy
+
+const mc = new minicrypt();
 
 //Secrets
 let secrets;
@@ -15,14 +21,150 @@ if (!process.env.URL) {
 
 //MongoDB Start
 const { MongoClient } = require("mongodb");
-const client = new MongoClient(url);
+const client = new MongoClient(url,{ useUnifiedTopology: true });
 async function start(){ await client.connect();}
 start();
 
 const app = express(); // this is the "app"
 const port = process.env.PORT || 8080;     // we will listen on this port
 app.use(express.json({type: ['application/json', 'text/plain']})); 
+app.use(express.urlencoded({'extended' : true})); // allow URLencoded data
 app.use(express.static('client'));
+
+const strategy = new LocalStrategy(async (username, password, done) => {
+    let database = client.db('petIt');
+    //Check if the user exists  
+    if (!findUser(username)) {
+        // If no such user
+        console.log("user doesn't exist");
+        return done(null, false, { 'message' : 'Wrong username' });
+    }
+
+    //Get the user associated with the username
+    let check_query = {"username": username};
+    let result = await database.collection("users").findOne(check_query); // do I need to await these calls?
+    if(result === null){
+        console.log("user does not exist");
+        return done(null, false, { 'message' : 'User does not exist' });
+    }
+
+    //Check if the password matches what is stored in the database for the given salt
+    if(mc.check(password,result.salt,result.password)){
+        console.log("login succeeded");
+        return done(null, username);
+    }
+    else{
+        console.log("login failed");
+        await new Promise((r) => setTimeout(r, 2000)); // two second delay
+        return done(null, false, { 'message' : 'Wrong password' });
+    }
+});
+
+const session = {
+    secret : process.env.SECRET || 'SECRET', // set this encryption key in Heroku config (never in GitHub)!
+    resave : false,
+    saveUninitialized: false
+};
+
+app.use(expressSession(session));
+passport.use(strategy);
+app.use(passport.initialize());
+app.use(passport.session());
+
+// App configuration
+
+// Convert user object to a unique identifier.
+passport.serializeUser((user, done) => {
+    done(null, user);
+});
+// Convert a unique identifier to a user object.
+passport.deserializeUser((uid, done) => {
+    done(null, uid);
+});
+
+app.use(express.json()); // allow JSON inputs
+app.use(express.urlencoded({'extended' : true})); // allow URLencoded data
+
+// Returns true if the user exists.
+async function findUser(username) {
+    let database = client.db('petIt');
+    //check if the username is in the database
+    let check_query = {"username": username};
+    let result = await database.collection("users").findOne(check_query); // do I need to await these calls?
+    if(result !== null){
+        return true;
+    }
+    else{
+        return false;
+    }
+}
+
+
+// Routes
+
+function checkLoggedIn(req, res, next) {
+    if (req.isAuthenticated()) {
+    // If we are authenticated, run the next route.
+    next();
+    console.log(req.session.passport.user); //this is the user!
+    } else {
+    // Otherwise, redirect to the login page.
+    console.log("not authed");
+	res.redirect('/login');
+    }
+}
+
+//does the same functionality as checkLoggedIn but also checks that the user matches
+//TODO: not implemented yet
+function checkMatchedUser(req,res,next){
+    if (req.isAuthenticated()){
+        if(req.query.username !== req.session.passport.user){
+            console.log("Invalid user match");
+            res.redirect('/login');
+        }
+        else{
+            next();
+        }  
+    }
+    else{
+        res.redirect('/login');
+    }
+}
+
+app.get('/settings.html',checkMatchedUser,(req, res,next) => { next();}); 
+//For a url that you want to block, you need checkLoggedIn or checkMatched user as the first function that handles the endpoint
+//and then after validation, just call next
+app.get('/userhome.html',checkMatchedUser,(req, res,next) => { next();}); 
+
+app.get('/home', checkMatchedUser, (req, res) => res.sendFile('html/userhome.html', { 'root' : __dirname }));
+
+//Endpoint to return the username associated with the current session, or "" if not logged in.
+app.get('/getSessionUser',(req, res) => { 
+    if(req.session.passport !== undefined){//return the user if it exists
+        res.send(req.session.passport.user);
+    }
+    else{
+        res.send();
+    }
+    
+}); // returns the session user
+
+app.post('/login', passport.authenticate('local' , {     // use username/password authentication
+        'successRedirect' : '/home',   // when we login, go to /userhome
+        'failureRedirect' : '/login'      // otherwise, back to login
+        })
+        );
+
+
+// Handle the URL /login (just output the login.html file).
+app.get('/login', (req, res) => res.sendFile('html/login.html', { 'root' : __dirname }));
+
+
+// Handle logging out (takes us back to the login page).
+app.get('/logout', (req, res) => {
+    req.logout(); // Logs us out! //TODO: this has the same issue as req.isAuthenticated which is we dont know if the function is written for us
+    res.redirect('/login'); // back to login
+});
 
 function createFakeUser(username){
     let interestIndex = Math.floor((Math.random()*3));
@@ -73,6 +215,20 @@ function createFakePetResult(type,query){
     }
     return pet;
 }
+
+app.get('/user/id/view',express.json(), async (req,res) => {
+    let database = client.db('petIt');
+    let query = {"username": req.query.username};
+    let result = await database.collection("users").findOne(query); // do I need to await these calls?
+    if(result !== null){ //prevent the password and salt being returned to the user
+        result.salt = "";
+        result.password="";
+    }
+    console.log("View request returned", result);
+    res.end(JSON.stringify(result));
+});
+
+app.use(express.static('html'));
 
 function createFakeSearchResult(type,query,quantity){
     let shelter_fields = Object.keys(createFakeShelterResult("null",""));
