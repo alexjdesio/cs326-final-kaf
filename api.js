@@ -21,7 +21,6 @@ if (!process.env.URL) {
 
 //MongoDB Start
 const { MongoClient } = require("mongodb");
-const e = require('express');
 const client = new MongoClient(url,{ useUnifiedTopology: true });
 async function start(){ await client.connect();}
 start();
@@ -38,9 +37,7 @@ app.use(express.static('client'));
 
 /**
  * TODO:   
-    * get Sam to redirect away from userhome if not logged in
-    * ^ broken because the code that we write is not the code that is run
-    * add same security to settings.html
+    * Merge
 */
 
 const strategy = new LocalStrategy(async (username, password, done) => {
@@ -112,25 +109,6 @@ async function findUser(username) {
     }
 }
 
-// Returns true if the password matches the one stored in the database.
-async function validatePassword(username, password) {
-    let database = client.db('petIt');
-    //Make sure this is a valid search request
-    //Get the user associated with the username
-    let check_query = {"username": username};
-    let result = await database.collection("users").findOne(check_query); // do I need to await these calls?
-    if(result === null){
-        console.log("User does not exist.");
-        return false;
-    }
-    //Check if the password matches what is stored in the database for the given salt
-    if(mc.check(password,result.salt,result.password)){
-        return true;
-    }
-    else{
-        return false;
-    }
-}
 
 // Routes
 
@@ -151,39 +129,26 @@ function checkLoggedIn(req, res, next) {
 function checkMatchedUser(req,res,next){
     if (req.isAuthenticated()){
         if(req.query.username !== req.session.passport.user){
+            console.log("Invalid user match");
             res.redirect('/login');
         }
-        next();
+        else{
+            next();
+        }  
     }
     else{
         res.redirect('/login');
     }
 }
 
-/** Commented out, we might need /userhome.html restricted
-app.get('/', checkLoggedIn, (req, res) => { //TODO: change this
-    res.send("hello world");
-    });
-*/
-
-// Private data
-/** 
-app.get('/userhome', checkLoggedIn, (req, res) => { //this needs testing
-    let url = '/userhome.html?username=' + req.user;
-    console.log("Redirecting to:",url);
-    res.redirect(url); //TODO: change to id
-});
-**/
-// Handle post data from the login.html form.
-
 app.get('/settings.html',checkMatchedUser,(req, res,next) => { next();}); 
 //For a url that you want to block, you need checkLoggedIn or checkMatched user as the first function that handles the endpoint
 //and then after validation, just call next
-app.get('/home',checkLoggedIn,(req, res) => { res.send("hello world");}); //this needs to be defined first
-//app.get('/userhome.html',checkMatchedUser,(req, res,next) => { next();}); 
+app.get('/userhome.html',checkMatchedUser,(req, res,next) => { next();}); 
 
+app.get('/home', checkMatchedUser, (req, res) => res.sendFile('html/userhome.html', { 'root' : __dirname }));
 
-
+//Endpoint to return the username associated with the current session, or "" if not logged in.
 app.get('/getSessionUser',(req, res) => { 
     if(req.session.passport !== undefined){//return the user if it exists
         res.send(req.session.passport.user);

@@ -382,8 +382,12 @@ async function sendFormData(arg1){
         });
         if(response.ok){
             console.log("Login response successfully sent to server.");
+        }
+        const result = await fetch("/getSessionUser",{method:"GET"});
+        if(result.ok){
+            let username = await result.text();
+            window.location.href= "/userhome.html?username=" + username; //this is the alternative method
         } 
-        window.location.href="/userhome.html"; //this is the alternative method
     }
 }
 
