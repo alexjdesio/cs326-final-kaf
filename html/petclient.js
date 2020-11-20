@@ -121,11 +121,11 @@ window.addEventListener("load", async function() {
                 //        fetch('http://localhost:8080/gameScore', { method: 'POST', body: JSON.stringify(p0JSON) } ); 
                 favorite_button.classList.add('active');
                 const post_url = `${site_url}/user/id/favoritepets/add?username=${username}`;
-                fetch(post_url, { method: 'POST', body: JSON.stringify(pet_id) });
+                fetch(post_url, { method: 'POST', body: pet_id });
                 favorite_button.innerText = `Remove ${pet.pet_name} from Favorites`; 
             } else {
                 const post_url = `${site_url}/user/id/favoritepets/delete?username=${username}`;
-                fetch(post_url, { method: 'POST', body: JSON.stringify(pet_id) });
+                fetch(post_url, { method: 'POST', body: pet_id });
                 favorite_button.innerText = `Add ${pet.pet_name} to Favorites`;
             }
         }
