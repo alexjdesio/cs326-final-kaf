@@ -31,6 +31,15 @@ app.use(express.json({type: ['application/json', 'text/plain']}));
 app.use(express.urlencoded({'extended' : true})); // allow URLencoded data
 app.use(express.static('client'));
 
+//EXPERIMENTING WITH EXPRESS.JS
+
+//Alex's MongoDB endpoints:
+
+/**
+ * TODO:   
+    * Merge
+*/
+
 const strategy = new LocalStrategy(async (username, password, done) => {
     let database = client.db('petIt');
     //Check if the user exists  
@@ -58,7 +67,9 @@ const strategy = new LocalStrategy(async (username, password, done) => {
         await new Promise((r) => setTimeout(r, 2000)); // two second delay
         return done(null, false, { 'message' : 'Wrong password' });
     }
-});
+    });
+
+// App configuration
 
 const session = {
     secret : process.env.SECRET || 'SECRET', // set this encryption key in Heroku config (never in GitHub)!
@@ -71,8 +82,6 @@ passport.use(strategy);
 app.use(passport.initialize());
 app.use(passport.session());
 
-// App configuration
-
 // Convert user object to a unique identifier.
 passport.serializeUser((user, done) => {
     done(null, user);
@@ -84,6 +93,7 @@ passport.deserializeUser((uid, done) => {
 
 app.use(express.json()); // allow JSON inputs
 app.use(express.urlencoded({'extended' : true})); // allow URLencoded data
+
 
 // Returns true if the user exists.
 async function findUser(username) {
@@ -166,6 +176,300 @@ app.get('/logout', (req, res) => {
     res.redirect('/login'); // back to login
 });
 
+// Register URL
+app.get('/register', (req, res) => res.sendFile('html/register.html',{ 'root' : __dirname }));
+
+// Like login, but add a new user and password IFF one doesn't exist already.
+// If we successfully add a new user, go to /login, else, back to /register.
+// Use req.body to access data (as in, req.body['username']).
+// Use res.redirect to change URLs.
+app.post("/register",express.json(), async (req,res) => {
+    let database = client.db('petIt');
+    //check if the username is in the database
+    let check_query = {"username": req.body.username};
+    let result = await database.collection("users").findOne(check_query); // do I need to await these calls?
+    if(result !== null){
+        console.log("User already exists.");
+        res.redirect('/register');
+        return;
+    }
+    //check if any of the body fields are blank/malformed
+    let requiredFields = {
+        username: null,
+        email: null, 
+        password: null,
+        type: null,
+    };
+    for(let field of Object.keys(requiredFields)){
+        if(req.body[field] === null || req.body[field] === ""){
+            console.log("Malformed Input.");
+            res.redirect('/register');
+            return;
+        }
+    }
+    let add_query = req.body; //set the query to be equal to the request body
+
+    //Hash password with salt
+    const salt_hash = mc.hash(req.body.password);
+    const salt = salt_hash[0];
+    const hash = salt_hash[1];
+    //update query to include hash + salt
+    add_query["password"] = hash;
+    add_query["salt"] = salt;
+    add_query["liked_pets"] = [];
+    add_query["liked_shelters"] = [];
+
+    //Add the user to the database
+    await database.collection("users").insertOne(add_query); // do I need to await these calls?
+    console.log(req.body);
+    res.redirect('/login');
+});
+
+//Needs testing
+app.post("/user/id/edit",checkLoggedIn, async (req,res) =>{
+    let database = client.db("petIt");
+    //check if the username is in the database
+    let check_query = {"username": req.body.username};
+
+    if(req.session.passport === null){
+        res.redirect("/login.html");
+        res.end();
+        return;
+    }
+    if(req.body.username !== req.session.passport.user){
+        console.log("You're not", req.session.passport.user, "!");
+    }
+
+    let result = await database.collection("users").findOne(check_query); // do I need to await these calls?
+    if(result === null){
+        console.log("User does not exist.");
+        res.end("User does not exist.");
+        return;
+    }
+    //check if any of the body fields are blank/malformed
+    let requiredFields = {
+        username: null,
+        email: null, 
+        type: null,
+    };
+    for(let field of Object.keys(requiredFields)){
+        if(req.body[field] === null || req.body[field] === ""){
+            console.log("Malformed Input.");
+            res.end("Malformed Input.");
+            return;
+        }
+    }
+    //Edit the existing user data
+    let edit_query = req.body;
+    if(edit_query.password === null || edit_query.password === ""){
+        edit_query["password"] = result.password;
+    }
+    if(edit_query.salt === null || edit_query.salt === ""){
+        edit_query["salt"] = result.salt;
+    }
+    await database.collection("users").findOneAndReplace(check_query,edit_query); 
+    res.end();
+    return;
+});
+
+app.get('/search',express.urlencoded(), async (req,res) => {
+    let database = client.db('petIt');
+    //Make sure this is a valid search request
+    let requiredFields = {
+        type: null,
+        query: null, 
+        quantity: null,
+    };
+    for(let field of Object.keys(requiredFields)){
+        if(req.query[field] === null){ 
+            res.end("Invalid request- missing type, query, or quantity field."); 
+            return;
+        }
+    }
+    let petFields = {
+        pet_name: null,
+        pet_location: null,
+        pet_type: null,
+        pet_breed: null,
+        pet_about: null,
+        pet_health: null,
+        pet_comments: null,
+        picture: null,
+        num_likes: null
+    };
+    let shelterFields = {
+        shelter_name: null,        
+        shelter_location: null,        
+        shelter_about: null,        
+        shelter_pets: null,        
+        shelter_comments: null,        
+        picture: null
+    };
+    //Figure out if this search will be in the pet or shelter collection
+    if(req.query.type === null){
+       res.end("Invalid query- missing type field.");
+    }
+    let collection_type = "pets";
+    if(req.query.type in petFields){
+        collection_type = "pets";
+    }
+    else if(req.query.type in shelterFields){
+        collection_type = "shelters"; 
+    }
+    else{
+        res.end("Invalid query- invalid type value.");
+    }
+    let query = {};
+    query[req.query.type] = req.query.query;
+    let result = [];
+    await database.collection(collection_type).find(query,{limit: parseInt(req.query.quantity)}).forEach((x)=>result.push(x));
+    console.log("Search request returned: ", result);
+    res.end(JSON.stringify(result));
+});
+
+//TODO: filter what's returned so that the password + salt are not returned
+app.get('/user/id/view',express.json(), async (req,res) => {
+    let database = client.db('petIt');
+    let query = {"username": req.query.username};
+    let result = await database.collection("users").findOne(query); // do I need to await these calls?
+    if(result !== null){ //prevent the password and salt being returned to the user
+        result.salt = "";
+        result.password="";
+    }
+    console.log("View request returned", result);
+    res.end(JSON.stringify(result));
+});
+
+app.listen(port, () => {
+    console.log(`App listening at http://localhost:${port}`);
+  });
+  
+//app.use('/',express.static('./html')); //Serves static pages(index.html, search.html, etc.)
+app.use(express.static('html'));
+
+//Sam
+
+app.get('/pet/view', async (req,res) => {
+    let database = client.db('petIt');
+    let query = {"pet_id": req.query.pet_id};
+    let result = await database.collection("pets").findOne(query);
+    res.end(JSON.stringify(result));
+});
+
+app.get('/shelter/view', async (req,res) => {
+    let database = client.db('petIt');
+    let query = {"shelter_id": req.query.shelter_id};
+    let result = await database.collection("shelters").findOne(query);
+    res.end(JSON.stringify(result));
+});
+// //needs both the user id and the range
+app.get('/user/id/favoritepets/view', checkLoggedIn, async (req,res) => {
+    let database = client.db('petIt');
+    console.log(req.query.username);
+    console.log(req.query.range);
+    let query = {"username": req.query.username};
+    let result = await database.collection("users").findOne(query);
+    console.log(result);
+    if (result !== null) {
+        console.log(result.liked_pets);
+    }
+    let i;
+    const pet_selection = [];
+    const range = (result.liked_pets.length > req.query.range) ? req.query.range : result.liked_pets.length;
+    for (i = 0; i < range; i++) {
+        pet_selection.push(result.liked_pets[i]);
+    }
+    //check if this is null
+    res.end(JSON.stringify(pet_selection));
+});
+// //needs both the user id and the range
+app.get('/user/id/favoriteshelters/view', checkLoggedIn, async (req,res) => {
+    let database = client.db('petIt');
+    let query = {"username": req.query.username};
+    let result = await database.collection("users").findOne(query);
+    let i;
+    const shelter_selection = [];    
+    const range = (result.liked_shelters.length > req.query.range) ? req.query.range : result.liked_shelters.length;
+    for (i = 0; i < range; i++) {
+        shelter_selection.push(result.liked_shelters[i]);
+    }
+    //check if the array is null
+    res.end(JSON.stringify(shelter_selection));
+});
+// //needs only an id to be send along
+app.get('/user/id/recentlyviewedpets/view', checkLoggedIn, async (req,res) => {
+    let database = client.db('petIt');
+    let query = {"username": req.query.username};
+    let result = await database.collection("users").findOne(query);
+    //we should check if this is null before sending it, I'll do it later though.
+    res.end(JSON.stringify(result.viewed_pets));
+});
+
+// //app.post("/pet/comments/create",express.json(), async (req,res) => {
+
+
+// //res.end("Comment Created") });
+
+// //favorite pets has ?user_id=0123&pet_id=0124
+app.post("/user/id/favoritepets/add", checkLoggedIn, async (req,res) => {
+    const database = client.db('petIt');
+    await database.collection("users").updateOne(
+        { "username": req.body.username},
+        {$push: {"liked_pets" : req.body.pet_id} }
+    );
+    res.end("Added Pet to Favorites");
+});
+
+app.post("/user/id/favoritepets/delete", checkLoggedIn, async (req,res) => {
+    const database = client.db('petIt');
+    await database.collection("users").updateOne(
+        { "username": req.body.username},
+        {$pop: {"liked_pets" : req.body.pet_id} }
+    );
+    res.end("Removed Pet from Favorites");
+});
+
+app.post("/pet/create", checkLoggedIn, async (req,res) => {
+    //check if logged in
+    const database = client.db("petIt");
+    const pet_id = await getID('pet');
+    let requiredFields = {
+        pet_name: req.body.pet_name,
+        pet_location: req.body.pet_location,
+        pet_id: pet_id,
+        pet_type: req.body.pet_type,
+        pet_breed: req.body.pet_breed,
+        pet_about: req.body.pet_about,
+        pet_health: req.body.pet_health,
+        pet_comments: req.body.pet_comments,
+        picture: req.body.picture,
+        num_likes: req.body.num_likes
+    };
+    //check if all required fields are actually included...
+    await database.collection("pets").insertOne(requiredFields);
+    console.log(req.body);
+    res.end("Pet created");
+});
+
+//Chat
+app.get('/chat/view', (req, res) => {
+    if (chat.length === 0){
+        createFakeChat();
+    }
+    res.end(JSON.stringify(chat));}
+);
+app.post('/chat/msg', (req, res) => {
+    chat[req.body.id].messages.push({
+        key: 0,
+        value: req.body.value});
+    res.send('Success');});
+
+//Shelter Page
+app.get('/shelter/view', (req, res) => res.end(JSON.stringify(createFakeShelterResult(null, null))));
+app.post('/shelter/edit', (req, res) => {
+    console.log(req.body);
+    res.send('Success');}); 
+
 function createFakeUser(username){
     let interestIndex = Math.floor((Math.random()*3));
     let interestArray = ["dog","cats","exotics"];
@@ -215,20 +519,6 @@ function createFakePetResult(type,query){
     }
     return pet;
 }
-
-app.get('/user/id/view',express.json(), async (req,res) => {
-    let database = client.db('petIt');
-    let query = {"username": req.query.username};
-    let result = await database.collection("users").findOne(query); // do I need to await these calls?
-    if(result !== null){ //prevent the password and salt being returned to the user
-        result.salt = "";
-        result.password="";
-    }
-    console.log("View request returned", result);
-    res.end(JSON.stringify(result));
-});
-
-app.use(express.static('html'));
 
 function createFakeSearchResult(type,query,quantity){
     let shelter_fields = Object.keys(createFakeShelterResult("null",""));
@@ -336,43 +626,6 @@ function favoritePets(range) {
     return pets;
 }
 
-//EXPERIMENTING WITH EXPRESS.JS
-
-app.listen(port, () => {
-  console.log('App listening at http://localhost:${port}');
-});
-
-app.use('/',express.static('./html')); //Serves static pages(index.html, search.html, etc.)
-
-app.get('/search',express.urlencoded(),search);
-
-app.get('/user/id/view',express.json(), (req,res) => res.end(JSON.stringify(createFakeUser(req.query.username))));
-
-app.post("/register",express.json(), (req,res) => res.end("Registration Successful."));
-
-app.post("/login",express.json(),login); //should be POST, works when set to GET
-
-app.post("/user/id/edit",express.json(),userEdit);
-
-//Chat
-app.get('/chat/view', (req, res) => {
-    if (chat.length === 0){
-        createFakeChat();
-    }
-    res.end(JSON.stringify(chat));}
-);
-app.post('/chat/msg', (req, res) => {
-    chat[req.body.id].messages.push({
-        key: 0,
-        value: req.body.value});
-    res.send('Success');});
-
-//Shelter Page
-app.get('/shelter/view', (req, res) => res.end(JSON.stringify(createFakeShelterResult(null, null))));
-app.post('/shelter/edit', (req, res) => {
-    console.log(req.body);
-    res.send('Success');}); 
-
 //Chat Functions
 let chat = [];
 function createFakeChat(){
@@ -450,117 +703,5 @@ function login(req, res){
     }
 }
 
-//Edits user data stored on the server.
-// some fields not successfully received
-function userEdit(req,res){
-    let options = req.body;
-    console.log("Edit request, Body:",JSON.stringify(options));
-    res.end("Request received successfully.");   
-}
-
-//POSTs should use body, GET should use query
-
-app.get('/pet/view', async (req,res) => {
-    let database = client.db('petIt');
-    let query = {"pet_id": req.query.pet_id};
-    let result = await database.collection("pets").findOne(query);
-    res.end(JSON.stringify(result));
-});
-
-app.get('/shelter/view', async (req,res) => {
-    let database = client.db('petIt');
-    let query = {"shelter_id": req.query.shelter_id};
-    let result = await database.collection("shelters").findOne(query);
-    res.end(JSON.stringify(result));
-});
-//needs both the user id and the range
-app.get('/user/id/favoritepets/view', checkLoggedIn(), async (req,res) => {
-    let database = client.db('petIt');
-    let query = {"username": req.query.username};
-    let result = await database.collection("users").findOne(query);
-    let i;
-    const pet_selection = [];
-    const range = (result.liked_pets.length > req.query.range) ? req.query.range : result.liked_pets.length;
-    for (i = 0; i < range; i++) {
-        pet_selection.push(result.liked_pets[i]);
-    }
-    //check if this is null
-    res.end(JSON.stringify(pet_selection));
-});
-//needs both the user id and the range
-app.get('/user/id/favoriteshelters/view', checkLoggedIn(), async (req,res) => {
-    let database = client.db('petIt');
-    let query = {"username": req.query.username};
-    let result = await database.collection("users").findOne(query);
-    let i;
-    const shelter_selection = [];    
-    const range = (result.liked_shelters.length > req.query.range) ? req.query.range : result.liked_shelters.length;
-    for (i = 0; i < range; i++) {
-        shelter_selection.push(result.liked_shelters[i]);
-    }
-    //check if the array is null
-    res.end(JSON.stringify(shelter_selection));
-});
-//needs only an id to be send along
-app.get('/user/id/recentlyviewedpets/view', checkLoggedIn(), async (req,res) => {
-    let database = client.db('petIt');
-    let query = {"username": req.query.username};
-    let result = await database.collection("users").findOne(query);
-    //we should check if this is null before sending it, I'll do it later though.
-    res.end(JSON.stringify(result.viewed_pets));
-});
-
-//app.post("/pet/comments/create",express.json(), async (req,res) => {
 
 
-//res.end("Comment Created") });
-
-//favorite pets has ?user_id=0123&pet_id=0124
-app.post("/user/id/favoritepets/add", checkLoggedIn(), async (req,res) => {
-    const database = client.db('petIt');
-    await database.collection("users").updateOne(
-        { "username": req.body.username},
-        {$push: {"liked_pets" : req.body.pet_id} }
-    );
-    res.end("Added Pet to Favorites");
-});
-
-app.post("/user/id/favoritepets/delete", checkLoggedIn(), async (req,res) => {
-    const database = client.db('petIt');
-    await database.collection("users").updateOne(
-        { "username": req.body.username},
-        {$pop: {"liked_pets" : req.body.pet_id} }
-    );
-    res.end("Removed Pet from Favorites");
-});
-
-app.post("/pet/create", checkLoggedIn(), async (req,res) => {
-    //check if logged in
-    const database = client.db("petIt");
-    const pet_id = await getID('pet');
-    let requiredFields = {
-        pet_name: req.body.pet_name,
-        pet_location: req.body.pet_location,
-        pet_id: pet_id,
-        pet_type: req.body.pet_type,
-        pet_breed: req.body.pet_breed,
-        pet_about: req.body.pet_about,
-        pet_health: req.body.pet_health,
-        pet_comments: req.body.pet_comments,
-        picture: req.body.picture,
-        num_likes: req.body.num_likes
-    };
-    //check if all required fields are actually included...
-    await database.collection("pets").insertOne(requiredFields);
-    console.log(req.body);
-    res.end("Pet created");
-});
-
-app.get('/getSessionUser',(req, res) => { 
-    if(req.session.passport !== undefined){//return the user if it exists
-        res.send(req.session.passport.user);
-    }
-    else{
-        res.send();
-    }
-});

@@ -155,7 +155,7 @@
 }
 
 .dropdown-menu{
-    display: none;
+    display:none;
     right: 1px;
     left: -100px;
     top: 90%;
@@ -190,4 +190,13 @@ p{
 .alignToRight{
     position: relative; 
     right: -1100px;
+}
+
+#search-form{
+    width: 1000px;
+    margin: 0 auto;
+}
+
+.mt-2rem{
+    margin-top: 2rem;
 }

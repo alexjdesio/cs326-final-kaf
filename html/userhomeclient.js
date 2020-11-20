@@ -156,15 +156,16 @@ async function renderUserHome() {
     const url_string = window.location.href;
     const url = new URL(url_string);
     const username = url.searchParams.get('username');
+    console.log("username: " + username);
 
-    const favorite_pets = await getFavoritePets(range_pets);
+    const favorite_pets = await getFavoritePets(range_pets, username);
 
     viewed_pets = favorite_pets.length;
     if (viewed_pets < range_pets) {
         document.getElementById('more_pets').classList.add('disabled');
     }
 
-    const favorite_shelters = await getFavoriteShelters(range_shelters);
+    const favorite_shelters = await getFavoriteShelters(range_shelters, username);
 
     viewed_shelters = favorite_shelters.length;
     if (viewed_shelters < range_shelters) {

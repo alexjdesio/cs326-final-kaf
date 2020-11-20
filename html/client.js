@@ -14,7 +14,7 @@
     * 
     * http://127.0.0.1:8080/settings.html?username=Theo
 */
-
+    
 async function getSearchResults(type,query,quantity){
     let request_url = "/search?type=" + type + "&query=" + query + "&quantity=" + quantity;
     let response = await fetch(request_url, {method:"GET"});
@@ -97,6 +97,9 @@ async function getUserResults(username){
     const response = await fetch(viewUserUrl,{method:"GET"});
     if(response.ok){
         let result = await response.json();
+        if(result === null){
+            return;
+        }
         console.log("User view request successful.");
         document.getElementById("username").textContent = "Modify Settings for: " + result["username"]; 
         //update value fields
@@ -251,16 +254,16 @@ function generateDynamicHTML(){
     const name = url.searchParams.get("name");
     const page = url.pathname;
     console.log(name,page);
-    if(page === "/settings.html"){
+    if(page === "/settings.html" || page === "/settings"){
         const username = url.searchParams.get("username");
-        if(username !== null){
+        if(username !== null && username !== ''){
             getUserResults(username);
         }
         let form = document.getElementById("settings-form");
         let submit = document.getElementById("settings-submit");
         form.addEventListener("submit",function (event){
             event.preventDefault(); //this is so important, prevents default form submission behavior
-            sendFormData();
+            sendFormData("edit");
         });   
     }
     else if (page === "/search.html"){
@@ -270,19 +273,21 @@ function generateDynamicHTML(){
         getSearchResults(type,query,quantity);
     }
     else if (page === "/signup.html"){
+        console.log("signup request sent");
         let form = document.getElementById("signup-form");
         let submit = document.getElementById("signup-submit");
         form.addEventListener("submit",function (event){
             event.preventDefault(); //this is so important, prevents default form submission behavior
-            sendFormData();
+            sendFormData("register");
         });
     }
-    else if (page === "/login.html"){
+    else if (page === "/login.html" || page === "/login"){
+        console.log("login request sent");
         let form = document.getElementById("login-form");
         let submit = document.getElementById("login-submit");
         form.addEventListener("submit",function (event){
             event.preventDefault(); //this is so important, prevents default form submission behavior
-            sendFormData();
+            sendFormData("login");
         });
     }
      else if (page === '/chat.html'){
@@ -320,16 +325,17 @@ async function sendChatData(){
     }
 }
 
-async function sendFormData(){
+//arg1 determines if this is an edit or register or login
+async function sendFormData(arg1){
     let userData = {
         username: null,
         email: null, 
         password: null,
         type: null,
         interests: null,
-        shelter: null,
-        liked_pets: null,
-        viewed_pets: null,
+        shelter: '',
+        liked_pets: '',
+        viewed_pets: '',
         location: null
     };
     let fields = Object.keys(userData);
@@ -339,17 +345,50 @@ async function sendFormData(){
         }
     }
     //console.log(JSON.stringify(userData));
-    
-    const response = await fetch("/user/id/edit", {
-        method: 'POST',
-        headers: {
-        'Content-Type': 'application/json;charset=utf-8'
-        },
-        body: JSON.stringify(userData)
-    });
-    if(response.ok){
-        console.log("Edit response successfully sent to server.");
-    } 
+    if(arg1 === "edit"){
+        const response = await fetch("/user/id/edit", {
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json;charset=utf-8'
+            },
+            body: JSON.stringify(userData)
+        });
+        if(response.ok){
+            console.log("Edit response successfully sent to server.");
+        } 
+        window.location.href="/userhome.html";
+    }
+    else if (arg1 === "register"){
+        const response = await fetch("/register", {
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json;charset=utf-8'
+            },
+            body: JSON.stringify(userData)
+        });
+        if(response.ok){
+            console.log("Edit response successfully sent to server.");
+        } 
+        window.location.href="/login.html";
+    }
+    else if (arg1 === "login"){
+        console.log("sending POST request to /login");
+        const response = await fetch("/login", {
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json;charset=utf-8'
+            },
+            body: JSON.stringify(userData)
+        });
+        if(response.ok){
+            console.log("Login response successfully sent to server.");
+        }
+        const result = await fetch("/getSessionUser",{method:"GET"});
+        if(result.ok){
+            let username = await result.text();
+            window.location.href= "/userhome.html?username=" + username; //this is the alternative method
+        } 
+    }
 }
 
 
