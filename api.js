@@ -1,6 +1,6 @@
 'use strict';
 const express = require("express");
-const minicrypt = require('./miniCrypt');
+const minicrypt = require('./miniCrypt.js');
 const expressSession = require('express-session');  // for managing session state
 const passport = require('passport');               // handles authentication
 const LocalStrategy = require('passport-local').Strategy; // username/password strategy
@@ -37,7 +37,7 @@ app.use(express.static('html'));
 
 //Alex's MongoDB endpoints:
 app.use(express.json({type: ['application/json', 'text/plain']})); 
-app.use(express.urlencoded({'extended' : true})); // allow URLencoded data
+app.use(express.urlencoded({extended : true})); // allow URLencoded data
 app.use(express.static('client'));
 
 const strategy = new LocalStrategy(async (username, password, done) => {
@@ -366,33 +366,42 @@ app.post("/pet/create",express.json(), (req,res) => res.end("Info Recieved."));
 //Joe******************************************************************************************************************
 //Chat Endpoints
 app.get('/chat/view', async (req, res) => {
-    const query = {'user_id': req.query.user_id};
+    const query = {'username': req.session.passport.user};
     const result = await database.collection('users').findOne(query); 
     res.end(JSON.stringify(result.chat));
 });
-//TODO Incomplete but works
+
 app.post('/chat/msg', async (req, res) => {
-    const query = {'user_id': req.query.user_id};
+    const query = {'username': req.session.passport.user};
     const result = await database.collection('users').findOne(query); 
+    const msg = {key: '0', value: req.body.value};
+    let noContact = true;
     let chat = result.chat;
     
-    const query2 = {'user_id': req.query.fromUser_id};
-    const result2 = await database.collection('users').findOne(query); 
+    const query2 = {'username': req.body.fromUsername};
+    const result2 = await database.collection('users').findOne(query2); 
+    const msg2 = {key: '1', value: req.body.value};
     let chat2 = result2.chat;
-
+    
     for (let x in chat){
-        if (chat[x].fromUser_id === req.query.fromUser_id){
-            chat[x].messages.push({ key: 0, value: req.query.value});
+        if (chat[x].fromUsername === req.body.fromUsername){
+            chat[x].messages.push(msg);
+            noContact = false;
             break;
         }
     }
     for (let x in chat2){
-        if (chat2[x].fromUser_id === req.query.user_id){
-            chat2[x].messages.push({ key: 1, value: req.query.value});
+        if (chat2[x].fromUsername === req.session.passport.user){
+            chat2[x].messages.push(msg2);
             break;
         }
     }
-    
+
+    if (noContact === true){
+        chat.push({fromUsername: req.body.fromUsername, messages: [msg]});
+        chat2.push({fromUsername: req.session.passport.user, messages: [msg2]});
+        res.end('Success');
+    }
     await database.collection('users').updateOne(query, {$set: {'chat': chat}});
     await database.collection('users').updateOne(query2, {$set: {'chat': chat2}});
     res.end('Success');
@@ -416,7 +425,7 @@ app.post('/shelter/create', async (req, res) => {
 });
 
 app.get('/shelter/view', async (req, res) => {
-    const query = {'shelter_id' : req.body.shelter_id};
+    const query = {'shelter_id' : req.query.shelter_id};
     const result = await database.collection('shelters').findOne(query); // do I need to await these calls?
     res.end(JSON.stringify(result));
 });
@@ -439,14 +448,14 @@ app.post('/shelter/edit', async (req, res) => {
 //Comments/recentlyViewed Endpoints
 app.post("/pet/comments/create", async (req,res) => {
     const query = {'pet_id': req.query.pet_id};
-    const comment = {'user_id': req.query.user_id, 'value': req.query.value};
+    const comment = {'username': req.query.username, 'value': req.query.value};
     await database.collection('pets').updateOne(query, {$push: {'pet_comments': comment}}); 
     res.end('Success');
 });
 
 app.post("/create/comments/create", async (req,res) => {
     const query = {'shelter_id': req.query.shelter_id};
-    const comment = {'user_id': req.query.user_id, 'value': req.query.value};
+    const comment = {'username': req.query.username, 'value': req.query.value};
     await database.collection('shelters').updateOne(query, {$push: {'shelter_comments': comment}}); 
     res.end('Success');
 });
@@ -461,7 +470,8 @@ async function getID(type){
         {$inc: {idCount: 1} }
     );
     const result = await col.findOne({type: type});
-    return result.idCount;
+    const string = String(result.idCount);
+    return string;
 }
 
 //*********************************************************************************************************************
