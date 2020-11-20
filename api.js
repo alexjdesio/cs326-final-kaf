@@ -216,6 +216,8 @@ app.post("/register",express.json(), async (req,res) => {
     //update query to include hash + salt
     add_query["password"] = hash;
     add_query["salt"] = salt;
+    add_query["liked_pets"] = [];
+    add_query["liked_shelters"] = [];
 
     //Add the user to the database
     await database.collection("users").insertOne(add_query); // do I need to await these calls?
@@ -259,12 +261,17 @@ app.post("/user/id/edit",checkLoggedIn, async (req,res) =>{
     }
     //Edit the existing user data
     let edit_query = req.body;
-    if(edit_query.password === null || edit_query.password === ""){
-        edit_query["password"] = result.password;
+    edit_query["password"] = result.password;
+    edit_query["salt"] = result.salt;
+    if(req.body.liked_pets === ''){
+        edit_query.liked_pets = [];
     }
-    if(edit_query.salt === null || edit_query.salt === ""){
-        edit_query["salt"] = result.salt;
+    if(req.body.viewed_pets === '') {
+        edit_query.viewed_pets = [];
     }
+    console.log("req body", req.body);
+    console.log("edit query,", edit_query);
+
     await database.collection("users").findOneAndReplace(check_query,edit_query); 
     res.end();
     return;
@@ -326,14 +333,16 @@ app.get('/search',express.urlencoded(), async (req,res) => {
 });
 
 //TODO: filter what's returned so that the password + salt are not returned
-app.get('/user/id/view',express.json(), async (req,res) => {
+app.get('/user/id/view',checkMatchedUser, async (req,res) => {
     let database = client.db('petIt');
     let query = {"username": req.query.username};
     let result = await database.collection("users").findOne(query); // do I need to await these calls?
+    /** 
     if(result !== null){ //prevent the password and salt being returned to the user
         result.salt = "";
         result.password="";
     }
+    **/
     console.log("View request returned", result);
     res.end(JSON.stringify(result));
 });
