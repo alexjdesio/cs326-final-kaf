@@ -378,25 +378,40 @@ app.get('/shelter/view', async (req,res) => {
 // //needs both the user id and the range
 app.get('/user/id/favoritepets/view', checkLoggedIn, async (req,res) => {
     let database = client.db('petIt');
-    console.log(req.query.username);
-    console.log(req.query.range);
     let query = {"username": req.query.username};
     let result = await database.collection("users").findOne(query);
-    console.log(result);
     if (result !== null) {
         console.log(result.liked_pets);
     }
     let i;
     const pet_selection = [];
-    if (req.query.range === -1) {
-        res.end(JSON.stringify(result.liked_pets));
+
+    const range = (result.liked_pets.length > req.query.range) ? req.query.range : result.liked_pets.length;
+    for (i = 0; i < range; i++) {
+        pet_selection.push(result.liked_pets[i]);
+    }
+    //check if this is null
+    res.end(JSON.stringify(pet_selection));
+
+});
+
+app.get('/user/id/checkfavorites', checkLoggedIn, async (req,res) => {
+    //args: id=&username=&type=
+    let database = client.db('petIt');
+    let query;
+    if (req.query.type === 'pet') {
+        query = {"username": req.query.username, liked_pets: req.query.id};
+    } else if (req.query.type === 'shelter') {
+        query = {"username": req.query.username, liked_shelters: req.query.id};
     } else {
-        const range = (result.liked_pets.length > req.query.range) ? req.query.range : result.liked_pets.length;
-        for (i = 0; i < range; i++) {
-            pet_selection.push(result.liked_pets[i]);
-        }
-        //check if this is null
-        res.end(JSON.stringify(pet_selection));
+        res.end("Incorrect type requested");
+    }
+    
+    let result = await database.collection("users").findOne(query);
+    if (result === null) {
+        res.end("Not in favorites");
+    } else {
+        res.end("In favorites");
     }
 });
 // //needs both the user id and the range
@@ -429,8 +444,6 @@ app.get('/user/id/recentlyviewedpets/view', checkLoggedIn, async (req,res) => {
 
 // //favorite pets has ?user_id=0123&pet_id=0124
 app.post("/user/id/favoritepets/add", checkLoggedIn, async (req,res) => {
-    console.log("here we are");
-    console.log(req.body.username);
     const database = client.db('petIt');
     await database.collection("users").updateOne(
         { "username": req.body.username},
@@ -440,10 +453,12 @@ app.post("/user/id/favoritepets/add", checkLoggedIn, async (req,res) => {
 });
 
 app.post("/user/id/favoritepets/delete", checkLoggedIn, async (req,res) => {
+    console.log("REMOVING??? this id:");
+    console.log(req.body.pet_id);
     const database = client.db('petIt');
     await database.collection("users").updateOne(
         { "username": req.body.username},
-        {$pop: {"liked_pets" : req.body.pet_id} }
+        { $pull: {"liked_pets" : req.body.pet_id} }
     );
     res.end("Removed Pet from Favorites");
 });
@@ -466,7 +481,6 @@ app.post("/pet/create", checkLoggedIn, async (req,res) => {
     };
     //check if all required fields are actually included...
     await database.collection("pets").insertOne(requiredFields);
-    console.log(req.body);
     res.end("Pet created");
 });
 
