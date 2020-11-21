@@ -141,7 +141,7 @@ async function renderShelters(element, shelters) {
         card_link.classList.add('card-link');
         card_link.innerText = 'Visit ' + shelter.shelter_name + '\'s Page';
             //card_link.href = site_url + 'shelter/view?=' + shelters[current_shelter].name;
-        card_link.href = '/shelterpage.html?name=' + shelter.shelter_id;
+        card_link.href = '/shelterpage.html?shelter_id=' + shelter.shelter_id;
 
         card_body.appendChild(card_title);
         card_body.appendChild(card_link);
