@@ -488,6 +488,11 @@ app.post("/pet/create", checkLoggedIn, async (req,res) => {
     };
     //check if all required fields are actually included...
     await database.collection("pets").insertOne(requiredFields);
+    
+    await database.collection('shelters').updateOne(
+        {shelter_id: req.body.pet_location},
+        {$push: {shelter_pets: pet_id}}
+    );
     res.end("Pet created");
 });
 
@@ -564,7 +569,23 @@ app.get('/shelter/view', async (req, res) => {
     const result = await database.collection('shelters').findOne(query); // do I need to await these calls?
     res.end(JSON.stringify(result));
 });
+app.post("/user/id/favoriteShelters/add", checkLoggedIn, async (req,res) => {
+    const database = client.db('petIt');
+    await database.collection("users").updateOne(
+        { "username": req.body.username},
+        {$push: {"liked_shelters" : req.body.shelter_id} }
+    );
+    res.end("Added Pet to Favorites");
+});
 
+app.post("/user/id/favoriteShelters/delete", checkLoggedIn, async (req,res) => {
+    const database = client.db('petIt');
+    await database.collection("users").updateOne(
+        { "username": req.body.username},
+        { $pull: {"liked_shelters" : req.body.shelter_id} }
+    );
+    res.end("Removed Pet from Favorites");
+});
 //Comments/recentlyViewed Endpoints
 app.post("/pet/comments/create", async (req,res) => {
     let user;

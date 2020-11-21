@@ -7,7 +7,10 @@ window.addEventListener('load', async function() {
     const url = new URL(url_string);
     const field = document.getElementById('petShelter');
     field.value = url.searchParams.get('shelter_id');
-    field.readOnly = true;
+    if (field.value !== ''){
+        field.readOnly = true;
+    }
+
     document.getElementById('submit_pet').addEventListener('click', () => {
         const name = document.getElementById('pet_name').value;
         const dog_check = document.getElementById('dog_check');
@@ -32,6 +35,4 @@ window.addEventListener('load', async function() {
         const post_url = `${site_url}/pet/create`;
         fetch(post_url, { method: 'POST', body: JSON.stringify(pet) });
     });
-
-
 });

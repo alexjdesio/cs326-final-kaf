@@ -140,10 +140,10 @@ window.addEventListener("load", async function() {
         //called in order type, username, id
         const pet_liked = await checkFavorites("pet", username, pet_id);
         console.log(pet_liked);
-        if (pet_liked) {
+        if (!pet_liked) {
             favorite_button.innerText = remove_string;
         } else {
-            add_string;
+            favorite_button.innerText = add_string;
         }
     }
 
@@ -177,6 +177,7 @@ window.addEventListener("load", async function() {
             }
         }
     });
+    favorite_button.click();
 
     document.getElementById('post_comment_button').addEventListener('click', async () => {
         let petID = url.searchParams.get("pet_id");
@@ -195,6 +196,5 @@ window.addEventListener("load", async function() {
             console.log(response.error);
         }
         location.reload();
->>>>>>> joe-dev
     });
 });
