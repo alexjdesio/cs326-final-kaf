@@ -103,11 +103,6 @@ async function renderPetPage(pet) {
 }
 
 window.addEventListener("load", async function() {
-    
-    
-
-
-
     const url_string = window.location.href;
     const url = new URL(url_string);
     const pet_id = url.searchParams.get('pet_id');
@@ -127,7 +122,7 @@ window.addEventListener("load", async function() {
     } else {
         recently_viewed.push(pet_id);
     }
-    if (recently_viewed.length > 5) {
+    if (recently_viewed.length > 4) {
         recently_viewed.pop();
     }
     console.log(recently_viewed);

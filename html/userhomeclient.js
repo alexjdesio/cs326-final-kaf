@@ -157,6 +157,61 @@ async function renderShelters(element, shelters) {
     }
 }
 
+async function renderViewed(element, pets) {
+    element.innerHTML = '';
+    let i;
+    //for (i = 0; i < (range_pets / 4); i++) {
+    let row;
+    for (i = 0; i < pets.length; i++) {
+        const pet = await getPet(pets[i]);
+        console.log(pet);
+        if (i % 4 === 0) {
+            row = document.createElement('div');
+            row.classList.add('row');
+        }
+        //for (j = 0; j < 4; j++) {
+        const col = document.createElement('div');
+        col.classList.add('col');
+
+        const card = document.createElement('div');
+        card.classList.add('card');
+        card.classList.add('homepage-card');
+        card.classList.add('text-center');
+
+        const card_image = document.createElement('img');
+        card_image.classList.add('card-img-top');
+        card_image.src = pet.picture;
+
+        const card_body = document.createElement('div');
+        card_body.classList.add('card-body');
+        card_body.classList.add('bg-light');
+
+        const card_title = document.createElement('h5');
+        card_title.classList.add('card-title');
+        card_title.classList.add('mt-0');
+        card_title.classList.add('font-weight-light');
+        card_title.innerText = pet.pet_name;
+
+        const card_link = document.createElement('a');
+        card_link.classList.add('card-link');
+        card_link.innerText = 'Visit ' + pet.pet_name + '\'s Page';
+        card_link.href = '/petpage.html?pet_id=' + pet.pet_id;
+
+        card_body.appendChild(card_title);
+        card_body.appendChild(card_link);
+        card.appendChild(card_image);
+        card.appendChild(card_body);
+        col.appendChild(card);
+        row.appendChild(col);
+        if (i % 4 === 3) {
+            element.appendChild(row);
+            element.appendChild(document.createElement('br'));
+        }
+        element.appendChild(row);
+        element.appendChild(document.createElement('br'));
+    }
+}
+
 async function renderUserHome() {
     const url_string = window.location.href;
     const url = new URL(url_string);
@@ -181,11 +236,15 @@ async function renderUserHome() {
 
     const pets_elem = document.getElementById('favorite_pets');
     const shelters_elem = document.getElementById('favorite_shelters');
+    const viewed_elem = document.getElementById('recently_viewed');
     const user_header = document.getElementById('username_label');
     user_header.innerText = username;
-    console.log("we got here.");
+    const recently_viewed = JSON.parse(window.localStorage.getItem("recently_viewed"));
     renderPets(pets_elem, favorite_pets);
     renderShelters(shelters_elem, favorite_shelters);
+    if (recently_viewed !== null) {
+        renderViewed(viewed_elem, recently_viewed);
+    }
 }
 //checkMatchedUser checks if you are indeed the user
 
