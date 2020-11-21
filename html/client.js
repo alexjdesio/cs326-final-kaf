@@ -231,6 +231,22 @@ async function sendChatData(noContact){
 }
 
 //Shelter Client
+async function checkFavorites(type, username, id) {
+    const url = `/user/id/checkfavorites?type=${type}&username=${username}&id=${id}`;
+    const response = await fetch(url);
+    if (response.ok) {
+        const restext = await response.text();
+        console.log(restext);
+        if (restext === "Not in favorites") {
+            return false;
+        } else if (restext === "In favorites") {
+            return true;
+        } else {
+            console.log("Invalid request");
+            return false;
+        }
+    }
+}
 
 async function renderShelter(shelterID){
     let viewUserUrl = "/shelter/view?shelter_id=" + shelterID;
@@ -247,7 +263,27 @@ async function renderShelter(shelterID){
         document.getElementById('banner').src = results.banner_picture;
         document.getElementById('location').src = results.location_picture;
         
-        renderPets(results.shelter_pets);
+        const recentList = document.getElementById('recentPet');
+        for (let i = 0; i < results.shelter_pets.length; i++){
+            const petResults = await fetch ('/pet/view?pet_id=' + results.shelter_pets[i]);
+            const petResult = await petResults.json();
+            console.log(petResult);
+            const post = document.createElement('div');
+            post.classList.add('col-3', 'card');
+            recentList.appendChild(post);
+
+            const img = document.createElement('img');
+            img.classList.add('img-thumbnail', 'imgCrop');
+            img.src = petResult.picture;
+            const hyperLink = document.createElement('a');
+            hyperLink.href = 'http://localhost:8080/petpage.html?pet_id=' + results.shelter_pets[i];
+            const header = document.createTextNode(petResult.pet_name);
+
+            hyperLink.appendChild(header);
+            post.appendChild(img);
+            post.appendChild(hyperLink);
+        }
+
         
         const userComment = document.getElementById('userComment');
         const msgComment = document.getElementById('msgComment');
@@ -262,61 +298,6 @@ async function renderShelter(shelterID){
             msgComment.appendChild(comment);
         }
     }
-}
-
-async function renderPets(element) {
-    //element.innerHTML = '';
-    //let i;
-    ////for (i = 0; i < (range_pets / 4); i++) {
-    //let row;
-    //for (i = 0; i < element; i++) {
-        //const pet = await getPet(pets[i]);
-        //console.log(pet);
-        //if (i % 4 === 0) {
-            //row = document.createElement('div');
-            //row.classList.add('row');
-        //}
-        ////for (j = 0; j < 4; j++) {
-        //const col = document.createElement('div');
-        //col.classList.add('col');
-
-        //const card = document.createElement('div');
-        //card.classList.add('card');
-        //card.classList.add('homepage-card');
-        //card.classList.add('text-center');
-
-        //const card_image = document.createElement('img');
-        //card_image.classList.add('card-img-top');
-        //card_image.src = pet.picture;
-
-        //const card_body = document.createElement('div');
-        //card_body.classList.add('card-body');
-        //card_body.classList.add('bg-light');
-
-        //const card_title = document.createElement('h5');
-        //card_title.classList.add('card-title');
-        //card_title.classList.add('mt-0');
-        //card_title.classList.add('font-weight-light');
-        //card_title.innerText = pet.pet_name;
-
-        //const card_link = document.createElement('a');
-        //card_link.classList.add('card-link');
-        //card_link.innerText = 'Visit ' + pet.pet_name + '\'s Page';
-        //card_link.href = '/petpage.html?pet_id=' + pet.pet_id;
-
-        //card_body.appendChild(card_title);
-        //card_body.appendChild(card_link);
-        //card.appendChild(card_image);
-        //card.appendChild(card_body);
-        //col.appendChild(card);
-        //row.appendChild(col);
-        //if (i % 4 === 3 || i === viewed_pets - 1) {
-            //element.appendChild(row);
-            //element.appendChild(document.createElement('br'));
-        //}
-        //element.appendChild(row);
-        //element.appendChild(document.createElement('br'));
-    //}
 }
 
 async function sendShelterData(){
@@ -354,6 +335,30 @@ async function sendCommentData(shelterID){
     });
     if(!response.ok){
         console.log(response.error);
+    }
+}
+
+async function getUsername() {
+    const url = '/getSessionUser';
+    const response = await fetch(url);
+    if (response.ok) {
+        const pet = await response.text();
+        return pet;
+    } else {
+        console.log("Username not working");
+    }
+}
+
+async function updateButton(button3, shelterID){
+    const remove_string = 'Remove from Favorites';
+    const add_string = 'Add to Favorites';
+    const username = await getUsername();
+
+    const pet_liked = await checkFavorites("shelter", username, shelterID);
+    if (pet_liked) {
+        button3.innerText = remove_string;
+    } else {
+        button3.innerText = add_string;
     }
 }
 //*************************************************************************************************************************
@@ -433,8 +438,29 @@ function generateDynamicHTML(){
         });
 
         const button3 = document.getElementById('likeShelter');
-        button3.addEventListener("click", async function (){
+        button3.addEventListener('click', async () => {
+            const username = await getUsername();
+            const remove_string = 'Remove from Favorites';
+            const add_string = 'Add to Favorites';
+            if (username === '') {
+                button3.classList.add('disabled');
+            }
+            else {
+                if (button3.innerText === add_string) {
+                    button3.classList.add('active');
+                    const post_url = `/user/id/favoriteShelters/add`;
+                    const post_body = {shelter_id: shelterID, username: username};
+                    await fetch(post_url, { method: 'POST', body: JSON.stringify(post_body) });
+                    button3.innerText = remove_string; 
+                } else {
+                    const post_url = `/user/id/favoriteShelters/delete`;
+                    const post_body = {shelter_id: shelterID, username: username};
+                    await fetch(post_url, { method: 'POST', body: JSON.stringify(post_body) });
+                    button3.innerText = add_string;
+                }
+            }
         });
+        updateButton(button3, shelterID);
     }
     else if (page ==='/shelterForm.html'){
         let form = document.getElementById('createShelter');
