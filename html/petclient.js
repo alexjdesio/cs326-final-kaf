@@ -195,6 +195,5 @@ window.addEventListener("load", async function() {
             console.log(response.error);
         }
         location.reload();
->>>>>>> joe-dev
     });
 });
