@@ -71,29 +71,25 @@
                 </div>
             </div>
             <!--Comments section-->
-            <div class="row mt-5 ml-0">
+        <div class="mt-5">
                 <div class="card" id="comments">
                     <div class="card-body">
                         <form>
-                            <div class="form-group">
-                                <div class="container">                          
-                                    <label for="userComment"></label>
-                                    <textarea class="form-control" rows="2" placeholder="Make a comment" id="comment_body"></textarea>
-                                    <div class="row">
-                                        <!--This is a little hacky, but it gets the job done.-->
-                                        <div class="col">
-                                            <small id="commentHelp" class="form-text text-muted">Login to comment</small>
-                                        </div>
-                                        <button type="button" id='post_comment_button' class="btn btn-primary float-right mt-2 mr-3">Post</button>
-                                    </div>
-                                </div>
-                            </div>
+                            <label for="userComment"></label>
+                            <textarea id='shelterComments' class="form-control" rows="2" placeholder="Make a comment"></textarea>
+                                <button id='post_comment_button' type="button" class="btn btn-primary float-right mt-1 mr-3">Post</button>
+                                <small id="commentHelp" class="form-text text-muted">Login to comment with your username. If not, your comment will be Anonymous.</small>
                         </form>
-                        <!--Comments would be added programatically-->
-                        <h3 class="card-title mt-0">Comments:</h3>   
-                        <div id="comments_section" div class="container">
-
+                        <h3 class="card-title mt-5">Comments:</h3>   
+                        <div class='row'>
+                            <div id='userComment' class='col-3'></div>
+                            <div id='msgComment' class='col-6'></div>
                         </div>
+                    </div>
+                </div>
+        </div><br>
+        </div>
+                        <!--Comments would be added programatically-->
                     </div>
                 </div>
             </div>

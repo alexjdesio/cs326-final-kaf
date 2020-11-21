@@ -33,7 +33,6 @@ const port = process.env.PORT || 8080;     // we will listen on this port
 //Start of Endpoints
   
 //app.use('/',express.static('./html')); //Serves static pages(index.html, search.html, etc.)
-app.use(express.static('html'));
 
 //Alex's MongoDB endpoints:
 
@@ -465,13 +464,13 @@ app.post("/pet/create", checkLoggedIn, async (req,res) => {
 
 //Joe******************************************************************************************************************
 //Chat Endpoints
-app.get('/chat/view', async (req, res) => {
+app.get('/chat/view', checkLoggedIn, async (req, res) => {
     const query = {'username': req.session.passport.user};
     const result = await database.collection('users').findOne(query); 
     res.end(JSON.stringify(result.chat));
 });
 
-app.post('/chat/msg', async (req, res) => {
+app.post('/chat/msg', checkLoggedIn, async (req, res) => {
     const query = {'username': req.session.passport.user};
     const result = await database.collection('users').findOne(query); 
     const msg = {key: '0', value: req.body.value};
@@ -480,9 +479,14 @@ app.post('/chat/msg', async (req, res) => {
     
     const query2 = {'username': req.body.fromUsername};
     const result2 = await database.collection('users').findOne(query2); 
+    if (result2 === null){
+        res.end('No users found');
+        return;
+
+    }
     const msg2 = {key: '1', value: req.body.value};
     let chat2 = result2.chat;
-    
+
     for (let x in chat){
         if (chat[x].fromUsername === req.body.fromUsername){
             chat[x].messages.push(msg);
@@ -500,7 +504,7 @@ app.post('/chat/msg', async (req, res) => {
     if (noContact === true){
         chat.push({fromUsername: req.body.fromUsername, messages: [msg]});
         chat2.push({fromUsername: req.session.passport.user, messages: [msg2]});
-        res.end('Success');
+        res.send('Success');
     }
     await database.collection('users').updateOne(query, {$set: {'chat': chat}});
     await database.collection('users').updateOne(query2, {$set: {'chat': chat2}});
@@ -511,13 +515,15 @@ app.post('/chat/msg', async (req, res) => {
 app.post('/shelter/create', async (req, res) => {
     const id = await getID('shelter');
     const shelter = {        
-        shelter_name: req.query.shelter_name,
+        shelter_name: req.body.shelter_name,
         shelter_id: id,        
-        shelter_location: req.query.shelter_location,        
-        shelter_about: req.query.shelter_about,        
+        shelter_location: req.body.shelter_location,        
+        shelter_about: req.body.shelter_about,        
         shelter_pets: [],        
         shelter_comments: [],        
-        picture: ''    
+        picture: req.body.picture,
+        banner_picture: req.body.banner_picture,
+        location_picture: req.body.location_picture
     };      
     const col = database.collection('shelters');
     await col.insertOne(shelter);
@@ -547,16 +553,32 @@ app.post('/shelter/edit', async (req, res) => {
 
 //Comments/recentlyViewed Endpoints
 app.post("/pet/comments/create", async (req,res) => {
-    const query = {'pet_id': req.query.pet_id};
-    const comment = {'username': req.query.username, 'value': req.query.value};
-    await database.collection('pets').updateOne(query, {$push: {'pet_comments': comment}}); 
+    let user;
+    try{
+        user = req.session.passport.user;
+    }
+    catch(error){
+        user = 'Anonymous';
+    }
+    const query = {'pet_id': req.body.pet_id};
+    const comment = {'username': user, 'value': req.body.value};
+    const col = database.collections('pets');
+    await col.updateOne(query, {$push: {'pet_comments': comment}}); 
     res.end('Success');
 });
 
-app.post("/create/comments/create", async (req,res) => {
-    const query = {'shelter_id': req.query.shelter_id};
-    const comment = {'username': req.query.username, 'value': req.query.value};
-    await database.collection('shelters').updateOne(query, {$push: {'shelter_comments': comment}}); 
+app.post("/shelter/comments/create", async (req,res) => {
+    let user;
+    try{
+        user = req.session.passport.user;
+    }
+    catch(error){
+        user = 'Anonymous';
+    }
+    const query = {'shelter_id': req.body.shelter_id};
+    const comment = {'username': user, 'value': req.body.value};
+    const col = database.collection('shelters');
+    await col.updateOne(query, {$push: {'shelter_comments': comment}}); 
     res.end('Success');
 });
 
@@ -575,3 +597,5 @@ async function getID(type){
 }
 
 //*********************************************************************************************************************
+//Don't move this or redirects won't work
+app.use(express.static('html'));
