@@ -12,6 +12,15 @@ async function getPet(pet_id) {
     //need to add else
 }
 
+async function getUsername() {
+    const url = '/getSessionUser';
+    const response = await fetch(url);
+    if (response.ok) {
+        const pet = await response.text();
+        return pet;
+    }
+}
+
 async function getShelter(shelter_id) {
     const url = "/shelter/view?shelter_id=" + shelter_id;
     const response = await fetch(url);
@@ -111,7 +120,9 @@ window.addEventListener("load", async function() {
     renderPetPage(pet);
 
     favorite_button.addEventListener('click', async () => {
-        const username = await fetch("/getSessionUser", {method: 'GET'});
+        const username = await getUsername();
+        console.log("THE NAME IS!");
+        console.log(username);
         if (username === '') {
             favorite_button.classList.add('disabled');
         }
@@ -120,12 +131,14 @@ window.addEventListener("load", async function() {
                 //do a POST request
                 //        fetch('http://localhost:8080/gameScore', { method: 'POST', body: JSON.stringify(p0JSON) } ); 
                 favorite_button.classList.add('active');
-                const post_url = `${site_url}/user/id/favoritepets/add?username=${username}`;
-                fetch(post_url, { method: 'POST', body: pet_id });
+                const post_url = `${site_url}/user/id/favoritepets/add`;
+                const post_body = {pet_id: pet_id, username: username};
+                fetch(post_url, { method: 'POST', body: JSON.stringify(post_body) });
                 favorite_button.innerText = `Remove ${pet.pet_name} from Favorites`; 
             } else {
-                const post_url = `${site_url}/user/id/favoritepets/delete?username=${username}`;
-                fetch(post_url, { method: 'POST', body: pet_id });
+                const post_url = `${site_url}/user/id/favoritepets/delete`;
+                const post_body = {pet_id: pet_id, username: username};
+                fetch(post_url, { method: 'POST', body: JSON.stringify(post_body) });
                 favorite_button.innerText = `Add ${pet.pet_name} to Favorites`;
             }
         }
