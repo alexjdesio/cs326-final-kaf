@@ -150,6 +150,7 @@ app.get('/home', checkMatchedUser, (req, res) => res.sendFile('html/userhome.htm
 //Endpoint to return the username associated with the current session, or "" if not logged in.
 app.get('/getSessionUser',(req, res) => { 
     if(req.session.passport !== undefined){//return the user if it exists
+        console.log(req.session.passport.user);
         res.send(req.session.passport.user);
     }
     else{
@@ -386,12 +387,16 @@ app.get('/user/id/favoritepets/view', checkLoggedIn, async (req,res) => {
     }
     let i;
     const pet_selection = [];
-    const range = (result.liked_pets.length > req.query.range) ? req.query.range : result.liked_pets.length;
-    for (i = 0; i < range; i++) {
-        pet_selection.push(result.liked_pets[i]);
+    if (req.query.range === -1) {
+        res.end(JSON.stringify(result.liked_pets));
+    } else {
+        const range = (result.liked_pets.length > req.query.range) ? req.query.range : result.liked_pets.length;
+        for (i = 0; i < range; i++) {
+            pet_selection.push(result.liked_pets[i]);
+        }
+        //check if this is null
+        res.end(JSON.stringify(pet_selection));
     }
-    //check if this is null
-    res.end(JSON.stringify(pet_selection));
 });
 // //needs both the user id and the range
 app.get('/user/id/favoriteshelters/view', checkLoggedIn, async (req,res) => {
@@ -423,6 +428,8 @@ app.get('/user/id/recentlyviewedpets/view', checkLoggedIn, async (req,res) => {
 
 // //favorite pets has ?user_id=0123&pet_id=0124
 app.post("/user/id/favoritepets/add", checkLoggedIn, async (req,res) => {
+    console.log("here we are");
+    console.log(req.body.username);
     const database = client.db('petIt');
     await database.collection("users").updateOne(
         { "username": req.body.username},

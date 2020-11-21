@@ -419,7 +419,15 @@ async function sendFormData(arg1){
     };
     let fields = Object.keys(userData);
     for(let field of fields){
-        if(document.getElementById(field) !== null){
+        if(field === "interests" || field === "type"){
+            let selected = document.getElementsByName(field);
+            selected.forEach((arg1)=>{
+                if(arg1.checked){
+                    userData[field] = arg1.value;
+                }
+            });
+        }
+        else if(document.getElementById(field) !== null){
             userData[field] = document.getElementById(field).value;
         }
     }

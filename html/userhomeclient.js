@@ -47,12 +47,15 @@ async function getFavoriteShelters(range, username) {
 }
 
 async function renderPets(element, pets) {
+    console.log("we got here!");
+    console.log(viewed_pets);
     element.innerHTML = '';
     let i;
     //for (i = 0; i < (range_pets / 4); i++) {
     let row;
-    for (i = 0; i < viewed_shelters; i++) {
+    for (i = 0; i < viewed_pets; i++) {
         const pet = await getPet(pets[i]);
+        console.log(pet);
         if (i % 4 === 0) {
             row = document.createElement('div');
             row.classList.add('row');
@@ -63,6 +66,7 @@ async function renderPets(element, pets) {
 
         const card = document.createElement('div');
         card.classList.add('card');
+        card.classList.add('homepage-card');
         card.classList.add('text-center');
 
         const card_image = document.createElement('img');
@@ -82,7 +86,7 @@ async function renderPets(element, pets) {
         const card_link = document.createElement('a');
         card_link.classList.add('card-link');
         card_link.innerText = 'Visit ' + pet.pet_name + '\'s Page';
-        card_link.href = '/petpage.html?name=' + pet.pet_name;
+        card_link.href = '/petpage.html?pet_id=' + pet.pet_id;
 
         card_body.appendChild(card_title);
         card_body.appendChild(card_link);
@@ -116,6 +120,7 @@ async function renderShelters(element, shelters) {
 
         const card = document.createElement('div');
         card.classList.add('card');
+        card.classList.add('homepage-card');
         card.classList.add('text-center');
 
         const card_image = document.createElement('img');
@@ -136,7 +141,7 @@ async function renderShelters(element, shelters) {
         card_link.classList.add('card-link');
         card_link.innerText = 'Visit ' + shelter.shelter_name + '\'s Page';
             //card_link.href = site_url + 'shelter/view?=' + shelters[current_shelter].name;
-        card_link.href = '/shelterpage.html?name=' + shelter.shelter_name;
+        card_link.href = '/shelterpage.html?name=' + shelter.shelter_id;
 
         card_body.appendChild(card_title);
         card_body.appendChild(card_link);
@@ -161,6 +166,8 @@ async function renderUserHome() {
     const favorite_pets = await getFavoritePets(range_pets, username);
 
     viewed_pets = favorite_pets.length;
+    console.log("viewed pets:");
+    console.log(viewed_pets);
     if (viewed_pets < range_pets) {
         document.getElementById('more_pets').classList.add('disabled');
     }
@@ -176,7 +183,7 @@ async function renderUserHome() {
     const shelters_elem = document.getElementById('favorite_shelters');
     const user_header = document.getElementById('username_label');
     user_header.innerText = username;
-
+    console.log("we got here.");
     renderPets(pets_elem, favorite_pets);
     renderShelters(shelters_elem, favorite_shelters);
 }

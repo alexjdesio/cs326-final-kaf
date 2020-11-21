@@ -55,6 +55,15 @@
     line-height:0.4;
 }
 
+#pet_picture {
+    width: 100%;
+    height: auto;
+}
+
+.homepage-card {
+    width: 18rem;
+}
+
 #add_heart{
     position: absolute; 
     right:0; 
