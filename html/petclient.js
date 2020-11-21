@@ -29,6 +29,7 @@ async function checkFavorites(type, username, id) {
     const response = await fetch(url);
     if (response.ok) {
         const restext = await response.text();
+        console.log(restext);
         if (restext === "Not in favorites") {
             return false;
         } else if (restext === "In favorites") {
@@ -50,10 +51,6 @@ async function getShelter(shelter_id) {
         console.log("Couldn't find that shelter!");
     }
     //need to add else
-}
-
-async function checkFavoritePets(username, pet_id) {
-    //
 }
 
 async function renderPetPage(pet) {
@@ -98,21 +95,45 @@ async function renderPetPage(pet) {
         const comment = document.createElement('h4');
         user.classList.add('card');
         comment.classList.add('card');
-        user.innerText = results.shelter_comments[x].username;
-        comment.innerText = results.shelter_comments[x].value;
+        user.innerText = pet.pet_comments[x].username;
+        comment.innerText = pet.pet_comments[x].value;
         userComment.appendChild(user);
         msgComment.appendChild(comment);
     }
 }
 
 window.addEventListener("load", async function() {
+    
+    
+
+
+
     const url_string = window.location.href;
     const url = new URL(url_string);
     const pet_id = url.searchParams.get('pet_id');
     const favorite_button = document.getElementById('favorite_button');
     const adopt_button = document.getElementById('adopt_button');
+    const visit_button = document.getElementById('visit_button');
     const pet = await getPet(pet_id);
+    const shelter = await getShelter(pet.pet_location);
     renderPetPage(pet);
+
+    let recently_viewed = JSON.parse(localStorage.getItem("recently_viewed"));
+    if (recently_viewed === null) {
+        recently_viewed = [];
+    }
+    if ( recently_viewed.includes(pet_id) ) {
+        console.log("already seen");
+    } else {
+        recently_viewed.push(pet_id);
+    }
+    if (recently_viewed.length > 5) {
+        recently_viewed.pop();
+    }
+    console.log(recently_viewed);
+    localStorage.setItem("recently_viewed", JSON.stringify(recently_viewed));
+
+    visit_button.innerText = `View ${shelter.shelter_name}`;
 
     const remove_string = 'Remove from Favorites';
     const add_string = 'Add to Favorites';
@@ -130,6 +151,11 @@ window.addEventListener("load", async function() {
             add_string;
         }
     }
+
+    visit_button.addEventListener('click', () => {
+        const shelter_url = `${site_url}/shelterPage.html?shelter_id=${shelter.shelter_id}`;
+        window.location.href = shelter_url;
+    });
 
     adopt_button.addEventListener('click', () => {
         const adopt_url = `${site_url}/chat.html`;

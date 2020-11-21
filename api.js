@@ -365,16 +365,24 @@ app.get('/pet/view', async (req,res) => {
     let database = client.db('petIt');
     let query = {"pet_id": req.query.pet_id};
     let result = await database.collection("pets").findOne(query);
-    res.end(JSON.stringify(result));
+    if (result === null) {
+        res.end("No pet found");
+    } else {
+        res.end(JSON.stringify(result));
+    }
 });
 
 app.get('/shelter/view', async (req,res) => {
     let database = client.db('petIt');
     let query = {"shelter_id": req.query.shelter_id};
     let result = await database.collection("shelters").findOne(query);
-    res.end(JSON.stringify(result));
+    if (result === null) {
+        res.end("No shelter found");
+    } else {
+        res.end(JSON.stringify(result));
+    }
 });
-// //needs both the user id and the range
+// //needs both the username and the range
 app.get('/user/id/favoritepets/view', checkLoggedIn, async (req,res) => {
     let database = client.db('petIt');
     let query = {"username": req.query.username};
