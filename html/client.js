@@ -231,6 +231,7 @@ async function sendChatData(noContact){
 }
 
 //Shelter Client
+
 async function renderShelter(shelterID){
     let viewUserUrl = "/shelter/view?shelter_id=" + shelterID;
     const response = await fetch(viewUserUrl);
@@ -381,15 +382,15 @@ function generateDynamicHTML(){
         const button = document.getElementById('commentShelter');
         button.addEventListener("click", function (){
             sendCommentData(shelterID);
+            location.reload();
         });
         const button2 = document.getElementById('postPet');
         button2.addEventListener("click", function (){
-            window.location.href="/petform.html";
+            window.location.href="/petform.html?shelter_id=" + shelterID;
         });
 
         const button3 = document.getElementById('likeShelter');
-        button3.addEventListener("click", function (){
-            sendCommentData(shelterID);
+        button3.addEventListener("click", async function (){
         });
     }
     else if (page ==='/shelterForm.html'){

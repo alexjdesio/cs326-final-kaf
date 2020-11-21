@@ -97,8 +97,8 @@ async function renderPetPage(pet) {
         const comment = document.createElement('h4');
         user.classList.add('card');
         comment.classList.add('card');
-        user.innerText = results.shelter_comments[x].username;
-        comment.innerText = results.shelter_comments[x].value;
+        user.innerText = pet.pet_comments[x].username;
+        comment.innerText = pet.pet_comments[x].value;
         userComment.appendChild(user);
         msgComment.appendChild(comment);
     }
@@ -146,10 +146,23 @@ window.addEventListener("load", async function() {
             }
         }
     });
-    document.getElementById('post_comment_button').addEventListener('click', () => {
-        const user_comment = document.getElementById('comment_body').value;
-        //do a POST request
+
+    document.getElementById('post_comment_button').addEventListener('click', async () => {
+        let petID = url.searchParams.get("pet_id");
+        let viewUserUrl = "/pet/comments/create";
+        const response = await fetch(viewUserUrl, {
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json;charset=utf-8'
+            },
+            body: JSON.stringify({
+                pet_id: petID, 
+                value: document.getElementById('petComments').value
+            })
+        });
+        if(!response.ok){
+            console.log(response.error);
+        }
+        location.reload();
     });
 });
-
-

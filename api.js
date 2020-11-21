@@ -569,7 +569,7 @@ app.post("/pet/comments/create", async (req,res) => {
     }
     const query = {'pet_id': req.body.pet_id};
     const comment = {'username': user, 'value': req.body.value};
-    const col = database.collections('pets');
+    const col = database.collection('pets');
     await col.updateOne(query, {$push: {'pet_comments': comment}}); 
     res.end('Success');
 });
