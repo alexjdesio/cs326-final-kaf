@@ -177,10 +177,24 @@ window.addEventListener("load", async function() {
             }
         }
     });
-    document.getElementById('post_comment_button').addEventListener('click', () => {
-        //const user_comment = document.getElementById('comment_body').value;
-        //do a POST request
+
+    document.getElementById('post_comment_button').addEventListener('click', async () => {
+        let petID = url.searchParams.get("pet_id");
+        let viewUserUrl = "/pet/comments/create";
+        const response = await fetch(viewUserUrl, {
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json;charset=utf-8'
+            },
+            body: JSON.stringify({
+                pet_id: petID, 
+                value: document.getElementById('petComments').value
+            })
+        });
+        if(!response.ok){
+            console.log(response.error);
+        }
+        location.reload();
+>>>>>>> joe-dev
     });
 });
-
-

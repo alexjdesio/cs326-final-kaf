@@ -3,6 +3,11 @@
 const site_url = "http://localhost:8080";
 
 window.addEventListener('load', async function() {
+    const url_string = window.location.href;
+    const url = new URL(url_string);
+    const field = document.getElementById('petShelter');
+    field.value = url.searchParams.get('shelter_id');
+    field.readOnly = true;
     document.getElementById('submit_pet').addEventListener('click', () => {
         const name = document.getElementById('pet_name').value;
         const dog_check = document.getElementById('dog_check');
