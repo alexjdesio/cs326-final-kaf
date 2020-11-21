@@ -388,12 +388,16 @@ app.get('/user/id/favoritepets/view', checkLoggedIn, async (req,res) => {
     }
     let i;
     const pet_selection = [];
-    const range = (result.liked_pets.length > req.query.range) ? req.query.range : result.liked_pets.length;
-    for (i = 0; i < range; i++) {
-        pet_selection.push(result.liked_pets[i]);
+    if (req.query.range === -1) {
+        res.end(JSON.stringify(result.liked_pets));
+    } else {
+        const range = (result.liked_pets.length > req.query.range) ? req.query.range : result.liked_pets.length;
+        for (i = 0; i < range; i++) {
+            pet_selection.push(result.liked_pets[i]);
+        }
+        //check if this is null
+        res.end(JSON.stringify(pet_selection));
     }
-    //check if this is null
-    res.end(JSON.stringify(pet_selection));
 });
 // //needs both the user id and the range
 app.get('/user/id/favoriteshelters/view', checkLoggedIn, async (req,res) => {

@@ -66,6 +66,7 @@ async function renderPets(element, pets) {
 
         const card = document.createElement('div');
         card.classList.add('card');
+        card.classList.add('homepage-card');
         card.classList.add('text-center');
 
         const card_image = document.createElement('img');
@@ -119,6 +120,7 @@ async function renderShelters(element, shelters) {
 
         const card = document.createElement('div');
         card.classList.add('card');
+        card.classList.add('homepage-card');
         card.classList.add('text-center');
 
         const card_image = document.createElement('img');

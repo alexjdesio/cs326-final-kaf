@@ -8,8 +8,9 @@ async function getPet(pet_id) {
     if (response.ok) {
         const pet = await response.json();
         return pet;
+    } else {
+        console.log("Pet not found!");
     }
-    //need to add else
 }
 
 async function getUsername() {
@@ -18,6 +19,8 @@ async function getUsername() {
     if (response.ok) {
         const pet = await response.text();
         return pet;
+    } else {
+        console.log("Username not working");
     }
 }
 
@@ -27,10 +30,30 @@ async function getShelter(shelter_id) {
     if (response.ok) {
         const shelter = await response.json();
         return shelter;
+    } else {
+        console.log("Couldn't find that shelter!");
     }
     //need to add else
 }
 
+async function checkFavoritePets(username, pet_id) {
+    //-1 range gives you all the pets!
+    const url = `/user/id/favoritepets/view?range=-1&username=${username}`;
+    const response = await fetch(url);
+    let liked = false;
+    if (response.ok) {
+        const pets = await response.json();
+        let i;
+        for (i = 0; i < pets.length; i++) {
+            if (pet[i] === pet_id) { 
+                liked = true; 
+            }
+        }
+        return liked;
+    } else {
+        console.log("Couldn't find favorite pets!")
+    }
+}
 
 async function renderPetPage(pet) {
     //get all the elements we need to fill in first. Because its easier for me to process that way.
@@ -118,6 +141,16 @@ window.addEventListener("load", async function() {
     const favorite_button = document.getElementById('favorite_button');
     const pet = await getPet(pet_id);
     renderPetPage(pet);
+    
+    const username = await getUsername();
+    if (username !== '') {
+        const pet_liked = checkFavoritePets(username, pet_id);
+        if (pet_liked) {
+            favorite_button.innerText = `Remove ${pet.pet_name} from Favorites`;
+        } else {
+            `Add ${pet.pet_name} to Favorites`;
+        }
+    }
 
     favorite_button.addEventListener('click', async () => {
         const username = await getUsername();
