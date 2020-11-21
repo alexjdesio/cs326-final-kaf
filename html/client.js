@@ -383,12 +383,12 @@ function generateDynamicHTML(){
             sendCommentData(shelterID);
         });
         const button2 = document.getElementById('postPet');
-        button.addEventListener("click", function (){
-            sendCommentData(shelterID);
+        button2.addEventListener("click", function (){
+            window.location.href="/petform.html";
         });
 
         const button3 = document.getElementById('likeShelter');
-        button.addEventListener("click", function (){
+        button3.addEventListener("click", function (){
             sendCommentData(shelterID);
         });
     }
