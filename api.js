@@ -565,21 +565,6 @@ app.get('/shelter/view', async (req, res) => {
     res.end(JSON.stringify(result));
 });
 
-app.post('/shelter/edit', async (req, res) => {
-    const shelter = {        
-        shelter_name: req.query.shelter_name,
-        shelter_id: req.query.shelter_id,        
-        shelter_location: req.query.shelter_location,        
-        shelter_about: req.query.shelter_about,        
-        shelter_pets: req.query.shelter_pets,        
-        shelter_comments: req.query.shelter_comments,        
-        picture: req.query.shelter_picture   
-    };      
-    const query = {'shelter_id' : parseInt(req.query.shelter_id)};
-    await database.collection('shelters').replaceOne(query, shelter);
-    res.end('Success');
-}); 
-
 //Comments/recentlyViewed Endpoints
 app.post("/pet/comments/create", async (req,res) => {
     let user;
