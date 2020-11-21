@@ -45,13 +45,13 @@ async function checkFavoritePets(username, pet_id) {
         const pets = await response.json();
         let i;
         for (i = 0; i < pets.length; i++) {
-            if (pet[i] === pet_id) { 
+            if (pets[i] === pet_id) { 
                 liked = true; 
             }
         }
         return liked;
     } else {
-        console.log("Couldn't find favorite pets!")
+        console.log("Couldn't find favorite pets!");
     }
 }
 
@@ -131,7 +131,6 @@ async function renderPetPage(pet) {
 
         }
     }
-
 }
 
 window.addEventListener("load", async function() {
@@ -142,14 +141,17 @@ window.addEventListener("load", async function() {
     const adopt_button = document.getElementById('adopt_button');
     const pet = await getPet(pet_id);
     renderPetPage(pet);
+
+    const remove_string = 'Remove from Favorites';
+    const add_string = 'Add to Favorites';
     
     const username = await getUsername();
     if (username !== '') {
         const pet_liked = checkFavoritePets(username, pet_id);
         if (pet_liked) {
-            favorite_button.innerText = `Remove ${pet.pet_name} from Favorites`;
+            favorite_button.innerText = remove_string;
         } else {
-            `Add ${pet.pet_name} to Favorites`;
+            add_string;
         }
     }
 
@@ -160,28 +162,26 @@ window.addEventListener("load", async function() {
 
     favorite_button.addEventListener('click', async () => {
         const username = await getUsername();
-        console.log("THE NAME IS!");
-        console.log(username);
         if (username === '') {
             favorite_button.classList.add('disabled');
         }
         else {
-            if (favorite_button.innerText === `Add ${pet.pet_name} to Favorites`) {
+            if (favorite_button.innerText === add_string) {
                 favorite_button.classList.add('active');
                 const post_url = `${site_url}/user/id/favoritepets/add`;
                 const post_body = {pet_id: pet_id, username: username};
                 fetch(post_url, { method: 'POST', body: JSON.stringify(post_body) });
-                favorite_button.innerText = `Remove ${pet.pet_name} from Favorites`; 
+                favorite_button.innerText = remove_string; 
             } else {
                 const post_url = `${site_url}/user/id/favoritepets/delete`;
                 const post_body = {pet_id: pet_id, username: username};
                 fetch(post_url, { method: 'POST', body: JSON.stringify(post_body) });
-                favorite_button.innerText = `Add ${pet.pet_name} to Favorites`;
+                favorite_button.innerText = add_string;
             }
         }
     });
     document.getElementById('post_comment_button').addEventListener('click', () => {
-        const user_comment = document.getElementById('comment_body').value;
+        //const user_comment = document.getElementById('comment_body').value;
         //do a POST request
     });
 });
