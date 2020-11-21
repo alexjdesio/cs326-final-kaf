@@ -232,24 +232,22 @@ async function sendChatData(noContact){
 
 //Shelter Client
 async function renderShelter(shelterID){
-    let viewUserUrl = "/shelter/view";
-    const response = await fetch(viewUserUrl, {
-        method: 'GET',
-        query: JSON.stringify({
-            shelter_id: shelterID 
-        })   
-    });
+    let viewUserUrl = "/shelter/view?shelter_id=" + shelterID;
+    const response = await fetch(viewUserUrl);
     if(response.ok){
-        console.log(shelterID)
         const results = await response.json();
         console.log(results);
-       /* document.getElementById('nameOrg').innerText = results.shelter_name;*/
-        //document.getElementById('nameOrg2').innerText = results.shelter_name;
-        //document.getElementById('aboutOrg').innerText = results.shelter_about;
-        //document.getElementById('aboutOrg2').innerText = results.shelter_location;
+        document.getElementById('nameOrg').innerText = results.shelter_name;
+        document.getElementById('nameOrg2').innerText = results.shelter_name;
+        document.getElementById('aboutOrg').innerText = results.shelter_about;
+        document.getElementById('aboutOrg2').innerText = results.shelter_location;
+
+        document.getElementById('profile').src = results.picture;
+        document.getElementById('banner').src = results.banner_picture;
+        document.getElementById('location').src = results.location_picture;
         
-        //const recentList = document.getElementById('recentPet');
-        //for (let i = 0; i < 5; ++i){
+        const recentList = document.getElementById('viewed_pets');
+       /* for (let i = 0; i < 5; ++i){*/
             //const post = document.createElement('div');
             //post.classList.add('col', 'card');
             //recentList.appendChild(post);
@@ -259,8 +257,59 @@ async function renderShelter(shelterID){
             //post.appendChild(img);
             //const header = document.createElement('h5');
             //header.innerText = results.shelter_pets[i].pet_name;
-            /*post.appendChild(header);*/
-        //}
+            //post.appendChild(header);
+        /*}*/
+        
+        const userComment = document.getElementById('userComment');
+        const msgComment = document.getElementById('msgComment');
+        for (let x in results.shelter_comments){
+            const user = document.createElement('h4');
+            const comment = document.createElement('h4');
+            user.classList.add('card');
+            comment.classList.add('card');
+            user.innerText = results.shelter_comments[x].username;
+            comment.innerText = results.shelter_comments[x].value;
+            userComment.appendChild(user);
+            msgComment.appendChild(comment);
+        }
+    }
+}
+
+async function sendShelterData(){
+    let viewUserUrl = "/shelter/create";
+    const response = await fetch(viewUserUrl, {
+        method: 'POST',
+        headers: {
+        'Content-Type': 'application/json;charset=utf-8'
+        },
+        body: JSON.stringify({
+            shelter_name: document.getElementById('shelter_name').value,
+            shelter_location: document.getElementById('shelter_location').value,
+            shelter_about: document.getElementById('shelter_about').value,
+            picture: document.getElementById('profile_picture').value,
+            banner_picture: document.getElementById('banner_picture').value,
+            location_picture: document.getElementById('location_picture').value
+        })
+    });
+    if(!response.ok){
+        console.log(response.error);
+    }
+}
+
+async function sendCommentData(shelterID){
+    let viewUserUrl = "/shelter/comments/create";
+    const response = await fetch(viewUserUrl, {
+        method: 'POST',
+        headers: {
+        'Content-Type': 'application/json;charset=utf-8'
+        },
+        body: JSON.stringify({
+            shelter_id: shelterID, 
+            value: document.getElementById('shelterComments').value
+        })
+    });
+    if(!response.ok){
+        console.log(response.error);
     }
 }
 //*************************************************************************************************************************
@@ -308,6 +357,7 @@ function generateDynamicHTML(){
             sendFormData("login");
         });
     }
+//Joe**********************************************************************************************************************
     else if (page === '/chat.html'){
         let form = document.getElementById('chatForm');
         let submit = document.getElementById('chatSubmit');
@@ -317,21 +367,40 @@ function generateDynamicHTML(){
         form.addEventListener("submit",function (event){
             event.preventDefault(); //this is so important, prevents default form submission behavior
             sendChatData(false);
-            document.getElementById('chatField').value = '';
             location.reload();
         });
         form2.addEventListener("submit",function (event){
             event.preventDefault(); //this is so important, prevents default form submission behavior
             sendChatData(true);
-            document.getElementById('nameField').value = '';
-            document.getElementById('textField').value = '';
             location.reload();
         });
     }
     else if (page ==='/shelterPage.html'){
         let shelterID = url.searchParams.get("shelter_id");
         renderShelter(shelterID); 
+        const button = document.getElementById('commentShelter');
+        button.addEventListener("click", function (){
+            sendCommentData(shelterID);
+        });
+        const button2 = document.getElementById('postPet');
+        button.addEventListener("click", function (){
+            sendCommentData(shelterID);
+        });
+
+        const button3 = document.getElementById('likeShelter');
+        button.addEventListener("click", function (){
+            sendCommentData(shelterID);
+        });
     }
+    else if (page ==='/shelterForm.html'){
+        let form = document.getElementById('createShelter');
+        form.addEventListener("submit",function (event){
+            event.preventDefault(); //this is so important, prevents default form submission behavior
+            sendShelterData();
+            location.reload();
+        });
+    }
+//*************************************************************************************************************************
 }
 
 

@@ -90,48 +90,18 @@ async function renderPetPage(pet) {
 
     //then deal with the comments section
 
-    const comments = pet.pet_comments;
-    
-    if (comments.length > 0) {
-        let i;
-        for (i = 0; i < comments.length; i++) {
-            const comment_row = document.createElement('div');
-            comment_row.classList.add('row');
-
-            const comment_card = document.createElement('div');
-            comment_card.classList.add('card');
-
-            const comment_user = document.createElement('div');
-            comment_user.classList.add('card-title');
-            comment_user.classList.add('mt-2');
-            comment_user.classList.add('ml-2');
-            comment_user.innerText = `${comments[i].username}:`;
-
-            const comment_body_container = document.createElement('div');
-            comment_body_container.classList.add('card-body');
-
-            const comment_body = document.createElement('p');
-            comment_body.classList.add('card-text');
-            comment_body.classList.add('bg-light');
-            comment_body.innerText = comments[i].comment;
-
-            comment_body_container.appendChild(comment_body);
-            comment_card.appendChild(comment_user);
-            comment_card.appendChild(comment_body_container);
-            comment_row.appendChild(comment_card);
-            comments_section.appendChild(comment_row);
-            comments_section.appendChild(document.createElement('br'));
-
-            /** 
-            <p class="card-text bg-light" id="about_shelter">Here at Westminster Animal Shelter, we rescue pets in need and give them 
-                                a loving home. Our pets are priced on a pay what you want scale, plus a small fee for shelter upkeep.
-                                Please contact us to adopt one of our beautiful animals!
-                            </p>
-                            **/
-
-        }
+    const userComment = document.getElementById('userComment');
+    const msgComment = document.getElementById('msgComment');
+    for (let x in pet.pet_comments){
+        const user = document.createElement('h4');
+        const comment = document.createElement('h4');
+        user.classList.add('card');
+        comment.classList.add('card');
+        user.innerText = results.shelter_comments[x].username;
+        comment.innerText = results.shelter_comments[x].value;
+        userComment.appendChild(user);
+        msgComment.appendChild(comment);
     }
-
 }
 
 window.addEventListener("load", async function() {
