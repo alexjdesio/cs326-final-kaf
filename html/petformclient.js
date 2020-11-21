@@ -16,7 +16,7 @@ window.addEventListener('load', async function() {
         const about = document.getElementById('about_pet').value;
         const health = document.getElementById('health_pet').value;
         const breed = document.getElementById('breed').value;
-        const location = document.getElementById('location').value;
+        const location = document.getElementById('petShelter').value;
         const picture = document.getElementById('picture').value;
         //later, we can actually check that these are all filled out
         let type;

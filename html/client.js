@@ -247,19 +247,7 @@ async function renderShelter(shelterID){
         document.getElementById('banner').src = results.banner_picture;
         document.getElementById('location').src = results.location_picture;
         
-        const recentList = document.getElementById('viewed_pets');
-       /* for (let i = 0; i < 5; ++i){*/
-            //const post = document.createElement('div');
-            //post.classList.add('col', 'card');
-            //recentList.appendChild(post);
-            //const img = document.createElement('img');
-            //img.classList.add('img-thumbnail', 'imgCrop');
-            //img.src = results.shelter_pets[i].picture;
-            //post.appendChild(img);
-            //const header = document.createElement('h5');
-            //header.innerText = results.shelter_pets[i].pet_name;
-            //post.appendChild(header);
-        /*}*/
+        renderPets(results.shelter_pets);
         
         const userComment = document.getElementById('userComment');
         const msgComment = document.getElementById('msgComment');
@@ -274,6 +262,61 @@ async function renderShelter(shelterID){
             msgComment.appendChild(comment);
         }
     }
+}
+
+async function renderPets(element) {
+    //element.innerHTML = '';
+    //let i;
+    ////for (i = 0; i < (range_pets / 4); i++) {
+    //let row;
+    //for (i = 0; i < element; i++) {
+        //const pet = await getPet(pets[i]);
+        //console.log(pet);
+        //if (i % 4 === 0) {
+            //row = document.createElement('div');
+            //row.classList.add('row');
+        //}
+        ////for (j = 0; j < 4; j++) {
+        //const col = document.createElement('div');
+        //col.classList.add('col');
+
+        //const card = document.createElement('div');
+        //card.classList.add('card');
+        //card.classList.add('homepage-card');
+        //card.classList.add('text-center');
+
+        //const card_image = document.createElement('img');
+        //card_image.classList.add('card-img-top');
+        //card_image.src = pet.picture;
+
+        //const card_body = document.createElement('div');
+        //card_body.classList.add('card-body');
+        //card_body.classList.add('bg-light');
+
+        //const card_title = document.createElement('h5');
+        //card_title.classList.add('card-title');
+        //card_title.classList.add('mt-0');
+        //card_title.classList.add('font-weight-light');
+        //card_title.innerText = pet.pet_name;
+
+        //const card_link = document.createElement('a');
+        //card_link.classList.add('card-link');
+        //card_link.innerText = 'Visit ' + pet.pet_name + '\'s Page';
+        //card_link.href = '/petpage.html?pet_id=' + pet.pet_id;
+
+        //card_body.appendChild(card_title);
+        //card_body.appendChild(card_link);
+        //card.appendChild(card_image);
+        //card.appendChild(card_body);
+        //col.appendChild(card);
+        //row.appendChild(col);
+        //if (i % 4 === 3 || i === viewed_pets - 1) {
+            //element.appendChild(row);
+            //element.appendChild(document.createElement('br'));
+        //}
+        //element.appendChild(row);
+        //element.appendChild(document.createElement('br'));
+    //}
 }
 
 async function sendShelterData(){
