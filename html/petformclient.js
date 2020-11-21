@@ -1,6 +1,6 @@
 'use strict';
 
-const site_url = "http://localhost:8080";
+const site_url = "";
 
 window.addEventListener('load', async function() {
     const url_string = window.location.href;

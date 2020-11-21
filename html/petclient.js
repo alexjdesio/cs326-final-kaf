@@ -1,6 +1,6 @@
 'use strict';
 
-const site_url = "http://localhost:8080";
+const site_url = "";
 
 async function getPet(pet_id) {
     const url = "/pet/view?pet_id=" + pet_id;

@@ -276,7 +276,7 @@ async function renderShelter(shelterID){
             img.classList.add('img-thumbnail', 'imgCrop');
             img.src = petResult.picture;
             const hyperLink = document.createElement('a');
-            hyperLink.href = 'http://localhost:8080/petpage.html?pet_id=' + results.shelter_pets[i];
+            hyperLink.href = '/petpage.html?pet_id=' + results.shelter_pets[i];
             const header = document.createTextNode(petResult.pet_name);
 
             hyperLink.appendChild(header);
