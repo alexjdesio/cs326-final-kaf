@@ -139,6 +139,7 @@ window.addEventListener("load", async function() {
     const url = new URL(url_string);
     const pet_id = url.searchParams.get('pet_id');
     const favorite_button = document.getElementById('favorite_button');
+    const adopt_button = document.getElementById('adopt_button');
     const pet = await getPet(pet_id);
     renderPetPage(pet);
     
@@ -152,6 +153,11 @@ window.addEventListener("load", async function() {
         }
     }
 
+    adopt_button.addEventListener('click', () => {
+        const adopt_url = `${site_url}/chat.html`;
+        window.location.href = adopt_url;
+    });
+
     favorite_button.addEventListener('click', async () => {
         const username = await getUsername();
         console.log("THE NAME IS!");
@@ -161,8 +167,6 @@ window.addEventListener("load", async function() {
         }
         else {
             if (favorite_button.innerText === `Add ${pet.pet_name} to Favorites`) {
-                //do a POST request
-                //        fetch('http://localhost:8080/gameScore', { method: 'POST', body: JSON.stringify(p0JSON) } ); 
                 favorite_button.classList.add('active');
                 const post_url = `${site_url}/user/id/favoritepets/add`;
                 const post_body = {pet_id: pet_id, username: username};
