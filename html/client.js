@@ -26,15 +26,18 @@ async function getSearchResults(type,query,quantity){
     let fieldElements = {
         pet_name: "a",
         pet_breed: "p",
-        shelter_name: "h3",
+        shelter_name: "a",
         picture: "img"
     };
     let labels = {
         pet_breed: "Breed: ",
         pet_about: "About: ",
-        pet_comments: "Comments: ",
-        pet_health: "Health: "
+        pet_health: "Health: ",
+        num_likes: "Likes: ",
+        pet_type: "Pet Type: ",
+        pet_location: "Shelter: "
     };
+    let omit = ["pet_id","_id","pet_location","pet_comments","shelter_id","shelter_pets","picture","banner_picture","location_picture","shelter_comments"];
     if(response.ok){
         let results = await response.json();
         const search_container = document.getElementById("search-results");
@@ -57,12 +60,20 @@ async function getSearchResults(type,query,quantity){
                     newField.height = 200;
                 }
                 else{
-                    if(field in labels){
+                    if(field === "pet_location"){
+                        const url = "/shelter/view?shelter_id=" + result[field];
+                        const response = await fetch(url);
+                        if (response.ok) {
+                            const shelter = await response.json();
+                            newField.textContent = labels[field] + shelter.shelter_name;
+                        }
+                    }
+                    else if(field in labels){
                         newField.textContent = labels[field] + result[field];
                     }
-                    else{
+                    else if(!omit.includes(field)){
                         newField.textContent = result[field];
-                    }   
+                    }          
                 }
                 newResultDiv.append(newField);
                 let classIdentifier = "card-text";
@@ -73,12 +84,12 @@ async function getSearchResults(type,query,quantity){
                 newField.classList.add(classIdentifier);
                 newField.classList.add(field);
 
-                //generates appropriate links for <a> tags, needs to be updated when merging code on Friday
+                //generates appropriate links for <a> tags
                 if(field === "pet_name"){
-                    newField.href = "/petpage.html?name=" + result[field]; //may need to change name of this field
+                    newField.href = "/petpage.html?pet_id=" + result["pet_id"]; //may need to change name of this field
                 }
                 else if(field === "shelter_name"){
-                    newField.href = "/shelterPage.html?name=" + result[field]; //may need to change name of this field
+                    newField.href = "/shelterPage.html?shelter_id=" + result["shelter_id"]; //may need to change name of this field
                 }
             } 
             search_container.append(newCard);

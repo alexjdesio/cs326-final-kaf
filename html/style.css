@@ -159,7 +159,7 @@
     content: ": ";
 }
 
-.pet_name{
+.pet_name, .shelter_name{
     font-size: 1.75rem;
 }
 
@@ -208,4 +208,12 @@ p{
 
 .mt-2rem{
     margin-top: 2rem;
+}
+
+#search-results .card-text{
+    line-height: 33px;
+}
+
+.shelter_location{
+    margin-bottom: 100px;
 }
