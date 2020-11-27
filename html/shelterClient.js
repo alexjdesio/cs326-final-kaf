@@ -91,6 +91,11 @@ async function sendShelterData(){
 }
 
 async function sendCommentData(shelterID){
+    const comment = document.getElementById('shelterComments').value;
+    if (comment === ''){
+        return;
+    }
+
     let viewUserUrl = "/shelter/comments/create";
     const response = await fetch(viewUserUrl, {
         method: 'POST',
@@ -99,7 +104,7 @@ async function sendCommentData(shelterID){
         },
         body: JSON.stringify({
             shelter_id: shelterID, 
-            value: document.getElementById('shelterComments').value
+            value: comment
         })
     });
     if(!response.ok){

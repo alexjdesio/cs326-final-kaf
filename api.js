@@ -130,10 +130,23 @@ function checkMatchedUser(req,res,next){
     }
 }
 
+async function checkIfShelterAcct(req, res, next){
+    const query = {'username': req.session.passport.user};
+    const result = await database.collection('users').findOne(query); 
+    if (result.type === 'shelter'){
+        next();
+    } else{
+        res.redirect('/login');
+    }
+}
+
 app.get('/settings.html',checkMatchedUser,(req, res,next) => { next();}); 
 //For a url that you want to block, you need checkLoggedIn or checkMatched user as the first function that handles the endpoint
 //and then after validation, just call next
 app.get('/userhome.html',checkMatchedUser,(req, res,next) => { next();}); 
+
+app.get('/chat.html', checkLoggedIn, (req, res,next) => { next();}); 
+app.get('/shelterForm.html',checkLoggedIn, checkIfShelterAcct, (req, res,next) => { next();}); 
 
 app.get('/home', checkMatchedUser, (req, res) => res.sendFile('html/userhome.html', { 'root' : __dirname }));
 

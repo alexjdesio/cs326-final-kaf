@@ -180,6 +180,11 @@ window.addEventListener("load", async function() {
     favorite_button.click();
 
     document.getElementById('post_comment_button').addEventListener('click', async () => {
+        const comment = document.getElementById('petComments').value;
+        if (comment === ''){
+            return;
+        }
+
         let petID = url.searchParams.get("pet_id");
         let viewUserUrl = "/pet/comments/create";
         const response = await fetch(viewUserUrl, {
@@ -189,7 +194,7 @@ window.addEventListener("load", async function() {
             },
             body: JSON.stringify({
                 pet_id: petID, 
-                value: document.getElementById('petComments').value
+                value: comment
             })
         });
         if(!response.ok){
