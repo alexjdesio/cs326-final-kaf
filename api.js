@@ -4,7 +4,6 @@ const minicrypt = require('./miniCrypt.js');
 const expressSession = require('express-session');  // for managing session state
 const passport = require('passport');               // handles authentication
 const LocalStrategy = require('passport-local').Strategy; // username/password strategy
-
 const mc = new minicrypt();
 
 //Secrets
@@ -19,7 +18,7 @@ if (!process.env.URL) {
 
 //MongoDB Start
 const { MongoClient } = require("mongodb");
-const client = new MongoClient(url,{ useUnifiedTopology: true });
+const client = new MongoClient(url, { useUnifiedTopology: true });
 let database;
 async function start(){ 
     await client.connect();
@@ -31,15 +30,6 @@ const app = express(); // this is the "app"
 const port = process.env.PORT || 8080;     // we will listen on this port
 
 //Start of Endpoints
-  
-//app.use('/',express.static('./html')); //Serves static pages(index.html, search.html, etc.)
-
-//Alex's MongoDB endpoints:
-
-/**
- * TODO:   
-    * Merge
-*/
 app.use(express.json({type: ['application/json', 'text/plain']})); 
 app.use(express.urlencoded({extended : true})); // allow URLencoded data
 app.use(express.static('client'));
@@ -53,8 +43,8 @@ const strategy = new LocalStrategy(async (username, password, done) => {
     }
 
     //Get the user associated with the username
-    let check_query = {"username": username};
-    let result = await database.collection("users").findOne(check_query); // do I need to await these calls?
+    const check_query = {"username": username};
+    const result = await database.collection("users").findOne(check_query); // do I need to await these calls?
     if(result === null){
         console.log("user does not exist");
         return done(null, false, { 'message' : 'User does not exist' });
@@ -100,8 +90,8 @@ app.use(express.urlencoded({'extended' : true})); // allow URLencoded data
 // Returns true if the user exists.
 async function findUser(username) {
     //check if the username is in the database
-    let check_query = {"username": username};
-    let result = await database.collection("users").findOne(check_query); // do I need to await these calls?
+    const check_query = {"username": username};
+    const result = await database.collection("users").findOne(check_query); // do I need to await these calls?
     if(result !== null){
         return true;
     }
@@ -185,28 +175,28 @@ app.get('/register', (req, res) => res.sendFile('html/register.html',{ 'root' : 
 // Use res.redirect to change URLs.
 app.post("/register",express.json(), async (req,res) => {
     //check if the username is in the database
-    let check_query = {"username": req.body.username};
-    let result = await database.collection("users").findOne(check_query); // do I need to await these calls?
+    const check_query = {"username": req.body.username};
+    const result = await database.collection("users").findOne(check_query); // do I need to await these calls?
     if(result !== null){
         console.log("User already exists.");
         res.redirect('/register');
         return;
     }
     //check if any of the body fields are blank/malformed
-    let requiredFields = {
+    const requiredFields = {
         username: null,
         email: null, 
         password: null,
         type: null,
     };
-    for(let field of Object.keys(requiredFields)){
+    for(const field of Object.keys(requiredFields)){
         if(req.body[field] === null || req.body[field] === ""){
             console.log("Malformed Input.");
             res.redirect('/register');
             return;
         }
     }
-    let add_query = req.body; //set the query to be equal to the request body
+    const add_query = req.body; //set the query to be equal to the request body
 
     //Hash password with salt
     const salt_hash = mc.hash(req.body.password);
@@ -229,9 +219,8 @@ app.post("/register",express.json(), async (req,res) => {
 
 //Needs testing
 app.post("/user/id/edit",checkLoggedIn, async (req,res) =>{
-    let database = client.db("petIt");
     //check if the username is in the database
-    let check_query = {"username": req.body.username};
+    const check_query = {"username": req.body.username};
 
     if(req.session.passport === null){
         res.redirect("/login.html");
@@ -242,19 +231,19 @@ app.post("/user/id/edit",checkLoggedIn, async (req,res) =>{
         console.log("You're not", req.session.passport.user, "!");
     }
 
-    let result = await database.collection("users").findOne(check_query); // do I need to await these calls?
+    const result = await database.collection("users").findOne(check_query); // do I need to await these calls?
     if(result === null){
         console.log("User does not exist.");
         res.end("User does not exist.");
         return;
     }
     //check if any of the body fields are blank/malformed
-    let requiredFields = {
+    const requiredFields = {
         username: null,
         email: null, 
         type: null,
     };
-    for(let field of Object.keys(requiredFields)){
+    for(const field of Object.keys(requiredFields)){
         if(req.body[field] === null || req.body[field] === ""){
             console.log("Malformed Input.");
             res.end("Malformed Input.");
@@ -262,7 +251,7 @@ app.post("/user/id/edit",checkLoggedIn, async (req,res) =>{
         }
     }
     //Edit the existing user data
-    let edit_query = req.body;
+    const edit_query = req.body;
     edit_query["password"] = result.password;
     edit_query["salt"] = result.salt;
     edit_query["shelter"] = result.shelter;
@@ -284,18 +273,18 @@ app.post("/user/id/edit",checkLoggedIn, async (req,res) =>{
 
 app.get('/search',express.urlencoded(), async (req,res) => {
     //Make sure this is a valid search request
-    let requiredFields = {
+    const requiredFields = {
         type: null,
         query: null, 
         quantity: null,
     };
-    for(let field of Object.keys(requiredFields)){
+    for(const field of Object.keys(requiredFields)){
         if(req.query[field] === null){ 
             res.end("Invalid request- missing type, query, or quantity field."); 
             return;
         }
     }
-    let petFields = {
+    const petFields = {
         pet_name: null,
         pet_location: null,
         pet_type: null,
@@ -306,7 +295,7 @@ app.get('/search',express.urlencoded(), async (req,res) => {
         picture: null,
         num_likes: null
     };
-    let shelterFields = {
+    const shelterFields = {
         shelter_name: null,        
         shelter_location: null,        
         shelter_about: null,        
@@ -328,9 +317,9 @@ app.get('/search',express.urlencoded(), async (req,res) => {
     else{
         res.end("Invalid query- invalid type value.");
     }
-    let query = {};
+    const query = {};
     query[req.query.type] = req.query.query;
-    let result = [];
+    const result = [];
     await database.collection(collection_type).find(query,{limit: parseInt(req.query.quantity)}).forEach((x)=>result.push(x));
     console.log("Search request returned: ", result);
     res.end(JSON.stringify(result));
@@ -339,9 +328,8 @@ app.get('/search',express.urlencoded(), async (req,res) => {
 //TODO: filter what's returned so that the password + salt are not returned
 
 app.get('/user/id/view',checkMatchedUser, async (req,res) => {
-    let database = client.db('petIt');
-    let query = {"username": req.query.username};
-    let result = await database.collection("users").findOne(query); // do I need to await these calls?
+    const query = {"username": req.query.username};
+    const result = await database.collection("users").findOne(query); // do I need to await these calls?
     /** 
     if(result !== null){ //prevent the password and salt being returned to the user
         result.salt = "";
@@ -362,9 +350,8 @@ app.use(express.static('html'));
 //Sam
 
 app.get('/pet/view', async (req,res) => {
-    let database = client.db('petIt');
-    let query = {"pet_id": req.query.pet_id};
-    let result = await database.collection("pets").findOne(query);
+    const query = {"pet_id": req.query.pet_id};
+    const result = await database.collection("pets").findOne(query);
     if (result === null) {
         res.end("No pet found");
     } else {
@@ -373,9 +360,8 @@ app.get('/pet/view', async (req,res) => {
 });
 
 app.get('/shelter/view', async (req,res) => {
-    let database = client.db('petIt');
-    let query = {"shelter_id": req.query.shelter_id};
-    let result = await database.collection("shelters").findOne(query);
+    const query = {"shelter_id": req.query.shelter_id};
+    const result = await database.collection("shelters").findOne(query);
     if (result === null) {
         res.end("No shelter found");
     } else {
@@ -384,9 +370,8 @@ app.get('/shelter/view', async (req,res) => {
 });
 // //needs both the username and the range
 app.get('/user/id/favoritepets/view', checkLoggedIn, async (req,res) => {
-    let database = client.db('petIt');
-    let query = {"username": req.query.username};
-    let result = await database.collection("users").findOne(query);
+    const query = {"username": req.query.username};
+    const result = await database.collection("users").findOne(query);
     if (result !== null) {
         console.log(result.liked_pets);
     }
@@ -404,7 +389,6 @@ app.get('/user/id/favoritepets/view', checkLoggedIn, async (req,res) => {
 
 app.get('/user/id/checkfavorites', checkLoggedIn, async (req,res) => {
     //args: id=&username=&type=
-    let database = client.db('petIt');
     let query;
     if (req.query.type === 'pet') {
         query = {"username": req.query.username, liked_pets: req.query.id};
@@ -414,7 +398,7 @@ app.get('/user/id/checkfavorites', checkLoggedIn, async (req,res) => {
         res.end("Incorrect type requested");
     }
     
-    let result = await database.collection("users").findOne(query);
+    const result = await database.collection("users").findOne(query);
     if (result === null) {
         res.end("Not in favorites");
     } else {
@@ -423,9 +407,8 @@ app.get('/user/id/checkfavorites', checkLoggedIn, async (req,res) => {
 });
 // //needs both the user id and the range
 app.get('/user/id/favoriteshelters/view', checkLoggedIn, async (req,res) => {
-    let database = client.db('petIt');
-    let query = {"username": req.query.username};
-    let result = await database.collection("users").findOne(query);
+    const query = {"username": req.query.username};
+    const result = await database.collection("users").findOne(query);
     let i;
     const shelter_selection = [];    
     const range = (result.liked_shelters.length > req.query.range) ? req.query.range : result.liked_shelters.length;
@@ -437,9 +420,8 @@ app.get('/user/id/favoriteshelters/view', checkLoggedIn, async (req,res) => {
 });
 // //needs only an id to be send along
 app.get('/user/id/recentlyviewedpets/view', checkLoggedIn, async (req,res) => {
-    let database = client.db('petIt');
-    let query = {"username": req.query.username};
-    let result = await database.collection("users").findOne(query);
+    const query = {"username": req.query.username};
+    const result = await database.collection("users").findOne(query);
     //we should check if this is null before sending it, I'll do it later though.
     res.end(JSON.stringify(result.viewed_pets));
 });
@@ -451,7 +433,6 @@ app.get('/user/id/recentlyviewedpets/view', checkLoggedIn, async (req,res) => {
 
 // //favorite pets has ?user_id=0123&pet_id=0124
 app.post("/user/id/favoritepets/add", checkLoggedIn, async (req,res) => {
-    const database = client.db('petIt');
     await database.collection("users").updateOne(
         { "username": req.body.username},
         {$push: {"liked_pets" : req.body.pet_id} }
@@ -462,7 +443,6 @@ app.post("/user/id/favoritepets/add", checkLoggedIn, async (req,res) => {
 app.post("/user/id/favoritepets/delete", checkLoggedIn, async (req,res) => {
     console.log("REMOVING??? this id:");
     console.log(req.body.pet_id);
-    const database = client.db('petIt');
     await database.collection("users").updateOne(
         { "username": req.body.username},
         { $pull: {"liked_pets" : req.body.pet_id} }
@@ -472,9 +452,8 @@ app.post("/user/id/favoritepets/delete", checkLoggedIn, async (req,res) => {
 
 app.post("/pet/create", checkLoggedIn, async (req,res) => {
     //check if logged in
-    const database = client.db("petIt");
     const pet_id = await getID('pet');
-    let requiredFields = {
+    const requiredFields = {
         pet_name: req.body.pet_name,
         pet_location: req.body.pet_location,
         pet_id: pet_id,
@@ -496,7 +475,6 @@ app.post("/pet/create", checkLoggedIn, async (req,res) => {
     res.end("Pet created");
 });
 
-//Joe******************************************************************************************************************
 //Chat Endpoints
 app.get('/chat/view', checkLoggedIn, async (req, res) => {
     const query = {'username': req.session.passport.user};
@@ -509,26 +487,25 @@ app.post('/chat/msg', checkLoggedIn, async (req, res) => {
     const result = await database.collection('users').findOne(query); 
     const msg = {key: '0', value: req.body.value};
     let noContact = true;
-    let chat = result.chat;
+    const chat = result.chat;
     
     const query2 = {'username': req.body.fromUsername};
     const result2 = await database.collection('users').findOne(query2); 
     if (result2 === null){
         res.end('No users found');
         return;
-
     }
     const msg2 = {key: '1', value: req.body.value};
-    let chat2 = result2.chat;
+    const chat2 = result2.chat;
 
-    for (let x in chat){
+    for (const x in chat){
         if (chat[x].fromUsername === req.body.fromUsername){
             chat[x].messages.push(msg);
             noContact = false;
             break;
         }
     }
-    for (let x in chat2){
+    for (const x in chat2){
         if (chat2[x].fromUsername === req.session.passport.user){
             chat2[x].messages.push(msg2);
             break;
@@ -545,9 +522,9 @@ app.post('/chat/msg', checkLoggedIn, async (req, res) => {
     res.end('Success');
 });
 
-//Shelter Endpoints
+//Shelter Endpoints for Create, View, Like/Unlike
 app.post('/shelter/create', async (req, res) => {
-    const id = await getID('shelter');
+    const id = getID('shelter');
     const shelter = {        
         shelter_name: req.body.shelter_name,
         shelter_id: id,        
@@ -569,8 +546,8 @@ app.get('/shelter/view', async (req, res) => {
     const result = await database.collection('shelters').findOne(query); // do I need to await these calls?
     res.end(JSON.stringify(result));
 });
+
 app.post("/user/id/favoriteShelters/add", checkLoggedIn, async (req,res) => {
-    const database = client.db('petIt');
     await database.collection("users").updateOne(
         { "username": req.body.username},
         {$push: {"liked_shelters" : req.body.shelter_id} }
@@ -579,14 +556,14 @@ app.post("/user/id/favoriteShelters/add", checkLoggedIn, async (req,res) => {
 });
 
 app.post("/user/id/favoriteShelters/delete", checkLoggedIn, async (req,res) => {
-    const database = client.db('petIt');
     await database.collection("users").updateOne(
         { "username": req.body.username},
         { $pull: {"liked_shelters" : req.body.shelter_id} }
     );
     res.end("Removed Pet from Favorites");
 });
-//Comments/recentlyViewed Endpoints
+
+//Comments Endpoints
 app.post("/pet/comments/create", async (req,res) => {
     let user;
     try{
@@ -617,9 +594,7 @@ app.post("/shelter/comments/create", async (req,res) => {
     res.end('Success');
 });
 
-//app.get('/user/id/recentlyviewedpets', async (req,res) => res.end(JSON.stringify(recentlyViewedPets())));
-
-//Counter for user, shelter and pets
+//ID generation for shelter and pets
 async function getID(type){
     const col = database.collection('idCounter');
     await col.updateOne(
@@ -631,6 +606,5 @@ async function getID(type){
     return string;
 }
 
-//*********************************************************************************************************************
 //Don't move this or redirects won't work
 app.use(express.static('html'));
