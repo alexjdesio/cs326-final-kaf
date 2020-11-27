@@ -140,7 +140,7 @@ window.addEventListener("load", async function() {
         //called in order type, username, id
         const pet_liked = await checkFavorites("pet", username, pet_id);
         console.log(pet_liked);
-        if (!pet_liked) {
+        if (pet_liked) {
             favorite_button.innerText = remove_string;
         } else {
             favorite_button.innerText = add_string;
@@ -177,7 +177,6 @@ window.addEventListener("load", async function() {
             }
         }
     });
-    favorite_button.click();
 
     document.getElementById('post_comment_button').addEventListener('click', async () => {
         const comment = document.getElementById('petComments').value;
