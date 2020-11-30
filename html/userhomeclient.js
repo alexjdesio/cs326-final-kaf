@@ -62,7 +62,7 @@ async function renderPets(element, pets) {
         }
         //for (j = 0; j < 4; j++) {
         const col = document.createElement('div');
-        col.classList.add('col');
+        col.classList.add('col-3');
 
         const card = document.createElement('div');
         card.classList.add('card');
@@ -98,9 +98,9 @@ async function renderPets(element, pets) {
             element.appendChild(row);
             element.appendChild(document.createElement('br'));
         }
-        element.appendChild(row);
-        element.appendChild(document.createElement('br'));
     }
+    element.appendChild(row);
+    element.appendChild(document.createElement('br'));
 }
 
 async function renderShelters(element, shelters) {
@@ -116,7 +116,7 @@ async function renderShelters(element, shelters) {
         }
         //for (j = 0; j < 4; j++) {
         const col = document.createElement('div');
-        col.classList.add('col');
+        col.classList.add('col-3');
 
         const card = document.createElement('div');
         card.classList.add('card');
@@ -155,6 +155,8 @@ async function renderShelters(element, shelters) {
             element.appendChild(document.createElement('br'));
         }
     }
+    element.appendChild(row);
+    element.appendChild(document.createElement('br'));
 }
 
 async function renderViewed(element, pets) {
@@ -171,7 +173,7 @@ async function renderViewed(element, pets) {
         }
         //for (j = 0; j < 4; j++) {
         const col = document.createElement('div');
-        col.classList.add('col');
+        col.classList.add('col-3');
 
         const card = document.createElement('div');
         card.classList.add('card');
@@ -207,9 +209,9 @@ async function renderViewed(element, pets) {
             element.appendChild(row);
             element.appendChild(document.createElement('br'));
         }
-        element.appendChild(row);
-        element.appendChild(document.createElement('br'));
     }
+    element.appendChild(row);
+    element.appendChild(document.createElement('br'));
 }
 
 async function renderUserHome() {
