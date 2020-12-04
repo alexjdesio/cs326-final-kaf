@@ -50,11 +50,9 @@ async function getShelter(shelter_id) {
     } else {
         console.log("Couldn't find that shelter!");
     }
-    //need to add else
 }
 
 async function renderPetPage(pet) {
-    //get all the elements we need to fill in first. Because its easier for me to process that way.
     const pet_name = document.getElementById("pet_name");
     const pet_breed = document.getElementById("pet_breed");
     const pet_picture = document.getElementById("pet_picture");
@@ -68,7 +66,6 @@ async function renderPetPage(pet) {
     const about_shelter = document.getElementById("about_shelter");
     const adopt_button = document.getElementById("adopt_button");
     const favorite_button = document.getElementById("favorite_button");
-    //Pet Objects: Name, Breed, About, Health, Location, Comments, Num Likes
     const shelter = await getShelter(pet.pet_location);
 
     pet_name.innerText = pet.pet_name;
@@ -84,8 +81,6 @@ async function renderPetPage(pet) {
     about_shelter.innerText = shelter.shelter_about;
     adopt_button.innerText = 'Adopt ' + pet.pet_name;
     favorite_button.innerText = `Add ${pet.pet_name} to Favorites`;
-
-    //then deal with the comments section
 
     const userComment = document.getElementById('userComment');
     const msgComment = document.getElementById('msgComment');

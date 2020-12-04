@@ -1,5 +1,3 @@
-//import {createFakeUser,createFakeLogin} from "./api.js";
-
 'use strict';
 
 /**
@@ -96,9 +94,6 @@ async function getSearchResults(type, query, quantity) {
         console.log("Request for search results failed:", type, query, quantity);
     }
 }
-
-//getSearchResults("pet_location","Boston","5");
-
 
 async function getUserResults(username) {
     const viewUserUrl = "/user/id/view?username=" + username;
@@ -248,6 +243,5 @@ async function sendFormData(arg1) {
         }
     }
 }
-
 
 generateDynamicHTML(); //enables dynamically-generated HTML

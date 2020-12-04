@@ -2,7 +2,6 @@
 
 //This file holds all javascript functions for the navbar
 
-
 //TODO: this function doesn't generate correct URLs
 async function navbarLinks() {
     const response = await fetch("/getSessionUser", {

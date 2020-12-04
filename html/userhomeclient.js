@@ -12,7 +12,6 @@ async function getPet(pet_id) {
         const pet = await response.json();
         return pet;
     }
-    //need to add else
 }
 
 async function getShelter(shelter_id) {
@@ -22,7 +21,6 @@ async function getShelter(shelter_id) {
         const shelter = await response.json();
         return shelter;
     }
-    //need to add else
 }
 
 async function getFavoritePets(range, username) {
@@ -33,7 +31,6 @@ async function getFavoritePets(range, username) {
         console.log(JSON.stringify(pets));
         return pets;
     }
-    //need to add else
 }
 
 async function getFavoriteShelters(range, username) {
@@ -43,7 +40,6 @@ async function getFavoriteShelters(range, username) {
         const shelters = await response.json();
         return shelters;
     }
-    //need to add else
 }
 
 async function renderPets(element, pets) {
@@ -51,7 +47,6 @@ async function renderPets(element, pets) {
     console.log(viewed_pets);
     element.innerHTML = '';
     let i;
-    //for (i = 0; i < (range_pets / 4); i++) {
     let row;
     for (i = 0; i < viewed_pets; i++) {
         const pet = await getPet(pets[i]);
@@ -60,7 +55,6 @@ async function renderPets(element, pets) {
             row = document.createElement('div');
             row.classList.add('row');
         }
-        //for (j = 0; j < 4; j++) {
         const col = document.createElement('div');
         col.classList.add('col-3');
 
@@ -106,7 +100,6 @@ async function renderPets(element, pets) {
 async function renderShelters(element, shelters) {
     element.innerHTML = '';
     let i;
-    //for (i = 0; i < (range_shelters / 4); i++) {
     let row;
     for (i = 0; i < viewed_shelters; i++) {
         const shelter = await getShelter(shelters[i]);
@@ -114,7 +107,6 @@ async function renderShelters(element, shelters) {
             row = document.createElement('div');
             row.classList.add('row');
         }
-        //for (j = 0; j < 4; j++) {
         const col = document.createElement('div');
         col.classList.add('col-3');
 
@@ -140,7 +132,6 @@ async function renderShelters(element, shelters) {
         const card_link = document.createElement('a');
         card_link.classList.add('card-link');
         card_link.innerText = 'Visit ' + shelter.shelter_name + '\'s Page';
-        //card_link.href = site_url + 'shelter/view?=' + shelters[current_shelter].name;
         card_link.href = '/shelterPage.html?shelter_id=' + shelter.shelter_id;
 
         card_body.appendChild(card_title);
@@ -149,7 +140,6 @@ async function renderShelters(element, shelters) {
         card.appendChild(card_body);
         col.appendChild(card);
         row.appendChild(col);
-        //}
         if (i % 4 === 3 || i === viewed_shelters - 1) {
             element.appendChild(row);
             element.appendChild(document.createElement('br'));
@@ -162,7 +152,6 @@ async function renderShelters(element, shelters) {
 async function renderViewed(element, pets) {
     element.innerHTML = '';
     let i;
-    //for (i = 0; i < (range_pets / 4); i++) {
     let row;
     for (i = 0; i < pets.length; i++) {
         const pet = await getPet(pets[i]);
@@ -171,7 +160,6 @@ async function renderViewed(element, pets) {
             row = document.createElement('div');
             row.classList.add('row');
         }
-        //for (j = 0; j < 4; j++) {
         const col = document.createElement('div');
         col.classList.add('col-3');
 
