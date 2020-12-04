@@ -170,7 +170,12 @@ app.get('/userhome.html', checkMatchedUser, (req, res, next) => {
 app.get('/chat.html', checkLoggedIn, (req, res, next) => {
     next();
 });
+
 app.get('/shelterForm.html', checkLoggedIn, checkIfShelterAcct, (req, res, next) => {
+    next();
+});
+
+app.get('/petform.html', checkLoggedIn, checkIfShelterAcct, (req, res, next) => {
     next();
 });
 
@@ -302,15 +307,8 @@ app.post("/user/id/edit", checkLoggedIn, async (req, res) => {
     edit_query["salt"] = result.salt;
     edit_query["shelter"] = result.shelter;
     edit_query["chat"] = result.chat;
-    if (req.body.liked_pets === '') {
-        edit_query.liked_pets = [];
-    }
-    if (req.body.liked_shelters === '') {
-        edit_query.liked_shelters = [];
-    }
-    if (req.body.viewed_pets === '') {
-        edit_query.viewed_pets = [];
-    }
+    edit_query["liked_pets"] = result.liked_pets;
+    edit_query["liked_shelters"] = result.liked_shelters;
 
     await database.collection("users").findOneAndReplace(check_query, edit_query);
     res.end();

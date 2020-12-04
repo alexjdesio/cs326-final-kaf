@@ -169,7 +169,6 @@ function generateDynamicHTML() {
     }
 }
 
-
 //arg1 determines if this is an edit or register or login
 async function sendFormData(arg1) {
     const userData = {
@@ -179,8 +178,8 @@ async function sendFormData(arg1) {
         type: null,
         interests: null,
         shelter: '',
-        liked_pets: '',
-        liked_shelters: '',
+        liked_pets: [],
+        liked_shelters: [],
         viewed_pets: '',
         location: null
     };
