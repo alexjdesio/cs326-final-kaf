@@ -148,6 +148,7 @@ async function editUserSettings(){
         interests: null,
         shelter: null,
         liked_pets: null,
+        liked_shelters: null,
         viewed_pets: null,
         location: null
     };
@@ -226,6 +227,7 @@ async function sendFormData(arg1){
         interests: null,
         shelter: '',
         liked_pets: '',
+        liked_shelters: '',
         viewed_pets: '',
         location: null
     };

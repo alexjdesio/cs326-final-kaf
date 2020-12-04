@@ -537,7 +537,7 @@ app.post('/chat/msg', checkLoggedIn, async (req, res) => {
 
 //Shelter Endpoints for Create, View, Like/Unlike
 app.post('/shelter/create', async (req, res) => {
-    const id = getID('shelter');
+    const id = await getID('shelter');
     const shelter = {        
         shelter_name: req.body.shelter_name,
         shelter_id: id,        
