@@ -42,7 +42,7 @@ async function getFavoriteShelters(range, username) {
     if (response.ok) {
         const shelters = await response.json();
         return shelters;
-    } 
+    }
     //need to add else
 }
 
@@ -140,7 +140,7 @@ async function renderShelters(element, shelters) {
         const card_link = document.createElement('a');
         card_link.classList.add('card-link');
         card_link.innerText = 'Visit ' + shelter.shelter_name + '\'s Page';
-            //card_link.href = site_url + 'shelter/view?=' + shelters[current_shelter].name;
+        //card_link.href = site_url + 'shelter/view?=' + shelters[current_shelter].name;
         card_link.href = '/shelterPage.html?shelter_id=' + shelter.shelter_id;
 
         card_body.appendChild(card_title);

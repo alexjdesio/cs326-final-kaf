@@ -17,10 +17,10 @@ async function checkFavorites(type, username, id) {
     }
 }
 
-async function renderShelter(shelterID){
+async function renderShelter(shelterID) {
     const viewUserUrl = "/shelter/view?shelter_id=" + shelterID;
     const response = await fetch(viewUserUrl);
-    if(response.ok){
+    if (response.ok) {
         const results = await response.json();
         console.log(results);
         document.getElementById('nameOrg').innerText = results.shelter_name;
@@ -31,10 +31,10 @@ async function renderShelter(shelterID){
         document.getElementById('profile').src = results.picture;
         document.getElementById('banner').src = results.banner_picture;
         document.getElementById('location').src = results.location_picture;
-        
+
         const recentList = document.getElementById('recentPet');
-        for (let i = 0; i < results.shelter_pets.length; i++){
-            const petResults = await fetch ('/pet/view?pet_id=' + results.shelter_pets[i]);
+        for (let i = 0; i < results.shelter_pets.length; i++) {
+            const petResults = await fetch('/pet/view?pet_id=' + results.shelter_pets[i]);
             const petResult = await petResults.json();
             console.log(petResult);
             const post = document.createElement('div');
@@ -53,10 +53,10 @@ async function renderShelter(shelterID){
             post.appendChild(hyperLink);
         }
 
-        
+
         const userComment = document.getElementById('userComment');
         const msgComment = document.getElementById('msgComment');
-        for (const x in results.shelter_comments){
+        for (const x in results.shelter_comments) {
             const user = document.createElement('h4');
             const comment = document.createElement('h4');
             user.classList.add('card');
@@ -69,12 +69,12 @@ async function renderShelter(shelterID){
     }
 }
 
-async function sendShelterData(){
+async function sendShelterData() {
     const viewUserUrl = "/shelter/create";
     const response = await fetch(viewUserUrl, {
         method: 'POST',
         headers: {
-        'Content-Type': 'application/json;charset=utf-8'
+            'Content-Type': 'application/json;charset=utf-8'
         },
         body: JSON.stringify({
             shelter_name: document.getElementById('shelter_name').value,
@@ -85,14 +85,14 @@ async function sendShelterData(){
             location_picture: document.getElementById('location_picture').value
         })
     });
-    if(!response.ok){
+    if (!response.ok) {
         console.log(response.error);
     }
 }
 
-async function sendCommentData(shelterID){
+async function sendCommentData(shelterID) {
     const comment = document.getElementById('shelterComments').value;
-    if (comment === ''){
+    if (comment === '') {
         return;
     }
 
@@ -100,14 +100,14 @@ async function sendCommentData(shelterID){
     const response = await fetch(viewUserUrl, {
         method: 'POST',
         headers: {
-        'Content-Type': 'application/json;charset=utf-8'
+            'Content-Type': 'application/json;charset=utf-8'
         },
         body: JSON.stringify({
-            shelter_id: shelterID, 
+            shelter_id: shelterID,
             value: comment
         })
     });
-    if(!response.ok){
+    if (!response.ok) {
         console.log(response.error);
     }
 }
@@ -123,7 +123,7 @@ async function getUsername() {
     }
 }
 
-async function updateButton(button3, shelterID){
+async function updateButton(button3, shelterID) {
     const remove_string = 'Remove from Favorites';
     const add_string = 'Add to Favorites';
     const username = await getUsername();
@@ -137,24 +137,24 @@ async function updateButton(button3, shelterID){
 }
 
 
-function generateDynamicHTML(){
+function generateDynamicHTML() {
     const url_string = window.location.href;
     const url = new URL(url_string);
     const name = url.searchParams.get("name");
     const page = url.pathname;
-    console.log(name,page);
+    console.log(name, page);
 
-    if (page ==='/shelterPage.html'){
+    if (page === '/shelterPage.html') {
         const shelterID = url.searchParams.get("shelter_id");
-        renderShelter(shelterID); 
+        renderShelter(shelterID);
         const button = document.getElementById('commentShelter');
-        button.addEventListener("click", function (){
+        button.addEventListener("click", function() {
             sendCommentData(shelterID);
             location.reload();
         });
         const button2 = document.getElementById('postPet');
-        button2.addEventListener("click", function (){
-            window.location.href="/petform.html?shelter_id=" + shelterID;
+        button2.addEventListener("click", function() {
+            window.location.href = "/petform.html?shelter_id=" + shelterID;
         });
 
         const button3 = document.getElementById('likeShelter');
@@ -164,27 +164,37 @@ function generateDynamicHTML(){
             const add_string = 'Add to Favorites';
             if (username === '') {
                 button3.classList.add('disabled');
-            }
-            else {
+            } else {
                 if (button3.innerText === add_string) {
                     button3.classList.add('active');
                     const post_url = `/user/id/favoriteShelters/add`;
-                    const post_body = {shelter_id: shelterID, username: username};
-                    await fetch(post_url, { method: 'POST', body: JSON.stringify(post_body) });
-                    button3.innerText = remove_string; 
+                    const post_body = {
+                        shelter_id: shelterID,
+                        username: username
+                    };
+                    await fetch(post_url, {
+                        method: 'POST',
+                        body: JSON.stringify(post_body)
+                    });
+                    button3.innerText = remove_string;
                 } else {
                     const post_url = `/user/id/favoriteShelters/delete`;
-                    const post_body = {shelter_id: shelterID, username: username};
-                    await fetch(post_url, { method: 'POST', body: JSON.stringify(post_body) });
+                    const post_body = {
+                        shelter_id: shelterID,
+                        username: username
+                    };
+                    await fetch(post_url, {
+                        method: 'POST',
+                        body: JSON.stringify(post_body)
+                    });
                     button3.innerText = add_string;
                 }
             }
         });
         updateButton(button3, shelterID);
-    }
-    else if (page ==='/shelterForm.html'){
+    } else if (page === '/shelterForm.html') {
         const form = document.getElementById('createShelter');
-        form.addEventListener("submit",function (event){
+        form.addEventListener("submit", function(event) {
             event.preventDefault(); //this is so important, prevents default form submission behavior
             sendShelterData();
             location.reload();

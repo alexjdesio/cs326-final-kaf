@@ -7,7 +7,7 @@ window.addEventListener('load', async function() {
     const url = new URL(url_string);
     const field = document.getElementById('petShelter');
     field.value = url.searchParams.get('shelter_id');
-    if (field.value !== ''){
+    if (field.value !== '') {
         field.readOnly = true;
     }
 
@@ -31,8 +31,21 @@ window.addEventListener('load', async function() {
             type = "exotic";
         }
 
-        const pet = {pet_name: name, pet_type: type, pet_about: about, pet_health: health, pet_breed: breed, pet_location: location, pet_comments: [], picture: picture, num_likes: 0};
+        const pet = {
+            pet_name: name,
+            pet_type: type,
+            pet_about: about,
+            pet_health: health,
+            pet_breed: breed,
+            pet_location: location,
+            pet_comments: [],
+            picture: picture,
+            num_likes: 0
+        };
         const post_url = `${site_url}/pet/create`;
-        fetch(post_url, { method: 'POST', body: JSON.stringify(pet) });
+        fetch(post_url, {
+            method: 'POST',
+            body: JSON.stringify(pet)
+        });
     });
 });

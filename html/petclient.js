@@ -89,7 +89,7 @@ async function renderPetPage(pet) {
 
     const userComment = document.getElementById('userComment');
     const msgComment = document.getElementById('msgComment');
-    for (const x in pet.pet_comments){
+    for (const x in pet.pet_comments) {
         const user = document.createElement('h4');
         const comment = document.createElement('h4');
         user.classList.add('card');
@@ -116,7 +116,7 @@ window.addEventListener("load", async function() {
     if (recently_viewed === null) {
         recently_viewed = [];
     }
-    if ( recently_viewed.includes(pet_id) ) {
+    if (recently_viewed.includes(pet_id)) {
         console.log("already seen");
     } else {
         recently_viewed.push(pet_id);
@@ -131,7 +131,7 @@ window.addEventListener("load", async function() {
 
     const remove_string = 'Remove from Favorites';
     const add_string = 'Add to Favorites';
-    
+
     const username = await getUsername();
     if (username !== '') {
         console.log(pet_id);
@@ -160,18 +160,29 @@ window.addEventListener("load", async function() {
         const username = await getUsername();
         if (username === '') {
             favorite_button.classList.add('disabled');
-        }
-        else {
+        } else {
             if (favorite_button.innerText === add_string) {
                 favorite_button.classList.add('active');
                 const post_url = `${site_url}/user/id/favoritepets/add`;
-                const post_body = {pet_id: pet_id, username: username};
-                await fetch(post_url, { method: 'POST', body: JSON.stringify(post_body) });
-                favorite_button.innerText = remove_string; 
+                const post_body = {
+                    pet_id: pet_id,
+                    username: username
+                };
+                await fetch(post_url, {
+                    method: 'POST',
+                    body: JSON.stringify(post_body)
+                });
+                favorite_button.innerText = remove_string;
             } else {
                 const post_url = `${site_url}/user/id/favoritepets/delete`;
-                const post_body = {pet_id: pet_id, username: username};
-                await fetch(post_url, { method: 'POST', body: JSON.stringify(post_body) });
+                const post_body = {
+                    pet_id: pet_id,
+                    username: username
+                };
+                await fetch(post_url, {
+                    method: 'POST',
+                    body: JSON.stringify(post_body)
+                });
                 favorite_button.innerText = add_string;
             }
         }
@@ -179,7 +190,7 @@ window.addEventListener("load", async function() {
 
     document.getElementById('post_comment_button').addEventListener('click', async () => {
         const comment = document.getElementById('petComments').value;
-        if (comment === ''){
+        if (comment === '') {
             return;
         }
 
@@ -188,14 +199,14 @@ window.addEventListener("load", async function() {
         const response = await fetch(viewUserUrl, {
             method: 'POST',
             headers: {
-            'Content-Type': 'application/json;charset=utf-8'
+                'Content-Type': 'application/json;charset=utf-8'
             },
             body: JSON.stringify({
-                pet_id: petID, 
+                pet_id: petID,
                 value: comment
             })
         });
-        if(!response.ok){
+        if (!response.ok) {
             console.log(response.error);
         }
         location.reload();
