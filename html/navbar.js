@@ -7,7 +7,7 @@
 async function navbarLinks(){
     const response = await fetch("/getSessionUser",{method:"GET"});
     if(response.ok){
-      let username = await response.text();
+      const username = await response.text();
       document.getElementById("userhome-link").href =  "/userhome.html?username=" + username;
       document.getElementById("settings-link").href =  "/settings.html?username=" + username;
     }

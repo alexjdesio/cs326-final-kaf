@@ -2,15 +2,15 @@
 
 let currentChat = '';
 async function renderChat(){
-    let viewUserUrl = "/chat/view";
+    const viewUserUrl = "/chat/view";
     const response = await fetch(viewUserUrl, {
         method: 'GET'});
     if(response.ok){
-        let result = await response.json();
+        const result = await response.json();
         const chatUsers = document.getElementById('chatUsers');
 
-        for (let x in result){
-            let results = result[x];
+        for (const x in result){
+            const results = result[x];
 
             const button = document.createElement('button');
             button.innerText = results.fromUsername;
@@ -21,8 +21,8 @@ async function renderChat(){
                     chatMessages.removeChild(chatMessages.lastChild);
                 }
 
-                let messages = results.messages;
-                for (let y of messages){
+                const messages = results.messages;
+                for (const y of messages){
                     const message = document.createElement('p');
                     message.innerText = y.value;
                     message.classList.add('border', 'rounded', 'bg-white');
@@ -38,9 +38,9 @@ async function renderChat(){
 }
 
 async function sendChatData(noContact){
-    let viewUserUrl = "/chat/msg";
+    const viewUserUrl = "/chat/msg";
     if(noContact === false){
-        const response = await fetch(viewUserUrl, {
+        await fetch(viewUserUrl, {
             method: 'POST',
             headers: {
             'Content-Type': 'application/json;charset=utf-8'
@@ -52,7 +52,7 @@ async function sendChatData(noContact){
         });
     }
     else if (noContact === true){
-        const response = await fetch(viewUserUrl, {
+        await fetch(viewUserUrl, {
             method: 'POST',
             headers: {
             'Content-Type': 'application/json;charset=utf-8'
@@ -63,23 +63,16 @@ async function sendChatData(noContact){
             })
         });
     }
-
-    if(!response.ok){
-        console.log(response.error);
-    }
 }
 
 function generateDynamicHTML(){
     const url_string = window.location.href;
     const url = new URL(url_string);
-    const name = url.searchParams.get("name");
     const page = url.pathname;
 
     if (page === '/chat.html'){
-        let form = document.getElementById('chatForm');
-        let submit = document.getElementById('chatSubmit');
-        let form2 = document.getElementById('addChat');
-        let submit2 = document.getElementById('createSubmit');
+        const form = document.getElementById('chatForm');
+        const form2 = document.getElementById('addChat');
         renderChat();
 
         form.addEventListener("submit", function (event){

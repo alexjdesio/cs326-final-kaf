@@ -67,7 +67,6 @@ async function renderPetPage(pet) {
     const shelter_name = document.getElementById("shelter_name");
     const about_shelter = document.getElementById("about_shelter");
     const adopt_button = document.getElementById("adopt_button");
-    const comments_section = document.getElementById("comments_section");
     const favorite_button = document.getElementById("favorite_button");
     //Pet Objects: Name, Breed, About, Health, Location, Comments, Num Likes
     const shelter = await getShelter(pet.pet_location);
@@ -90,7 +89,7 @@ async function renderPetPage(pet) {
 
     const userComment = document.getElementById('userComment');
     const msgComment = document.getElementById('msgComment');
-    for (let x in pet.pet_comments){
+    for (const x in pet.pet_comments){
         const user = document.createElement('h4');
         const comment = document.createElement('h4');
         user.classList.add('card');
@@ -184,8 +183,8 @@ window.addEventListener("load", async function() {
             return;
         }
 
-        let petID = url.searchParams.get("pet_id");
-        let viewUserUrl = "/pet/comments/create";
+        const petID = url.searchParams.get("pet_id");
+        const viewUserUrl = "/pet/comments/create";
         const response = await fetch(viewUserUrl, {
             method: 'POST',
             headers: {

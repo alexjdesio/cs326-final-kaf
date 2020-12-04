@@ -16,20 +16,20 @@
 */
     
 async function getSearchResults(type,query,quantity){
-    let request_url = "/search?type=" + type + "&query=" + query + "&quantity=" + quantity;
-    let response = await fetch(request_url, {method:"GET"});
-    let fieldClasses = {
+    const request_url = "/search?type=" + type + "&query=" + query + "&quantity=" + quantity;
+    const response = await fetch(request_url, {method:"GET"});
+    const fieldClasses = {
         pet_name: "card-title",
         shelter_name: "card-title",
         picture: "format-picture"
     };
-    let fieldElements = {
+    const fieldElements = {
         pet_name: "a",
         pet_breed: "p",
         shelter_name: "a",
         picture: "img"
     };
-    let labels = {
+    const labels = {
         pet_breed: "Breed: ",
         pet_about: "About: ",
         pet_health: "Health: ",
@@ -37,18 +37,18 @@ async function getSearchResults(type,query,quantity){
         pet_type: "Pet Type: ",
         pet_location: "Shelter: "
     };
-    let omit = ["pet_id","_id","pet_location","pet_comments","shelter_id","shelter_pets","picture","banner_picture","location_picture","shelter_comments"];
+    const omit = ["pet_id","_id","pet_location","pet_comments","shelter_id","shelter_pets","picture","banner_picture","location_picture","shelter_comments"];
     if(response.ok){
-        let results = await response.json();
+        const results = await response.json();
         const search_container = document.getElementById("search-results");
         console.log(search_container);
-        for(let result of results){
+        for(const result of results){
             const newCard = document.createElement("div");
             const newResultDiv = document.createElement("div");
             newCard.classList.add("card");
             newResultDiv.classList.add("card-body");
             newCard.append(newResultDiv);
-            for(let field of Object.keys(result)){
+            for(const field of Object.keys(result)){
                 let elementType = "p";
                 if(field in fieldElements){ //define the element type with a default of <p>
                     elementType = fieldElements[field];
@@ -104,71 +104,36 @@ async function getSearchResults(type,query,quantity){
 
 
 async function getUserResults(username){
-    let viewUserUrl = "/user/id/view?username=" + username;
+    const viewUserUrl = "/user/id/view?username=" + username;
     const response = await fetch(viewUserUrl,{method:"GET"});
     if(response.ok){
-        let result = await response.json();
+        const result = await response.json();
         if(result === null){
             return;
         }
         console.log("User view request successful.");
         document.getElementById("username").textContent = "Modify Settings for: " + result["username"]; 
         //update value fields
-        for(let field of Object.keys(result)){
+        for(const field of Object.keys(result)){
             if(field !== "password" && field !== "type" && field !=="interests"){
-                let element = document.getElementById(field);
+                const element = document.getElementById(field);
                 if(element !== null){
                     element.value = result[field];
                 } 
             }
         }
         //update checkboxes for user type
-        let type_elements = document.getElementsByName("type");
-        for(let type_element of type_elements){
+        const type_elements = document.getElementsByName("type");
+        for(const type_element of type_elements){
             type_element.checked = (type_element.value === result.type) ? true : false;
         }
         //update checkboxes for user interests
-        let interest_elements = document.getElementsByName("interests");
-        for(let interest_element of interest_elements){
+        const interest_elements = document.getElementsByName("interests");
+        for(const interest_element of interest_elements){
             //console.log("Comparing ", interest_element.value, " with ", result.interests);
             interest_element.checked = (interest_element.value === result.interests) ? true : false;
         }   
     }
-}
-
-//TESTING:
-
-//Experimental function, may be removed
-async function editUserSettings(){
-    let userData = {
-        username: null,
-        email: null, 
-        password: null,
-        type: null,
-        interests: null,
-        shelter: null,
-        liked_pets: null,
-        liked_shelters: null,
-        viewed_pets: null,
-        location: null
-    };
-    for(let field of Object.keys(userData)){
-        let currField = document.getElementById(field);
-        userData[field] = (currField !== null) ? currField.value : null;
-    }
-    console.log(userData);
-    const response = await fetch("/user/id/edit", {
-        method: 'POST',
-        headers: {
-        'Content-Type': 'application/json;charset=utf-8'
-        },
-        body: JSON.stringify(userData)
-    }); 
-    if(response.ok){
-        //let result = response.json();
-        //console.log("Edit to user data successfully submitted.\nResponse:", JSON.stringify(result));
-    }
-    return;
 }
 
 //This is the only function that should be called- it will decide which other functions need to load
@@ -183,23 +148,21 @@ function generateDynamicHTML(){
         if(username !== null && username !== ''){
             getUserResults(username);
         }
-        let form = document.getElementById("settings-form");
-        let submit = document.getElementById("settings-submit");
+        const form = document.getElementById("settings-form");
         form.addEventListener("submit",function (event){
             event.preventDefault(); //this is so important, prevents default form submission behavior
             sendFormData("edit");
         });   
     }
     else if (page === "/search.html"){
-        let type = url.searchParams.get("type");
-        let query = url.searchParams.get("query");
-        let quantity = 10; //this could be modified to become more dynamic- for example, add event listener to increase num of results on click
+        const type = url.searchParams.get("type");
+        const query = url.searchParams.get("query");
+        const quantity = 10; //this could be modified to become more dynamic- for example, add event listener to increase num of results on click
         getSearchResults(type,query,quantity);
     }
     else if (page === "/signup.html"){
         console.log("signup request sent");
-        let form = document.getElementById("signup-form");
-        let submit = document.getElementById("signup-submit");
+        const form = document.getElementById("signup-form");
         form.addEventListener("submit",function (event){
             event.preventDefault(); //this is so important, prevents default form submission behavior
             sendFormData("register");
@@ -207,8 +170,7 @@ function generateDynamicHTML(){
     }
     else if (page === "/login.html" || page === "/login"){
         console.log("login request sent");
-        let form = document.getElementById("login-form");
-        let submit = document.getElementById("login-submit");
+        const form = document.getElementById("login-form");
         form.addEventListener("submit",function (event){
             event.preventDefault(); //this is so important, prevents default form submission behavior
             sendFormData("login");
@@ -219,7 +181,7 @@ function generateDynamicHTML(){
 
 //arg1 determines if this is an edit or register or login
 async function sendFormData(arg1){
-    let userData = {
+    const userData = {
         username: null,
         email: null, 
         password: null,
@@ -231,10 +193,10 @@ async function sendFormData(arg1){
         viewed_pets: '',
         location: null
     };
-    let fields = Object.keys(userData);
-    for(let field of fields){
+    const fields = Object.keys(userData);
+    for(const field of fields){
         if(field === "interests" || field === "type"){
-            let selected = document.getElementsByName(field);
+            const selected = document.getElementsByName(field);
             selected.forEach((arg1)=>{
                 if(arg1.checked){
                     userData[field] = arg1.value;
@@ -286,7 +248,7 @@ async function sendFormData(arg1){
         }
         const result = await fetch("/getSessionUser",{method:"GET"});
         if(result.ok){
-            let username = await result.text();
+            const username = await result.text();
             window.location.href= "/userhome.html?username=" + username; //this is the alternative method
         } 
     }

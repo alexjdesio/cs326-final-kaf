@@ -18,7 +18,7 @@ async function checkFavorites(type, username, id) {
 }
 
 async function renderShelter(shelterID){
-    let viewUserUrl = "/shelter/view?shelter_id=" + shelterID;
+    const viewUserUrl = "/shelter/view?shelter_id=" + shelterID;
     const response = await fetch(viewUserUrl);
     if(response.ok){
         const results = await response.json();
@@ -56,7 +56,7 @@ async function renderShelter(shelterID){
         
         const userComment = document.getElementById('userComment');
         const msgComment = document.getElementById('msgComment');
-        for (let x in results.shelter_comments){
+        for (const x in results.shelter_comments){
             const user = document.createElement('h4');
             const comment = document.createElement('h4');
             user.classList.add('card');
@@ -70,7 +70,7 @@ async function renderShelter(shelterID){
 }
 
 async function sendShelterData(){
-    let viewUserUrl = "/shelter/create";
+    const viewUserUrl = "/shelter/create";
     const response = await fetch(viewUserUrl, {
         method: 'POST',
         headers: {
@@ -96,7 +96,7 @@ async function sendCommentData(shelterID){
         return;
     }
 
-    let viewUserUrl = "/shelter/comments/create";
+    const viewUserUrl = "/shelter/comments/create";
     const response = await fetch(viewUserUrl, {
         method: 'POST',
         headers: {
@@ -145,7 +145,7 @@ function generateDynamicHTML(){
     console.log(name,page);
 
     if (page ==='/shelterPage.html'){
-        let shelterID = url.searchParams.get("shelter_id");
+        const shelterID = url.searchParams.get("shelter_id");
         renderShelter(shelterID); 
         const button = document.getElementById('commentShelter');
         button.addEventListener("click", function (){
@@ -183,7 +183,7 @@ function generateDynamicHTML(){
         updateButton(button3, shelterID);
     }
     else if (page ==='/shelterForm.html'){
-        let form = document.getElementById('createShelter');
+        const form = document.getElementById('createShelter');
         form.addEventListener("submit",function (event){
             event.preventDefault(); //this is so important, prevents default form submission behavior
             sendShelterData();
